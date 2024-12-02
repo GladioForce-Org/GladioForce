@@ -27,6 +27,7 @@ def create_test_data(apps, schema_editor):
     )
     edition = Edition.objects.create(year=2024)
     size = Size.objects.create(size="M")
+    size2 = Size.objects.create(size="L")
     tshirt = Tshirt.objects.create(model="Unisex")
     tshirt.size.add(size)
     available_tshirt = AvailableTshirt.objects.create(tshirt=tshirt, edition=edition, price=20.00)
@@ -46,7 +47,7 @@ def create_test_data(apps, schema_editor):
         works_day2=True,
         tshirt=available_tshirt,
         club=club,
-        size=size
+        size=size2
     )
 
 
