@@ -39,6 +39,15 @@ def create_test_data(apps, schema_editor):
         club=club,
         size=size
     )
+    Volunteer.objects.create(
+        first_name="John",
+        last_name="Smith",
+        national_registry_number="987654321",
+        works_day2=True,
+        tshirt=available_tshirt,
+        club=club,
+        size=size
+    )
 
 
 class Migration(migrations.Migration):
