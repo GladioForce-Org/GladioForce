@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  admin_dashboard:
+    build:
+      context: ./frontend/admin_dashboard/
+    ports:
+      - "4200:4200" # Used for debugging if needed
+    environment:
+      - NODE_ENV=production
+    command: ["npm", "run", "start","--","--host", "0.0.0.0"]
+    depends_on:
+      - backend
+
+  data_collectie:
+    build:
+      context: ./frontend/data_collectie/
+    ports:
+      - "4201:4201" # Used for debugging if needed
+    environment:
+      - NODE_ENV=production
+    command: ["npm", "run", "start", "--", "--port", "4201","--host", "0.0.0.0"]
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend/gladio_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_ENV=production
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000" 
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+  db:
+    build:
+      context: ./db_docker/
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "gladio"
+      MYSQL_USER: "gladioforce"
+      MYSQL_PASSWORD: "gladioforce"
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  db_data:
