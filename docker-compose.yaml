@@ -8,9 +8,13 @@ services:
       - "4200:4200" # Used for debugging if needed
     environment:
       - NODE_ENV=production
-    command: ["npm", "run", "start","--","--host", "0.0.0.0"]
+    command: ["npm", "run", "start","--","--host", "0.0.0.0", "--poll", "2000"]
     depends_on:
       - backend
+    volumes:
+      - ./frontend/admin_dashboard:/app # Sync local files with container
+      - /app/node_modules # Prevent overwriting node_modules
+
 
   data_collectie:
     build:
@@ -19,9 +23,12 @@ services:
       - "4201:4201" # Used for debugging if needed
     environment:
       - NODE_ENV=production
-    command: ["npm", "run", "start", "--", "--port", "4201","--host", "0.0.0.0"]
+    command: ["npm", "run", "start", "--", "--port", "4201","--host", "0.0.0.0", "--poll", "2000"]
     depends_on:
       - backend
+    volumes:
+      - ./frontend/data_collectie:/app # Sync local files with container
+      - /app/node_modules # Prevent overwriting node_modules
 
   backend:
     build:
