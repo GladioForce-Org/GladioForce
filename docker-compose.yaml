@@ -41,6 +41,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./backend/gladio_backend:/app # Sync local files with container
+
 
 
   db:
