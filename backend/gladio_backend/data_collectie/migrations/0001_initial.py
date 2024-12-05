@@ -11,6 +11,7 @@ def create_test_data(apps, schema_editor):
     Tshirt = apps.get_model('data_collectie', 'Tshirt')
     AvailableTshirt = apps.get_model('data_collectie', 'AvailableTshirt')
     Volunteer = apps.get_model('data_collectie', 'Volunteer')
+    ParticipatingClub = apps.get_model('data_collectie', 'ParticipatingClub')
     
     # Create test data
     club = Club.objects.create(
@@ -48,6 +49,12 @@ def create_test_data(apps, schema_editor):
         tshirt=available_tshirt,
         club=club,
         size=size2
+    )
+    ParticipatingClub.objects.create(
+        club=club,
+        edition=edition,
+        person_in_charge_day1="Jane Doe",
+        person_in_charge_day2="John Smith"
     )
 
 
