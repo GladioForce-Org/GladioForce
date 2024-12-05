@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { initFlowbite } from 'flowbite';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { FooterComponent } from './footer/footer.component';
@@ -13,7 +13,12 @@ import { FooterComponent } from './footer/footer.component';
 })
 export class AppComponent {
   title = 'admin_dashboard';
+
+  constructor(
+    private router: Router
+  ) {}
+
   ngOnInit(): void {
     initFlowbite();
-}
+  }
 }
