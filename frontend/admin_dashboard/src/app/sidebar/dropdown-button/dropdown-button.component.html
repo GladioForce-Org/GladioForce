@@ -4,7 +4,14 @@
     [attr.aria-controls]="dropdownreference"
     [attr.data-collapse-toggle]="dropdownreference"
 >
-    <ng-content></ng-content>
+    <app-feather-icon
+        *ngIf="icon !== ''"
+        [size]="24"
+        [icon]="icon"
+        class="text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+    >
+    </app-feather-icon>
+
 
     <span class="flex-1 ml-3 text-left whitespace-nowrap">{{ name }}</span>
 

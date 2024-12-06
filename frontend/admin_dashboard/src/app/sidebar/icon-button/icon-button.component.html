@@ -3,7 +3,13 @@
     data-tooltip-target="tooltip-button"
     class="inline-flex justify-center p-2 text-gray-500 rounded cursor-pointer dark:text-gray-400 dark:hover:text-white hover:text-gray-900 hover:bg-purple-400 dark:hover:bg-gray-600"
 >
-    <ng-content></ng-content>
+    <app-feather-icon
+        *ngIf="icon !== ''"
+        [size]="24"
+        [icon]="icon"
+        class="text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+    >
+    </app-feather-icon>
 </a>
 
 <div
