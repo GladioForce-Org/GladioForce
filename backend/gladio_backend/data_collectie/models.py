@@ -17,7 +17,7 @@ class Club(models.Model):
         return self.name
     
     def gen_link(self):
-        return ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+', k=32))
+        return ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+', k=64))
 
 
 class Edition(models.Model):
