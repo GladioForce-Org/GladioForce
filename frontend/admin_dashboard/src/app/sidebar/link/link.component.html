@@ -1,0 +1,15 @@
+<li class="mt-2">
+    <a
+      [href]="link"
+      [class]="css"
+    >
+      <app-feather-icon
+        *ngIf="icon !== ''"
+        [size]="24"
+        [icon]="icon"
+        class="text-gray-400 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+      >
+      </app-feather-icon>
+      <span [ngClass]="{ 'ml-3' : icon !== '' }">{{ linkName }}</span>
+    </a>
+</li>
