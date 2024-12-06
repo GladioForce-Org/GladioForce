@@ -1,4 +1,5 @@
 from django.db import models
+import random
 
 class Club(models.Model):
     name = models.CharField(max_length=100)
@@ -14,6 +15,9 @@ class Club(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def gen_link(self):
+        return ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+', k=32))
 
 
 class Edition(models.Model):
@@ -55,9 +59,9 @@ class Volunteer(models.Model):
     works_day2 = models.BooleanField(default=False)
     needs_parking_day1 = models.BooleanField(default=False)
     needs_parking_day2 = models.BooleanField(default=False)
-    tshirt = models.ForeignKey(AvailableTshirt, on_delete=models.CASCADE)
+    tshirt = models.ForeignKey(AvailableTshirt, on_delete=models.CASCADE, null=True)
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
-    size = models.ForeignKey(Size, on_delete=models.CASCADE)
+    size = models.ForeignKey(Size, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -66,8 +70,10 @@ class Volunteer(models.Model):
 class ParticipatingClub(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
     edition = models.ForeignKey(Edition, on_delete=models.CASCADE)
-    person_in_charge_day1 = models.CharField(max_length=100)
-    person_in_charge_day2 = models.CharField(max_length=100)
+    person_in_charge_day1 = models.CharField(max_length=100, null=True)
+    person1_in_charge_day1 = models.CharField(max_length=100, null=True)
+    person_in_charge_day2 = models.CharField(max_length=100, null=True)
+    person1_in_charge_day2 = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return f"{self.club} - {self.edition}"
