@@ -1,0 +1,9 @@
+<li class="mt-2">
+    <a
+      [href]="link"
+      [class]="css"
+    >
+      <ng-content></ng-content>
+      <span [ngClass]="{ 'ml-3' : hasIcon }">{{ linkName }}</span>
+    </a>
+</li>
