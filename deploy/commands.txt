@@ -1,0 +1,43 @@
+
+########Export variables as environment variables########
+set -o allexport; source .env; set +o allexport
+
+########use a custom variables file#################
+terraform plan -var-file="dev.tfvars"
+
+###########use a custom variable when using terraform plan#######
+terraform plan -var="instance_type=m5.large"
+
+
+#########Destroy a certain resource#############
+terraform destroy -target <resource>
+
+
+######### Pretty format of all the terraform files#############
+terraform fmt
+
+
+######### validating terraform config files#############
+terraform validate
+
+
+######## Recreating a resource when it has been changed on AWS ##################
+terraform apply -replace="aws_vpc.<name>"
+
+######## Using terraform graph to create a visual representation of the deployment######
+terraform graph > graph.dot 
+
+--> then use the graphviz application to visualise the file
+sudo apt install graphviz
+cat graph.dot | dot -Tsvg > graph.svg
+
+open with chrome
+
+
+##### saving terraform plan to a file to create a backup ##########
+terraform plan -out backupplan  (is a binary file)
+terraform apply backupplan
+
+######### ouput the output "variables" in the console##########
+!! Outputs have to be declared first !!
+terraform ouput iam_arn
