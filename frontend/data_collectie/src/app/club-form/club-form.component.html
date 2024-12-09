@@ -1,0 +1,121 @@
+<div class="container mx-auto p-4">
+    <!-- Title -->
+    <h1 class="text-3xl font-bold text-gray-900 mb-4">Gladiolen 2025</h1>
+
+    <h2 class="text-2xl font-semibold text-gray-700 mb-6">'t Maïske</h2>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="rounded p-4 mb-4 text-lg bg-red-200 text-red-800 border-2 border-red-300">
+        {{ errorMessage }}
+    </div>
+
+    <form (ngSubmit)="onSubmit(clubForm)" #clubForm="ngForm" class="mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="">
+                <!-- Address Field -->
+                <div>
+                    <label for="adress" class="block mb-2 text-sm font-medium text-gray-900">Adres</label>
+                    <input type="text" id="adress" name="adress" [(ngModel)]="club.adress" #adress="ngModel" required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="adress.invalid && (adress.dirty || adress.touched)" class="text-red-500 text-xs mt-1">
+                        Adres is verplicht.
+                    </p>
+                </div>
+
+                <!-- Postal Code Field -->
+                <div>
+                    <label for="postal_code" class="block mb-2 text-sm font-medium text-gray-900">Postcode</label>
+                    <input type="text" id="postal_code" name="postal_code" [(ngModel)]="club.postal_code"
+                        #postal_code="ngModel" required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="postal_code.invalid && (postal_code.dirty || postal_code.touched)"
+                        class="text-red-500 text-xs mt-1">
+                        Postcode is verplicht.
+                    </p>
+                </div>
+
+                <!-- City Field -->
+                <div>
+                    <label for="city" class="block mb-2 text-sm font-medium text-gray-900">Gemeente</label>
+                    <input type="text" id="city" name="city" [(ngModel)]="club.city" #city="ngModel" required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="city.invalid && (city.dirty || city.touched)" class="text-red-500 text-xs mt-1">
+                        Gemeente is verplicht.
+                    </p>
+                </div>
+
+                <!-- BTW Number Field (Optional) -->
+                <div>
+                    <label for="BTW_number" class="block mb-2 text-sm font-medium text-gray-900">BTW nummer
+                        (optioneel)</label>
+                    <input type="text" id="BTW_number" name="BTW_number" [(ngModel)]="club.BTW_number"
+                        #BTW_number="ngModel"
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                </div>
+
+                <!-- Bank Account Field -->
+                <div>
+                    <label for="bank_account" class="block mb-2 text-sm font-medium text-gray-900">Rekening nummer (voor
+                        uitbetaling)</label>
+                    <input type="text" id="bank_account" name="bank_account" [(ngModel)]="club.bank_account"
+                        #bank_account="ngModel" required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="bank_account.invalid && (bank_account.dirty || bank_account.touched)"
+                        class="text-red-500 text-xs mt-1">
+                        Rekening nummer is verplicht.
+                    </p>
+                </div>
+            </div>
+
+            <div class="">
+                <!-- Email Field -->
+                <div>
+                    <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
+                    <input type="email" id="email" name="email" [(ngModel)]="club.email" #email="ngModel" required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        [ngClass]="{
+                'border-red-500': email.invalid && (email.dirty || email.touched),
+                'border-green-500': email.valid
+              }" />
+                    <p *ngIf="email.invalid && (email.dirty || email.touched)" class="text-red-500 text-xs mt-1">
+                        <span *ngIf="email.errors?.['email']">Gelieve een geldig email adres in te geven.</span>
+                    </p>
+                </div>
+
+                <!-- Contact Field -->
+                <div>
+                    <label for="contact" class="block mb-2 text-sm font-medium text-gray-900">Hoofdcontact
+                        (naam en voornaam)</label>
+                    <input type="text" id="contact" name="contact" [(ngModel)]="club.contact" #contact="ngModel"
+                        required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="contact.invalid && (contact.dirty || contact.touched)" class="text-red-500 text-xs mt-1">
+                        Hoofdcontact naam en voornaam is verplicht.
+                    </p>
+                </div>
+
+                <!-- Phone Number Field -->
+                <div>
+                    <label for="phone_number" class="block mb-2 text-sm font-medium text-gray-900">GSM nummer</label>
+                    <input type="text" id="phone_number" name="phone_number" [(ngModel)]="club.phone_number"
+                        #phone_number="ngModel" required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="phone_number.invalid && (phone_number.dirty || phone_number.touched)"
+                        class="text-red-500 text-xs mt-1">
+                        GSM nummer is verplicht.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-6">
+            <button type="submit" [disabled]="clubForm.invalid || isSubmitted"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center disabled:opacity-50">
+                Opslaan
+            </button>
+        </div>
+    </form>
+
+</div>
