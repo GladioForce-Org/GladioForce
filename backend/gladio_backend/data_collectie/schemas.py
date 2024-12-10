@@ -13,6 +13,17 @@ class ClubCreateSchema(Schema):
     postal_code: str
     city: str
 
+class ClubSchemaPatch(Schema):
+    name: str
+    email: str
+    contact: str
+    phone: str
+    bank_account: str
+    address: str
+    btw_number: str
+    postal_code: str
+    city: str
+
 class ClubSchemaOut(Schema):
     id: int
     name: str
