@@ -3,11 +3,11 @@ export interface Club {
     name: string;
     email: string;
     contact: string;
-    phone_number: string;
+    phone: string;
     link: string;
     bank_account: string;
     BTW_number: string;
-    adress: string;
+    address: string;
     postal_code: string;
     city: string;
 }

@@ -3,8 +3,7 @@ import { ClubFormComponent } from './club-form/club-form.component';
 
 export const routes: Routes = [
     {
-        // path: '/:link', 
-        path: '',
+        path: ':link',
         component: ClubFormComponent
     },
 ];

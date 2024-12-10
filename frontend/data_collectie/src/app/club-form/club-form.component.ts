@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormsModule, NgForm, Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Club } from '../interfaces/club';
+import { Volunteer } from '../interfaces/volunteer';
 import { ClubService } from '../services/club.service';
+import { belgianBankAccountValidator } from '../validators/validators';
 
 @Component({
   selector: 'app-club-form',
@@ -17,48 +19,62 @@ export class ClubFormComponent implements OnInit {
   isEdit: boolean = false;
 
   clubId: number = 0;
+  clubLink: string = '';
 
   club: Club = {
     id: 0,
     name: '',
     email: '',
     contact: '',
-    phone_number: '',
+    phone: '',
     link: '',
     bank_account: '',
     BTW_number: '',
-    adress: '',
+    address: '',
     postal_code: '',
     city: ''
   };
+
+  volunteers: Volunteer[] = [];
 
   isSubmitted: boolean = false;
   errorMessage: string = '';
 
   constructor(
     private router: Router,
-    private clubService: ClubService
+    private route: ActivatedRoute,
+    private clubService: ClubService,
+    private fb: FormBuilder
   ) { }
 
   ngOnInit(): void {
-    const state = this.router.getCurrentNavigation()?.extras.state || {};
+    this.clubLink = this.route.snapshot.paramMap.get('link') || '';
 
-    this.isEdit = state['mode'] === 'edit';
-
-    this.clubId = +state['id'];
-
-    if (this.clubId && this.clubId > 0) {
+    if (this.clubLink) {
       this.loadClubDetails();
+      this.loadVolunteers();
     }
   }
 
   loadClubDetails(): void {
-    this.clubService.getClubById(this.clubId).subscribe({
+    this.clubService.getClubByLink(this.clubLink).subscribe({
       next: (result) => {
+        console.log(result);
         this.club = result;
       },
       error: (error) => {
         this.errorMessage = 'Failed to load club details: ' + error.message;
+      }
+    });
+  }
+
+  loadVolunteers(): void {
+    this.clubService.getVolunteersByClubLink(this.clubLink).subscribe({
+      next: (result) => {
+        this.volunteers = result;
+      },
+      error: (error) => {
+        this.errorMessage = 'Failed to load volunteers: ' + error.message;
       }
     });
   }
@@ -75,7 +91,7 @@ export class ClubFormComponent implements OnInit {
   }
 
   private updateClub(): void {
-    this.clubService.putClub(this.clubId, this.club).subscribe({
+    this.clubService.putClub(this.club.id, this.club).subscribe({
       next: () => {
         this.router.navigateByUrl(`/${this.club.link}`);
       },
