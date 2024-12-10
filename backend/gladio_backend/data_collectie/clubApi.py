@@ -1,6 +1,6 @@
 from ninja import NinjaAPI, Router
 from .models import Club, ParticipatingClub, Volunteer
-from .schemas import ClubSchemaOut, ClubCreateSchema, VolunteerSchemaOut
+from .schemas import ClubSchemaOut, ClubCreateSchema, VolunteerSchemaOut, ClubSchemaPatch
 from typing import List
 from django.http import Http404
 
@@ -42,9 +42,17 @@ def delete_club(request, club_id: int):
     return {"status": "ok"}
 
 @router.patch("update/{club_link}")
-def update_club(request, club_link: str, payload: ClubCreateSchema):
+def update_club(request, club_link: str, payload: ClubSchemaPatch):
     club = Club.objects.get(link=club_link)
     club.name = payload.name
+    club.email = payload.email
+    club.contact = payload.contact
+    club.phone = payload.phone
+    club.bank_account = payload.bank_account
+    club.address = payload.address
+    club.btw_number = payload.btw_number
+    club.postal_code = payload.postal_code
+    club.city = payload.city
     club.save()
     return {"status": "ok"}
 
