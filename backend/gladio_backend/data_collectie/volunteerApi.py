@@ -2,6 +2,7 @@ from ninja import Schema, Router
 from .models import Volunteer, Club, AvailableTshirt, Size
 from .schemas import VolunteerSchemaOut, VolunteerCreateSchema, VolunteerSchemaPatch
 from typing import List
+from .services import get_tshirt_or_none, get_size_or_none
 
 
 router = Router()
@@ -28,28 +29,14 @@ def update_volunteer(request, volunteer_id: int, payload: VolunteerSchemaPatch):
     try:
         # Retrieve the volunteer by ID
         volunteer = Volunteer.objects.get(id=volunteer_id)
-
         # Update the basic fields
-        volunteer.first_name = payload.first_name
-        volunteer.last_name = payload.last_name
-        volunteer.works_day1 = payload.works_day1
-        volunteer.works_day2 = payload.works_day2
-        volunteer.needs_parking_day1 = payload.needs_parking_day1
-        volunteer.needs_parking_day2 = payload.needs_parking_day2
+        for field in payload.dict().keys():
+            if field in ["first_name", "last_name", "works_day1", "works_day2", "needs_parking_day1", "needs_parking_day2"]:
+                setattr(volunteer, field, payload.dict()[field])
 
         # Update ForeignKey fields if provided
-        if payload.tshirt_id is not None:
-            try:
-                volunteer.tshirt = AvailableTshirt.objects.get(id=payload.tshirt_id)
-            except AvailableTshirt.DoesNotExist:
-                return {"status": "error", "message": f"Tshirt with ID {payload.tshirt_id} does not exist"}
-
-        if payload.size_id is not None:
-            try:
-                volunteer.size = Size.objects.get(id=payload.size_id)
-            except Size.DoesNotExist:
-                return {"status": "error", "message": f"Size with ID {payload.size_id} does not exist"}
-
+        volunteer.tshirt = get_tshirt_or_none(payload.tshirt_id)
+        volunteer.size = get_size_or_none(payload.size_id)
         # Save the updated volunteer to the database
         volunteer.save()
 
