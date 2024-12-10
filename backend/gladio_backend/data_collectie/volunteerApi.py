@@ -5,7 +5,7 @@ from typing import List
 from .services import get_tshirt_or_none, get_size_or_none
 
 
-router = Router()
+router = Router(tags=["Volunteers"])
 
 @router.get("/", response=List[VolunteerSchemaOut])
 def get_volunteers(request):

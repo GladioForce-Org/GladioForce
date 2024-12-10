@@ -5,7 +5,7 @@ from typing import List
 from django.http import Http404
 
 
-router = Router() 
+router = Router(tags=["Clubs"]) 
 
 @router.get("/generate_link/{club_id}")
 def generate_link(request, club_id: int):
