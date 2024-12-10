@@ -41,9 +41,9 @@ def delete_club(request, club_id: int):
     Club.objects.get(id=club_id).delete()
     return {"status": "ok"}
 
-@router.patch("update/{club_id}")
-def update_club(request, club_id: int, payload: ClubCreateSchema):
-    club = Club.objects.get(id=club_id)
+@router.patch("update/{club_link}")
+def update_club(request, club_link: str, payload: ClubCreateSchema):
+    club = Club.objects.get(link=club_link)
     club.name = payload.name
     club.save()
     return {"status": "ok"}

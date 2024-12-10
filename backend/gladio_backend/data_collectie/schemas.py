@@ -37,6 +37,16 @@ class VolunteerCreateSchema(Schema):
     tshirt_id: Optional[int] = None  # Optional field, defaults to None
     size_id: Optional[int] = None  
 
+class VolunteerSchemaPatch(Schema):
+    first_name: str
+    last_name: str
+    works_day1: bool
+    works_day2: bool
+    needs_parking_day1: bool
+    needs_parking_day2: bool
+    tshirt_id: Optional[int] = None  # Optional field, defaults to None
+    size_id: Optional[int] = None  
+
 class VolunteerSchemaOut(Schema):
     id: int
     first_name: str
