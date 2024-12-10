@@ -35,4 +35,16 @@ def create_club(request, payload: ClubCreateSchema):
     club = Club.objects.create(**payload.dict())
     return {"id": club.id, "name": club.name}
 
+@router.delete("/{club_id}")
+def delete_club(request, club_id: int):
+    Club.objects.get(id=club_id).delete()
+    return {"status": "ok"}
+
+@router.put("/{club_id}")
+def update_club(request, club_id: int, payload: ClubCreateSchema):
+    club = Club.objects.get(id=club_id)
+    club.name = payload.name
+    club.save()
+    return {"status": "ok"}
+
 api = NinjaAPI()

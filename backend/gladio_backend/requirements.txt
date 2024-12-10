@@ -1,3 +1,4 @@
 Django
 Django-ninja
 mysqlclient
+django-cors-headers
