@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm, Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { FormsModule, NgForm, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Club } from '../interfaces/club';
 import { Volunteer } from '../interfaces/volunteer';
 import { ClubService } from '../services/club.service';
-import { belgianBankAccountValidator } from '../validators/validators';
 
 @Component({
   selector: 'app-club-form',
@@ -15,11 +14,9 @@ import { belgianBankAccountValidator } from '../validators/validators';
   styleUrl: './club-form.component.scss'
 })
 export class ClubFormComponent implements OnInit {
-  isAdd: boolean = true;
-  isEdit: boolean = false;
-
   clubId: number = 0;
   clubLink: string = '';
+  invalidBankAccount: boolean = false;
 
   club: Club = {
     id: 0,
@@ -44,7 +41,6 @@ export class ClubFormComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private clubService: ClubService,
-    private fb: FormBuilder
   ) { }
 
   ngOnInit(): void {
@@ -59,7 +55,6 @@ export class ClubFormComponent implements OnInit {
   loadClubDetails(): void {
     this.clubService.getClubByLink(this.clubLink).subscribe({
       next: (result) => {
-        console.log(result);
         this.club = result;
       },
       error: (error) => {
@@ -80,6 +75,12 @@ export class ClubFormComponent implements OnInit {
   }
 
   onSubmit(form: NgForm): void {
+    const bankAccountControl = form.form.get('bank_account');
+    if (bankAccountControl && this.validateBelgianBankAccount(bankAccountControl) !== null) {
+      this.invalidBankAccount = true;
+      return;
+    }
+
     this.isSubmitted = true;
     this.errorMessage = '';
 
@@ -88,17 +89,49 @@ export class ClubFormComponent implements OnInit {
     }
 
     this.updateClub();
+    this.invalidBankAccount = false;
   }
 
   private updateClub(): void {
-    this.clubService.putClub(this.club.id, this.club).subscribe({
+    this.clubService.patchClub(this.club.link, this.club).subscribe({
       next: () => {
         this.router.navigateByUrl(`/${this.club.link}`);
+        this.isSubmitted = false;
       },
       error: (error) => {
         this.errorMessage = 'Failed to update club: ' + error.message;
         this.isSubmitted = false;
       }
     });
+  }
+
+  private validateBelgianBankAccount(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+
+    if (!value) {
+      return null;
+    }
+
+    // Remove all spaces and convert to uppercase
+    const cleanedValue = value.replace(/\s/g, '').toUpperCase();
+
+    // Basic format check: BE + 14 digits
+    if (!/^BE[0-9]{14}$/.test(cleanedValue)) {
+      return { invalidBelgianBankAccount: true };
+    }
+
+    // Extract parts for validation
+    const countryCode = cleanedValue.substring(0, 2);
+    const checkDigits = cleanedValue.substring(2, 4);
+    const bankCode = cleanedValue.substring(4, 7);
+    const accountNumber = cleanedValue.substring(7);
+
+    // Create checkable string: Move BE to end and convert to numbers (B=11, E=14)
+    const rearranged = bankCode + accountNumber + '1114' + checkDigits;
+
+    // Convert to number and check if modulo 97 equals 1
+    const modResult = BigInt(rearranged) % 97n;
+
+    return modResult === 1n ? null : { invalidBelgianBankAccount: true };
   }
 }
