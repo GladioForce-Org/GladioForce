@@ -2,7 +2,7 @@
     <!-- Title -->
     <h1 class="text-3xl font-bold text-gray-900 mb-4">Gladiolen 2025</h1>
 
-    <h2 class="text-2xl font-semibold text-gray-700 mb-6">'t Maïske</h2>
+    <h2 class="text-2xl font-semibold text-gray-700 mb-6">{{ club.name }}</h2>
 
     <!-- Error Message -->
     <div *ngIf="errorMessage" class="rounded p-4 mb-4 text-lg bg-red-200 text-red-800 border-2 border-red-300">
@@ -14,10 +14,11 @@
             <div class="">
                 <!-- Address Field -->
                 <div>
-                    <label for="adress" class="block mb-2 text-sm font-medium text-gray-900">Adres</label>
-                    <input type="text" id="adress" name="adress" [(ngModel)]="club.adress" #adress="ngModel" required
+                    <label for="address" class="block mb-2 text-sm font-medium text-gray-900">Adres</label>
+                    <input type="text" id="address" name="address" [(ngModel)]="club.address" #address="ngModel"
+                        required
                         class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
-                    <p *ngIf="adress.invalid && (adress.dirty || adress.touched)" class="text-red-500 text-xs mt-1">
+                    <p *ngIf="address.invalid && (address.dirty || address.touched)" class="text-red-500 text-xs mt-1">
                         Adres is verplicht.
                     </p>
                 </div>
@@ -58,11 +59,14 @@
                     <label for="bank_account" class="block mb-2 text-sm font-medium text-gray-900">Rekening nummer (voor
                         uitbetaling)</label>
                     <input type="text" id="bank_account" name="bank_account" [(ngModel)]="club.bank_account"
-                        #bank_account="ngModel" required
-                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                        #bank_account="ngModel" required [ngModelOptions]="{ updateOn: 'blur' }"
+                        [ngClass]="{ 'border-red-500': bank_account.invalid && (bank_account.dirty || bank_account.touched) }"
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        belgianBankAccountValidator />
                     <p *ngIf="bank_account.invalid && (bank_account.dirty || bank_account.touched)"
                         class="text-red-500 text-xs mt-1">
-                        Rekening nummer is verplicht.
+                        <span *ngIf="bank_account.errors?.['invalidBelgianBankAccount']">Ongeldig Belgisch
+                            rekeningnummer.</span>
                     </p>
                 </div>
             </div>
@@ -96,17 +100,47 @@
 
                 <!-- Phone Number Field -->
                 <div>
-                    <label for="phone_number" class="block mb-2 text-sm font-medium text-gray-900">GSM nummer</label>
-                    <input type="text" id="phone_number" name="phone_number" [(ngModel)]="club.phone_number"
-                        #phone_number="ngModel" required
+                    <label for="phone" class="block mb-2 text-sm font-medium text-gray-900">GSM nummer</label>
+                    <input type="text" id="phone" name="phone" [(ngModel)]="club.phone" #phone="ngModel" required
                         class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
-                    <p *ngIf="phone_number.invalid && (phone_number.dirty || phone_number.touched)"
-                        class="text-red-500 text-xs mt-1">
+                    <p *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="text-red-500 text-xs mt-1">
                         GSM nummer is verplicht.
                     </p>
                 </div>
             </div>
+        </div>
 
+        <!-- Volunteers Table -->
+        <div class="mt-8">
+            <h3 class="text-xl font-semibold text-gray-700 mb-4">Vrijwilligers</h3>
+            <table class="min-w-full bg-white border border-gray-200">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b text-center">Voornaam</th>
+                        <th class="py-2 px-4 border-b text-center">Achternaam</th>
+                        <th class="py-2 px-4 border-b text-center">Werkt Dag 1</th>
+                        <th class="py-2 px-4 border-b text-center">Werkt Dag 2</th>
+                        <th class="py-2 px-4 border-b text-center">Parkeren Dag 1</th>
+                        <th class="py-2 px-4 border-b text-center">Parkeren Dag 2</th>
+                        <th class="py-2 px-4 border-b text-center">T-shirt ID</th>
+                        <th class="py-2 px-4 border-b text-center">Maat ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let volunteer of volunteers">
+                        <td class="py-2 px-4 border-b text-center">{{ volunteer.first_name }}</td>
+                        <td class="py-2 px-4 border-b text-center">{{ volunteer.last_name }}</td>
+                        <td class="py-2 px-4 border-b text-center">{{ volunteer.works_day1 ? 'Ja' : 'Nee' }}</td>
+                        <td class="py-2 px-4 border-b text-center">{{ volunteer.works_day2 ? 'Ja' : 'Nee' }}</td>
+                        <td class="py-2 px-4 border-b text-center">{{ volunteer.needs_parking_day1 ? 'Ja' : 'Nee' }}
+                        </td>
+                        <td class="py-2 px-4 border-b text-center">{{ volunteer.needs_parking_day2 ? 'Ja' : 'Nee' }}
+                        </td>
+                        <td class="py-2 px-4 border-b text-center">{{ volunteer.tshirt_id }}</td>
+                        <td class="py-2 px-4 border-b text-center">{{ volunteer.size_id }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <!-- Submit Button -->
@@ -117,5 +151,4 @@
             </button>
         </div>
     </form>
-
 </div>
