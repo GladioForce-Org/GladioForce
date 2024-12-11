@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -9,8 +9,7 @@ import { AuthService } from '../services/auth.service';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
-  constructor(private authService: AuthService) {
-    
+  constructor(private changeDetectorRef: ChangeDetectorRef, private authService: AuthService) {
   }
 
   email: string | null = ''; //provided by Authservice
@@ -19,7 +18,7 @@ export class HomeComponent implements OnInit {
     // Subscribe to the email changes from the AuthService
     this.authService.email$.subscribe((email) => {
       this.email = email;
-      // this.changeDetectorRef.detectChanges();
+      this.changeDetectorRef.detectChanges();
     });
   }
 

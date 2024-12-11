@@ -39,11 +39,23 @@ export class AuthComponent implements OnInit {
     this.firebaseApp = initializeApp(environment.firebaseConfig);
   }
 
+
   async ngOnInit() {
-    // Subscribe to the email changes from the AuthService
     this.authService.email$.subscribe((email) => {
       this.email = email;
       this.changeDetectorRef.detectChanges();
+
+    });
+
+    this.auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in, so update the state with the user information
+        this.email = user.email;
+        this.changeUser(user);
+      } else {
+        // No user is signed in, you can handle this as needed (e.g., showing login form)
+        this.changeUser(null);
+      }
     });
   }
 
