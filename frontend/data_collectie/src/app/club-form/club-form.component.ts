@@ -17,6 +17,7 @@ export class ClubFormComponent implements OnInit {
   clubId: number = 0;
   clubLink: string = '';
   invalidBankAccount: boolean = false;
+  invalidEmail: boolean = false;
 
   club: Club = {
     id: 0,
@@ -81,6 +82,12 @@ export class ClubFormComponent implements OnInit {
       return;
     }
 
+    const emailControl = form.form.get('email');
+    if (emailControl && this.validateEmail(emailControl) !== null) {
+      this.invalidEmail = true;
+      return;
+    }
+
     this.isSubmitted = true;
     this.errorMessage = '';
 
@@ -90,6 +97,7 @@ export class ClubFormComponent implements OnInit {
 
     this.updateClub();
     this.invalidBankAccount = false;
+    this.invalidEmail = false;
   }
 
   private updateClub(): void {
@@ -133,5 +141,20 @@ export class ClubFormComponent implements OnInit {
     const modResult = BigInt(rearranged) % 97n;
 
     return modResult === 1n ? null : { invalidBelgianBankAccount: true };
+  }
+
+  private validateEmail(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+
+    if (!value) {
+      return null;
+    }
+
+    // Basic format check: at least one character before and after @
+    if (!/.+@.+\..+/.test(value)) {
+      return { invalidEmail: true };
+    }
+
+    return null;
   }
 }

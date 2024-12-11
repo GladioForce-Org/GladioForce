@@ -75,13 +75,10 @@
                 <div>
                     <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
                     <input type="email" id="email" name="email" [(ngModel)]="club.email" #email="ngModel" required
-                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                        [ngClass]="{
-                'border-red-500': email.invalid && (email.dirty || email.touched),
-                'border-green-500': email.valid
-              }" />
-                    <p *ngIf="email.invalid && (email.dirty || email.touched)" class="text-red-500 text-xs mt-1">
-                        <span *ngIf="email.errors?.['email']">Gelieve een geldig email adres in te geven.</span>
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="email.invalid || invalidEmail && (email.dirty || email.touched)"
+                        class="text-red-500 text-xs mt-1">
+                        Gelieve een geldig email adres in te geven.
                     </p>
                 </div>
 
