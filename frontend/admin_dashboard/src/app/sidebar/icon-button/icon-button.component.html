@@ -1,6 +1,6 @@
 <a
     [href]="link"
-    data-tooltip-target="tooltip-button"
+    [attr.data-tooltip-target]="tooltipReference"
     class="inline-flex justify-center p-2 text-gray-500 rounded cursor-pointer dark:text-gray-400 dark:hover:text-white hover:text-gray-900 hover:bg-purple-400 dark:hover:bg-gray-600"
 >
     <app-feather-icon
@@ -14,7 +14,7 @@
 
 <div
     *ngIf="linkName !== ''"
-    id="tooltip-button"
+    [attr.id]="tooltipReference"
     role="tooltip"
     class="inline-block absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip"
 >

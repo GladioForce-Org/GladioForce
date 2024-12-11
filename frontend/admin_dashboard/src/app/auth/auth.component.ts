@@ -1,10 +1,11 @@
 // src/app/auth.component.ts
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FirebaseApp, initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, Persistence, browserLocalPersistence, AuthError, Auth, setPersistence } from 'firebase/auth';
 import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-auth',
@@ -15,11 +16,11 @@ import { CommonModule } from '@angular/common';
 })
 export class AuthComponent implements OnInit {
   private firebaseApp: FirebaseApp;
-  private auth = getAuth();
+  private auth: Auth = getAuth();
 
   // Store email and password input fields in the component
   emailUserCreate: string = '';
-  email: string = '';
+  email: string | null = ''; //provided by Authservice
   password: string = '';
   registrationPassword: string = '';
   repeatedRegistrationPassword: string = '';
@@ -29,19 +30,33 @@ export class AuthComponent implements OnInit {
   userCreated = '';
   errorUserCreation = '';
 
-  userAuthenticated = '';
   errorAuthentication = '';
 
-  userLoggedOut = '';
   errorLoggedOut = '';
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) {
+  constructor(private changeDetectorRef: ChangeDetectorRef, private authService: AuthService) {
     // Initialize Firebase with your Firebase configuration
     this.firebaseApp = initializeApp(environment.firebaseConfig);
   }
 
+
   async ngOnInit() {
-    console.log(this.user);
+    this.authService.email$.subscribe((email) => {
+      this.email = email;
+      this.changeDetectorRef.detectChanges();
+
+    });
+
+    this.auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in, so update the state with the user information
+        this.email = user.email;
+        this.changeUser(user);
+      } else {
+        // No user is signed in, you can handle this as needed (e.g., showing login form)
+        this.changeUser(null);
+      }
+    });
   }
 
   // Create a new user (sign up)
@@ -74,30 +89,48 @@ export class AuthComponent implements OnInit {
 
   // Sign in with email and password
   signIn() {
-    this.userAuthenticated = ''
     this.errorAuthentication = '';
-
-    signInWithEmailAndPassword(this.auth, this.email, this.password)
+    
+    setPersistence(this.auth, browserLocalPersistence).then(() => {
+      let email = this.email !== null ? this.email.toString() : '';
+      signInWithEmailAndPassword(this.auth, email, this.password)
       .then((userCredential) => {
         this.changeUser(userCredential.user);
-        this.userAuthenticated = 'Welkom ' + this.email;
         this.errorAuthentication = '';
       })
-      .catch((error) => {
-        this.errorAuthentication = 'Error bij aanmelden!';
+      .catch((error: AuthError) => {
+        // Handle errors during sign-in
+        const errorCode = error.code;
+        const errorMessage = error.message;
+
+        switch (errorCode) {
+          case "auth/invalid-email":
+            this.errorAuthentication = "Ongeldig e-mailadres.";
+            break;
+          case "auth/user-disabled":
+            this.errorAuthentication = "Gebruikersaccount is uitgeschakeld.";
+            break;
+          case "auth/user-not-found":
+            this.errorAuthentication = "Geen gebruiker gevonden met dit e-mailadres.";
+            break;
+          case "auth/wrong-password":
+            this.errorAuthentication = "Onjuist wachtwoord.";
+            break;
+          default:
+            this.errorAuthentication = `Error: ${errorMessage} (Code: ${errorCode})`;
+        }
       });
+    })
+
   }
 
   // Sign out the user
   signOut() {
-    this.userLoggedOut = '';
     this.errorLoggedOut = '';
   
     signOut(this.auth)
       .then(() => {
-        this.userLoggedOut = 'Gebruiker afgemeld';
         this.changeUser(null);
-        this.userAuthenticated = 'Welkom ' + this.email;
       })
       .catch((error) => {
         this.errorLoggedOut = 'Error bij afmelden!';
