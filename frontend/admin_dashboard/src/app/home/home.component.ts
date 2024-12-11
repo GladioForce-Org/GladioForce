@@ -1,5 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { AuthService } from '../services/auth.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-home',
@@ -8,18 +7,7 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
-  constructor(private changeDetectorRef: ChangeDetectorRef, private authService: AuthService) {
+export class HomeComponent {
+  constructor() {
   }
-
-  email: string | null = ''; //provided by Authservice
-
-  async ngOnInit() {
-    // Subscribe to the email changes from the AuthService
-    this.authService.email$.subscribe((email) => {
-      this.email = email;
-      this.changeDetectorRef.detectChanges();
-    });
-  }
-
 }
