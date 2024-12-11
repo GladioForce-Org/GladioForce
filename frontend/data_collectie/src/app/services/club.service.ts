@@ -21,11 +21,11 @@ export class ClubService {
     return this.httpClient.get<Club>(`${this.baseUrl}${link}`);
   }
 
-  putClub(id: number, club: Club): Observable<Club> {
+  patchClub(link: string, club: Club): Observable<Club> {
     let headers = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/json; charset=utf-8');
 
-    return this.httpClient.put<Club>(`${this.baseUrl}${id}`, club, { headers: headers });
+    return this.httpClient.patch<Club>(`${this.baseUrl}update/${link}`, club, { headers: headers });
   }
 
   getVolunteersByClubLink(link: string): Observable<Volunteer[]> {

@@ -60,13 +60,12 @@
                         uitbetaling)</label>
                     <input type="text" id="bank_account" name="bank_account" [(ngModel)]="club.bank_account"
                         #bank_account="ngModel" required [ngModelOptions]="{ updateOn: 'blur' }"
-                        [ngClass]="{ 'border-red-500': bank_account.invalid && (bank_account.dirty || bank_account.touched) }"
+                        [ngClass]="{ 'border-red-500': invalidBankAccount && (bank_account.dirty || bank_account.touched) }"
                         class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                         belgianBankAccountValidator />
-                    <p *ngIf="bank_account.invalid && (bank_account.dirty || bank_account.touched)"
+                    <p *ngIf="invalidBankAccount && (bank_account.dirty || bank_account.touched)"
                         class="text-red-500 text-xs mt-1">
-                        <span *ngIf="bank_account.errors?.['invalidBelgianBankAccount']">Ongeldig Belgisch
-                            rekeningnummer.</span>
+                        Ongeldig Belgisch rekeningnummer.
                     </p>
                 </div>
             </div>
