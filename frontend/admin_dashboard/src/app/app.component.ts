@@ -4,6 +4,8 @@ import { initFlowbite } from 'flowbite';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { FooterComponent } from './footer/footer.component';
 
+declare var firebase: any; //Declares firebase globally
+
 @Component({
   selector: 'app-root',
   standalone: true,

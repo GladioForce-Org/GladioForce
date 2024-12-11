@@ -10,6 +10,7 @@ import { ExportComponent } from './export/export.component';
 import { DocumentsComponent } from './documents/documents.component';
 import { HelpComponent } from './info/info.component';
 import { SettingsComponent } from './settings/settings.component';
+import { AuthComponent } from './auth/auth.component';
 
 export const routes: Routes = [
     {path: 'home', component: HomeComponent},
@@ -23,5 +24,6 @@ export const routes: Routes = [
     {path: 'documents', component: DocumentsComponent},
     {path: 'help', component: HelpComponent},
     {path: 'settings', component: SettingsComponent},
+    {path: 'auth', component: AuthComponent},
     { path: '', redirectTo: '/home', pathMatch: 'full' }, // Default route
 ];
