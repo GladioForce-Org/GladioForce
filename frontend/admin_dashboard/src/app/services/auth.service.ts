@@ -21,22 +21,9 @@ export class AuthService {
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
         this.emailSubject.next(user.email); // Update the BehaviorSubject with the user's email
-        this.setEmail();
       } else {
         this.emailSubject.next(null); // Set to null if no user is signed in
-        this.setEmail();
       }
-
-      console.log('USER: ' + user);
-      console.log('EMAIL: ' + this.email$);
     });
-  }
-
-  getCurrentEmail(): string | null {
-    return this.emailSubject.getValue();
-  }
-
-  setEmail() {
-    this.email$ = this.emailSubject.asObservable();
   }
 }

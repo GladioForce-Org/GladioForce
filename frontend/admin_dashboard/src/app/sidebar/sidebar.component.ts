@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { LinkComponent } from "./link/link.component";
 import { DropdownButtonComponent } from "./dropdown-button/dropdown-button.component";
 import { IconButtonComponent } from "./icon-button/icon-button.component";
@@ -13,19 +12,17 @@ import { AuthService } from '../services/auth.service';
   styleUrl: './sidebar.component.scss'
 })
 export class SidebarComponent implements OnInit {
-  email: string = ''; //provided by Authservice
+  email: string = 'Niet Aangemeld'; //provided by Authservice
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
-    private authService: AuthService,
-    private router: Router) {
-  }
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     // Subscribe to the email changes from the AuthService
     this.authService.email$.subscribe((email) => {
-      this.email = email === null ? '' : email;
-      console.log('SIDEBAR: ' + this.email);
+      this.email = email ?? 'Niet Aangemeld';
       this.changeDetectorRef.detectChanges();
     });
   }
