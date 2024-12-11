@@ -19,6 +19,8 @@
     "@angular/platform-browser-dynamic": "^18.2.13",
     "@angular/router": "^18.2.13",
     "admin-dashboard": "file:",
+    "firebase": "^10.14.1",
+    "firebaseui": "^6.1.0",
     "flowbite": "^2.5.2",
     "rxjs": "~7.8.0",
     "sass": "^1.81.0",

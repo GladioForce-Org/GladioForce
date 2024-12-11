@@ -67,16 +67,16 @@
     <ul
       class="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700"
     >
-      <li>
+      <!-- <li>
         <app-dropdown-button name="Authenticatie" dropdownreference="dropdown-authentication" icon="lock"></app-dropdown-button>
 
         <ul id="dropdown-authentication" class="hidden space-y-2">
-          <app-link linkName="Log in" link="#"></app-link>
-          <app-link linkName="Log out" link="#"></app-link>
-          <app-link linkName="Paswoord vergeten" link="#"></app-link>
+          <app-link linkName="Log in" link="/auth"></app-link>
+          <app-link linkName="Log out" link="/auth"></app-link>
+          <app-link linkName="Paswoord vergeten" link="/auth"></app-link>
         </ul>
-      </li>
-
+      </li> -->
+      <app-link linkName="Authenticatie" link="/auth" icon="lock"></app-link>
       <app-link linkName="Docs" link="http://localhost:8000/api/docs" icon="clipboard"></app-link>
       <app-link linkName="Help" link="/help" icon="help-circle"></app-link>
 
