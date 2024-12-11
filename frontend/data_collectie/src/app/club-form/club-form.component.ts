@@ -113,6 +113,14 @@ export class ClubFormComponent implements OnInit {
     });
   }
 
+  protected editVolunteer(volunteerId: number): void {
+
+  }
+
+  protected deleteVolunteer(volunteerId: number): void {
+
+  }
+
   private validateBelgianBankAccount(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
 

@@ -1,8 +1,15 @@
 <div class="container mx-auto p-4">
     <!-- Title -->
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">Gladiolen 2025</h1>
+    <h1 class="text-3xl font-bold text-gray-900 mb-4 text-center">Gladiolen 2025</h1>
 
-    <h2 class="text-2xl font-semibold text-gray-700 mb-6">{{ club.name }}</h2>
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-semibold text-gray-700">{{ club.name }}</h2>
+        <!-- Submit Button -->
+        <button type="submit" [disabled]="clubForm.invalid || isSubmitted"
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-md w-auto px-5 py-2.5 text-center disabled:opacity-50">
+            Opslaan
+        </button>
+    </div>
 
     <!-- Error Message -->
     <div *ngIf="errorMessage" class="rounded p-4 mb-4 text-lg bg-red-200 text-red-800 border-2 border-red-300">
@@ -13,7 +20,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="">
                 <!-- Address Field -->
-                <div>
+                <div class="pt-2">
                     <label for="address" class="block mb-2 text-sm font-medium text-gray-900">Adres</label>
                     <input type="text" id="address" name="address" [(ngModel)]="club.address" #address="ngModel"
                         required
@@ -24,7 +31,7 @@
                 </div>
 
                 <!-- Postal Code Field -->
-                <div>
+                <div class="pt-2">
                     <label for="postal_code" class="block mb-2 text-sm font-medium text-gray-900">Postcode</label>
                     <input type="text" id="postal_code" name="postal_code" [(ngModel)]="club.postal_code"
                         #postal_code="ngModel" required
@@ -36,7 +43,7 @@
                 </div>
 
                 <!-- City Field -->
-                <div>
+                <div class="pt-2">
                     <label for="city" class="block mb-2 text-sm font-medium text-gray-900">Gemeente</label>
                     <input type="text" id="city" name="city" [(ngModel)]="club.city" #city="ngModel" required
                         class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
@@ -46,7 +53,7 @@
                 </div>
 
                 <!-- BTW Number Field (Optional) -->
-                <div>
+                <div class="pt-2">
                     <label for="BTW_number" class="block mb-2 text-sm font-medium text-gray-900">BTW nummer
                         (optioneel)</label>
                     <input type="text" id="BTW_number" name="BTW_number" [(ngModel)]="club.BTW_number"
@@ -55,7 +62,7 @@
                 </div>
 
                 <!-- Bank Account Field -->
-                <div>
+                <div class="pt-2">
                     <label for="bank_account" class="block mb-2 text-sm font-medium text-gray-900">Rekening nummer (voor
                         uitbetaling)</label>
                     <input type="text" id="bank_account" name="bank_account" [(ngModel)]="club.bank_account"
@@ -70,7 +77,7 @@
                 </div>
             </div>
 
-            <div class="">
+            <div class="pt-2">
                 <!-- Email Field -->
                 <div>
                     <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
@@ -83,7 +90,7 @@
                 </div>
 
                 <!-- Contact Field -->
-                <div>
+                <div class="pt-2">
                     <label for="contact" class="block mb-2 text-sm font-medium text-gray-900">Hoofdcontact
                         (naam en voornaam)</label>
                     <input type="text" id="contact" name="contact" [(ngModel)]="club.contact" #contact="ngModel"
@@ -95,7 +102,7 @@
                 </div>
 
                 <!-- Phone Number Field -->
-                <div>
+                <div class="pt-2">
                     <label for="phone" class="block mb-2 text-sm font-medium text-gray-900">GSM nummer</label>
                     <input type="text" id="phone" name="phone" [(ngModel)]="club.phone" #phone="ngModel" required
                         class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
@@ -103,48 +110,84 @@
                         GSM nummer is verplicht.
                     </p>
                 </div>
+
+                <!-- Parking tickets Field -->
+                <div class="pt-2">
+                    <p class="text-lg font-semibold">Aantal parkeerkaarten</p>
+                    <p class="">Vrijdag: <span class="font-semibold">2</span></p>
+                    <p class="">Zaterdag: <span class="font-semibold">2</span></p>
+                    <p class="text-blue-500 text-sm mt-1">
+                        Probeer dit te beperken. De medewerkerparking is niet onbeperkt. Bij voorkeur fietsen of
+                        carpoolen.
+                    </p>
+                </div>
             </div>
         </div>
 
         <!-- Volunteers Table -->
         <div class="mt-8">
-            <h3 class="text-xl font-semibold text-gray-700 mb-4">Vrijwilligers</h3>
-            <table class="min-w-full bg-white border border-gray-200">
-                <thead>
-                    <tr>
-                        <th class="py-2 px-4 border-b text-center">Voornaam</th>
-                        <th class="py-2 px-4 border-b text-center">Achternaam</th>
-                        <th class="py-2 px-4 border-b text-center">Werkt Dag 1</th>
-                        <th class="py-2 px-4 border-b text-center">Werkt Dag 2</th>
-                        <th class="py-2 px-4 border-b text-center">Parkeren Dag 1</th>
-                        <th class="py-2 px-4 border-b text-center">Parkeren Dag 2</th>
-                        <th class="py-2 px-4 border-b text-center">T-shirt ID</th>
-                        <th class="py-2 px-4 border-b text-center">Maat ID</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let volunteer of volunteers">
-                        <td class="py-2 px-4 border-b text-center">{{ volunteer.first_name }}</td>
-                        <td class="py-2 px-4 border-b text-center">{{ volunteer.last_name }}</td>
-                        <td class="py-2 px-4 border-b text-center">{{ volunteer.works_day1 ? 'Ja' : 'Nee' }}</td>
-                        <td class="py-2 px-4 border-b text-center">{{ volunteer.works_day2 ? 'Ja' : 'Nee' }}</td>
-                        <td class="py-2 px-4 border-b text-center">{{ volunteer.needs_parking_day1 ? 'Ja' : 'Nee' }}
-                        </td>
-                        <td class="py-2 px-4 border-b text-center">{{ volunteer.needs_parking_day2 ? 'Ja' : 'Nee' }}
-                        </td>
-                        <td class="py-2 px-4 border-b text-center">{{ volunteer.tshirt_id }}</td>
-                        <td class="py-2 px-4 border-b text-center">{{ volunteer.size_id }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Submit Button -->
-        <div class="mt-6">
-            <button type="submit" [disabled]="clubForm.invalid || isSubmitted"
-                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center disabled:opacity-50">
-                Opslaan
-            </button>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold text-gray-700">Vrijwilligers</h2>
+                <button type="button"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-md w-auto px-5 py-2.5 text-center disabled:opacity-50">
+                    Vrijwilliger toevoegen
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200 overflow-auto">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4 border-b text-center"></th>
+                            <th class="py-2 px-4 border-b text-start">Naam</th>
+                            <th class="py-2 px-4 border-b text-start">Rijksregisternummer</th>
+                            <th class="py-2 px-4 border-b text-start">T-shirt (maat/geslacht)</th>
+                            <th class="py-2 px-4 border-b text-start">Aanwezig (vr/za)</th>
+                            <th class="py-2 px-4 border-b text-start">Parking (vr/za)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let volunteer of volunteers">
+                            <td class="text-sm font-medium border-b border-gray-200">
+                                <div class="flex justify-center gap-4">
+                                    <a (click)="editVolunteer(volunteer.id)"
+                                        class="text-indigo-600 hover:text-indigo-900 cursor-pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </a>
+                                    <a (click)="deleteVolunteer(volunteer.id)" class="mr-0 md:mr-4  cursor-pointer"><svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="w-6 h-6 text-red-600 hover:text-red-800" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg></a>
+                                </div>
+                            </td>
+                            <td class="py-2 px-4 border-b text-start">{{ volunteer.first_name }} {{ volunteer.last_name
+                                }}</td>
+                            <td class="py-2 px-4 border-b text-start">**.**.**-***.**</td>
+                            <td class="py-2 px-4 border-b text-start">{{volunteer.size_id}} {{volunteer.tshirt_id}}</td>
+                            <td class="py-2 px-4 border-b text-start"> {{
+                                volunteer.works_day1 && volunteer.works_day2 ? 'Beide' :
+                                volunteer.works_day1 ? 'Vrijdag' :
+                                volunteer.works_day2 ? 'Zaterdag' : 'Nee'
+                                }}</td>
+                            <td class="py-2 px-4 border-b text-start">
+                                {{
+                                volunteer.needs_parking_day1 && volunteer.needs_parking_day2 ? 'Beide' :
+                                volunteer.needs_parking_day1 ? 'Vrijdag' :
+                                volunteer.needs_parking_day2 ? 'Zaterdag' : 'Nee'
+                                }}
+                            </td>
+                            <!-- <td class="py-2 px-4 border-b text-center">{{ volunteer.tshirt_id }}</td>
+                            <td class="py-2 px-4 border-b text-center">{{ volunteer.size_id }}</td> -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </form>
 </div>
