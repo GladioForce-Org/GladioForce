@@ -90,7 +90,7 @@ export class AuthComponent implements OnInit {
   // Sign in with email and password
   signIn() {
     this.errorAuthentication = '';
-    
+
     setPersistence(this.auth, browserLocalPersistence).then(() => {
       let email = this.email !== null ? this.email.toString() : '';
       signInWithEmailAndPassword(this.auth, email, this.password)
@@ -124,10 +124,16 @@ export class AuthComponent implements OnInit {
 
   }
 
+  async getIdToken(): Promise<string | null> {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    return user ? await user.getIdToken() : null;
+  }
+
   // Sign out the user
   signOut() {
     this.errorLoggedOut = '';
-  
+
     signOut(this.auth)
       .then(() => {
         this.changeUser(null);
