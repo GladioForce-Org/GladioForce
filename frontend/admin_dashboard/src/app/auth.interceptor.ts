@@ -15,8 +15,9 @@ export const AuthInterceptor: HttpInterceptorFn = (
 ): Observable<HttpEvent<unknown>> => {
   const auth = getAuth();
   const user = auth.currentUser;
+  const apiUrl = 'http://localhost:8000/api';
 
-  if (user) {
+  if (req.url.startsWith(apiUrl) && user) {
     // Get the ID token from Firebase
     return from(user.getIdToken()).pipe(
       switchMap((idToken) => {
