@@ -12,6 +12,22 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import firebase_admin
+from firebase_admin import credentials
+
+
+# config = {
+#         "apiKey": "AIzaSyAR25aA7XOEdHqSarp22t2jJKSkjFYSOpA",
+#         "authDomain": "gladioforceauth.firebaseapp.com",
+#         "projectId": "gladioforceauth",
+#         "storageBucket": "gladioforceauth.firebasestorage.app",
+#         "messagingSenderId": "275933662041",
+#         "appId": "1:275933662041:web:98e8406239336d53141a48"
+# }
+
+# cred = credentials.Certificate('cred')
+# firebase_admin.initialize_app(cred)
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
