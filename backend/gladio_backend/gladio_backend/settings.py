@@ -16,22 +16,14 @@ import firebase_admin
 from firebase_admin import credentials
 
 
-# config = {
-#         "apiKey": "AIzaSyAR25aA7XOEdHqSarp22t2jJKSkjFYSOpA",
-#         "authDomain": "gladioforceauth.firebaseapp.com",
-#         "projectId": "gladioforceauth",
-#         "storageBucket": "gladioforceauth.firebasestorage.app",
-#         "messagingSenderId": "275933662041",
-#         "appId": "1:275933662041:web:98e8406239336d53141a48"
-# }
-
-# cred = credentials.Certificate('cred')
-# firebase_admin.initialize_app(cred)
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+Settings_DIR = os.path.dirname(__file__)
+service_key = os.path.join(Settings_DIR, 'ServiceKey.json')
 
+
+cred = credentials.Certificate(service_key)
+firebase_admin.initialize_app(cred)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
