@@ -14,24 +14,34 @@ export const AuthInterceptor: HttpInterceptorFn = (
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> => {
   const auth = getAuth();
-  const user = auth.currentUser;
   const apiUrl = 'http://localhost:8000/api';
 
-  if (req.url.startsWith(apiUrl) && user) {
-    // Get the ID token from Firebase
-    return from(user.getIdToken()).pipe(
-      switchMap((idToken) => {
-        // Clone the request and add the Authorization header
-        const clonedReq = req.clone({
-          setHeaders: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        });
-        return next(clonedReq);
-      })
-    );
-  } else {
-    // If no user is logged in, proceed without adding a token
-    return next(req);
+  console.log('Intercepting request:', req.url);
+
+  if (req.url.startsWith(apiUrl)) {
+    return new Observable((observer) => {
+      const unsubscribe = auth.onAuthStateChanged(async (user) => {
+        unsubscribe(); // Stop listening once the state is resolved
+        if (user) {
+          try {
+            const idToken = await user.getIdToken();
+            const clonedReq = req.clone({
+              setHeaders: {
+                Authorization: `Bearer ${idToken}`,
+              },
+            });
+            next(clonedReq).subscribe(observer);
+          } catch (error) {
+            console.error('Error fetching ID token:', error);
+            next(req).subscribe(observer); // Proceed without token on error
+          }
+        } else {
+          next(req).subscribe(observer); // Proceed without token if no user
+        }
+      });
+    });
   }
+
+  // Proceed if the URL doesn't match the API URL
+  return next(req);
 };
