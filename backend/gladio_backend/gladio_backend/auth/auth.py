@@ -2,13 +2,11 @@ from ninja.security import HttpBearer
 from firebase_admin import auth
 
 class FirebaseAuth(HttpBearer):
-    def authenticate(self, request):
+    def authenticate(self, request, token: str):
         try:
-            print(request.headers)
-            #get token form request header
-            token = request.headers.get('Authorization').split('Bearer ')[1]
             # Verify the Firebase ID token
             decoded_token = auth.verify_id_token(token)
             return decoded_token  # Return the decoded token for use in the endpoint
-        except Exception:
+        except Exception as e:
+            print(f"Token verification failed: {e}")
             return None  # Return None if the token is invalid or verification fails
