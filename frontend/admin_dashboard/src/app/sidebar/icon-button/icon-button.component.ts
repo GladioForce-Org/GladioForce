@@ -13,4 +13,5 @@ export class IconButtonComponent {
   @Input() linkName: string = '';
   @Input() link: string = ''
   @Input() icon: string = '';
+  @Input() tooltipReference: string = '';
 }
