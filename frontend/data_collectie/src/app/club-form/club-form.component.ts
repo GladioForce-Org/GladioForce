@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Club } from '../interfaces/club';
-import { Volunteer } from '../interfaces/volunteer';
-import { ClubService } from '../services/club.service';
+import { Club } from '../data/types/club';
+import { Volunteer } from '../data/types/volunteer';
+import { ClubService } from '../data/services/club.service';
 
 @Component({
   selector: 'app-club-form',

@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Club } from '../interfaces/club';
-import { Volunteer } from '../interfaces/volunteer';
+import { Club } from '../types/club';
+import { Volunteer } from '../types/volunteer';
 import { Observable } from 'rxjs';
 
 @Injectable({
