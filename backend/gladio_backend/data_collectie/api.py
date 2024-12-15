@@ -1,5 +1,7 @@
 from ninja import NinjaAPI
-from . import clubApi, volunteerApi
+
+from .admin_api import clubApi
+from .admin_api import volunteerApi
 from gladio_backend.auth.auth import FirebaseAuth
 from .link_api.router import router
 

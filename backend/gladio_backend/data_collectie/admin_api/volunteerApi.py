@@ -1,8 +1,8 @@
 from ninja import Schema, Router
-from .models import Volunteer, Club, AvailableTshirt, Size
-from .schemas import VolunteerSchemaOut, VolunteerCreateSchema, VolunteerSchemaPatch
+from ..models import Volunteer, Club, AvailableTshirt, Size
+from ..schemas import VolunteerSchemaOut, VolunteerCreateSchema, VolunteerSchemaPatch
 from typing import List
-from .services import get_tshirt_or_none, get_size_or_none
+from ..services import get_tshirt_or_none, get_size_or_none
 from gladio_backend.auth.auth import FirebaseAuth
 
 
