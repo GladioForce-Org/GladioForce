@@ -5,7 +5,7 @@ from ..schemas import ClubSchemaOut, ClubCreateSchema, VolunteerSchemaOut, ClubS
 from ..services import get_tshirt_or_none, get_size_or_none
 from typing import List
 
-router = Router(tags=["Clubs"])
+router = Router(tags=["Clubs Data Collection"])
 
 #get club with link
 @router.get("/{club_link}", response=ClubSchemaOut)
@@ -44,28 +44,31 @@ def create_volunteer(request, club_link: str, payload: VolunteerCreateSchema):
     return {"id": volunteer.id, "first_name": volunteer.first_name}
 
 #patch volunteer
-@router.patch("/update/{volunteer_id}")
-def update_volunteer(request, volunteer_id: int, payload: VolunteerSchemaPatch):
+@router.patch("/update/{club_link}/volunteer/{volunteer_id}")
+def update_volunteer(request, volunteer_id: int, payload: VolunteerSchemaPatch, club_link: str):
     try:
-        # Retrieve the volunteer by ID
-        volunteer = Volunteer.objects.get(id=volunteer_id)
-        # Update the basic fields
+        club = Club.objects.get(link = club_link)
+        volunteer = Volunteer.objects.get(id=volunteer_id, club=club)
         for field in payload.dict().keys():
             if field in ["first_name", "last_name", "works_day1", "works_day2", "needs_parking_day1", "needs_parking_day2"]:
                 setattr(volunteer, field, payload.dict()[field])
-
-        # Update ForeignKey fields if provided
         volunteer.tshirt = get_tshirt_or_none(payload.tshirt_id)
         volunteer.size = get_size_or_none(payload.size_id)
-        # Save the updated volunteer to the database
         volunteer.save()
-
         return {"status": "ok", "message": "Volunteer updated successfully"}
+    except Club.DoesNotExist:
+        return {"status": "error", "message": f"Club with link {club_link} does not exist"}
     except Volunteer.DoesNotExist:
-        return {"status": "error", "message": f"Volunteer with ID {volunteer_id} does not exist"}
-    
+        return {"status": "error", "message": f"Volunteer with ID {volunteer_id} does not exist in this club"}
+
 #delete volunteer
-@router.delete("/{volunteer_id}")
-def delete_volunteer(request, volunteer_id: int):
-    Volunteer.objects.get(id=volunteer_id).delete()
+@router.delete("/{club_link}/volunteer/{volunteer_id}")
+def delete_volunteer(request, volunteer_id: int, club_link: str):
+    try:
+        club = Club.objects.get(link = club_link)
+        Volunteer.objects.get(id=volunteer_id, club=club).delete()
+    except Club.DoesNotExist:
+        return {"status": "error", "message": f"Club with link {club_link} does not exist"}
+    except Volunteer.DoesNotExist:
+        return {"status": "error", "message": f"Volunteer with ID {volunteer_id} does not exist in this club"}
     return {"status": "ok"}
