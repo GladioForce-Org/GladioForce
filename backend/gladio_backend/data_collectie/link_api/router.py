@@ -1,7 +1,7 @@
 from ninja import NinjaAPI, Router
 from django.http import Http404
-from ..models import Club, ParticipatingClub, Volunteer, AvailableTshirt, Size
-from ..schemas import ClubSchemaOut, ClubCreateSchema, VolunteerSchemaOut, ClubSchemaPatch, VolunteerCreateSchema, VolunteerSchemaPatch
+from ..models import Club, Volunteer, AvailableTshirt, Size
+from ..schemas import ClubSchemaOut, VolunteerSchemaOut, ClubSchemaPatch, VolunteerCreateSchema, VolunteerSchemaPatch
 from ..services import get_tshirt_or_none, get_size_or_none
 from typing import List
 
@@ -20,15 +20,15 @@ def get_club(request, club_link: str):
 
 #get all volunteers of a club with link
 @router.get("/{club_link}/volunteers", response=List[VolunteerSchemaOut])
-def get_volunteers(request, club_link: str):
+def get_volunteers(club_link: str):
     try:
         club = Club.objects.get(link = club_link)
         volunteers = Volunteer.objects.filter(club = club)
         return list(volunteers)
     except Club.DoesNotExist:
-        return {"status": "error", "message": f"Club with link {club_link} does not exist"}
+        raise Http404(f"Club with link {club_link} does not exist")
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        raise Http404(str(e))
 
 #update club with link
 @router.patch("update/{club_link}")
