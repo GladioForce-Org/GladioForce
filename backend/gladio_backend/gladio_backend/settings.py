@@ -29,12 +29,12 @@ firebase_admin.initialize_app(cred)
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x4@bnn0a%)^-tmx!4hp&aov2-gl75qiwd+a9ko8_xi@m#dk466'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-x4@bnn0a%)^-tmx!4hp&aov2-gl75qiwd+a9ko8_xi@m#dk466')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.getenv('ALB_DNS')]
 
 
 # Application definition
