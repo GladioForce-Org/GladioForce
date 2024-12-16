@@ -44,8 +44,7 @@ db_storage_type      = "gp2"
 db_engine            = "mysql"
 db_engine_version    = "8.0.35"
 db_instance_class    = "db.t3.micro"
-db_identifier        = "db-ce-crud-app-r0785469-instance"
-db_name              = "db-ce-crud-app-r0785469--database"
+
 
 
 
