@@ -1,6 +1,9 @@
 from ninja import NinjaAPI
-from . import clubApi, volunteerApi
+
+from .admin_api import clubApi
+from .admin_api import volunteerApi
 from gladio_backend.auth.auth import FirebaseAuth
+from .link_api.router import router
 
 
 
@@ -14,3 +17,4 @@ def auth(request):
 
 api.add_router("/clubs", clubApi.router)
 api.add_router("/volunteers", volunteerApi.router)
+api.add_router("/collection", router)
