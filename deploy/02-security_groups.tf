@@ -40,6 +40,15 @@ resource "aws_vpc_security_group_ingress_rule" "internet_nginx_sg_rule_2" {
   to_port     = 443
 }
 
+resource "aws_vpc_security_group_ingress_rule" "internet_nginx_sg_rule_3" {
+  security_group_id = aws_security_group.internet_nginx_sg.id
+
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 22
+  ip_protocol = "tcp"
+  to_port     = 22
+}
+
 # Outbound rule that allows all trafic to all destinations
 resource "aws_vpc_security_group_egress_rule" "internet_nginx_sg_rule_3" {
   security_group_id = aws_security_group.internet_nginx_sg.id
@@ -48,6 +57,39 @@ resource "aws_vpc_security_group_egress_rule" "internet_nginx_sg_rule_3" {
   ip_protocol = -1
 
 }
+
+
+# resource "aws_security_group" "alb_sg" {
+#   name        = "${local.prefix}-alb-sg"
+#   description = "Security group for loadbalancer"
+#   vpc_id      = aws_vpc.vpc.id
+
+#   tags = merge(
+#     local.common_tags,
+#     tomap({ "Name" = "${local.prefix}-alb-sg" })
+#   )
+
+# }
+
+# resource "aws_vpc_security_group_ingress_rule" "internet_alb_sg_rule_1" {
+#   security_group_id = aws_security_group.alb_sg.id
+
+
+#   from_port   = 8000
+#   ip_protocol = "tcp"
+#   to_port     = 8000
+#   referenced_security_group_id = aws_security_group.internet_nginx_sg.id
+# }
+
+# # Outbound rule that allows all trafic to all destinations
+# resource "aws_vpc_security_group_egress_rule" "internet_alb_sg_rule_1" {
+#   security_group_id = aws_security_group.alb_sg.id
+
+#   cidr_ipv4   = "0.0.0.0/0"
+#   ip_protocol = -1
+
+# }
+
 
 
 #Security group for the App-tier where the containers will be deployed. We only allow HTTP traffic coming from the internet facing load balancer. 
@@ -70,9 +112,9 @@ resource "aws_security_group" "app_tier_sg" {
 resource "aws_vpc_security_group_ingress_rule" "app_tier_sg_rule_1" {
   security_group_id = aws_security_group.app_tier_sg.id
 
-  from_port                    = 80
+  from_port                    = 8000
   ip_protocol                  = "tcp"
-  to_port                      = 80
+  to_port                      = 8000
   referenced_security_group_id = aws_security_group.internet_nginx_sg.id
 
 }

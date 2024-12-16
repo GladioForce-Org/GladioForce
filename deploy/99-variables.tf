@@ -101,12 +101,6 @@ variable "db_instance_class" {
 
 }
 
-variable "db_identifier" {
-
-  type        = string
-  description = "The name of the RDS instance, if omitted, Terraform will assign a random, unique identifier. "
-
-}
 
 variable "db_username" {
 
@@ -122,12 +116,6 @@ variable "db_password" {
 }
 
 
-variable "db_name" {
-
-  type        = string
-  description = "Name of the database that will be deployed for the applicationS"
-
-}
 
 
 
@@ -177,6 +165,13 @@ variable "ecr_image" {
 
   type        = string
   description = "Name of image that will be used in the task definition"
+
+}
+
+variable "app_secret_key" {
+
+  type        = string
+  description = "secret key of the django app"
 
 }
 

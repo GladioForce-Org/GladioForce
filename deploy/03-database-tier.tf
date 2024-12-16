@@ -24,7 +24,7 @@ resource "aws_db_instance" "db_app" {
   identifier        = "${local.prefix}-db"
   username          = var.db_username
   password          = var.db_password
-  db_name           = "entries"
+  db_name           = "gladio"
 
 
   vpc_security_group_ids = [aws_security_group.db_tier_sg.id]
