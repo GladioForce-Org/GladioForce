@@ -105,7 +105,7 @@ resource "aws_route_table_association" "public_subnet_asso" {
 # Define DB subnet group for the RDS database, this is required when we create the Multi-AZ environment (replication)
 resource "aws_db_subnet_group" "db_subnet" {
   name       = "${local.prefix}-db-subnet-group"
-  subnet_ids = [aws_subnet.database_subnets[0].id]
+  subnet_ids = [aws_subnet.database_subnets[0].id, aws_subnet.database_subnets[1].id]
 
   tags = merge(
     local.common_tags,
@@ -120,10 +120,6 @@ resource "aws_db_subnet_group" "db_subnet" {
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.vpc.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-
-  }
 
   tags = merge(
     local.common_tags,
@@ -139,3 +135,11 @@ resource "aws_route_table_association" "private_route_association_2" {
   route_table_id = aws_route_table.private_route_table.id
 }
 
+
+
+#Elastic ip for nginx
+
+resource "aws_eip" "nginx" {
+  instance = aws_instance.nginx.id
+
+}

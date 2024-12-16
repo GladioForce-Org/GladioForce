@@ -180,6 +180,13 @@ variable "ecr_image" {
 
 }
 
+variable "app_secret_key" {
+
+  type        = string
+  description = "secret key of the django app"
+
+}
+
 # ########################## Web Tier ###############################
 
 
