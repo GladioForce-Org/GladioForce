@@ -214,7 +214,7 @@ server {
 }
 
 server {
-    listen 443 ssl;
+    listen 443 ssl http2;
     server_name $DOMAIN_NAME;
 
     # SSL configuration
@@ -228,6 +228,9 @@ server {
         proxy_set_header Host ${aws_s3_bucket_website_configuration.admin_dashboard.website_endpoint};
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+
+        # Ensure Angular routes work without 404 errors
+        try_files $uri $uri/ /index.html;
     }
 
     location /api/ {
