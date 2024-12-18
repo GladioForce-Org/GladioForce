@@ -23,7 +23,8 @@ service_key = os.path.join(Settings_DIR, 'ServiceKey.json')
 
 
 cred = credentials.Certificate(service_key)
-firebase_admin.initialize_app(cred)
+if not firebase_admin._apps:
+    firebase_admin.initialize_app(cred)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/

@@ -83,3 +83,7 @@ __pycache__/
 
 
 .venv/
+
+**/ServiceKey.json
+
+**/environment.ts

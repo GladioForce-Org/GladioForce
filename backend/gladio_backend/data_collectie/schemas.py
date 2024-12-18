@@ -69,3 +69,8 @@ class VolunteerSchemaOut(Schema):
     tshirt_id: Optional[int] = None
     club_id: int
     size_id: Optional[int] = None
+
+class CoreMemberCreateSchema(Schema):
+    email: str
+    display_name: Optional[str] = None
+    phone_number: Optional[str] = None
