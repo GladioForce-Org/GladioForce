@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { CoreMember } from '../interfaces/core-member';
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 @Component({
@@ -85,22 +86,28 @@ export class CoremembersComponent implements OnInit {
 
         this.getCoreMembers();
       },
-      error: (error) => {
-        this.errorUserCreation = error.message;
+      error: (error: HttpErrorResponse) => {
+        if (error.error) { // Check if error.error exists
+          try {
+            console.log("parsing");
+            const parsedError = JSON.parse(JSON.stringify(error.error)); // Try to parse it as JSON
+            this.errorUserCreation = parsedError.error || parsedError.message || "An error occurred."; // Access error or message property
+          } catch (parseError) {
+            console.error("Failed to parse error response:", parseError);
+            this.errorUserCreation = "An error occurred."; // Fallback message
+          }
+        } else {
+          this.errorUserCreation = 'An unknown error occurred.'; // Generic fallback
+        }
+        console.error('User creation error:', error); // Keep logging the full error for debugging
       }
-    })
+    });
   }
 
   private correctPhoneNumber() {
     // Phone number correction for Belgium to comply with Firebase's format
-    if (this.coreMemberToCreate.phone_number !== undefined) {
-      // remove all forward slashes
-      this.coreMemberToCreate.phone_number = this.coreMemberToCreate.phone_number.replace(/\//g, '');
-
-      // remove the first zero
-      if (this.coreMemberToCreate.phone_number[0] === '0') {
-        this.coreMemberToCreate.phone_number = '+32' + this.coreMemberToCreate.phone_number?.slice(1); //remove the first 0
-      }
+    if (this.coreMemberToCreate.phone_number !== undefined && this.coreMemberToCreate.phone_number[0] === '0') {
+      this.coreMemberToCreate.phone_number = '+32' + this.coreMemberToCreate.phone_number?.slice(0); //remove the first 0
     }
   }
 
