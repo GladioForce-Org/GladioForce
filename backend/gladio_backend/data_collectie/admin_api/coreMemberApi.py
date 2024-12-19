@@ -33,7 +33,7 @@ def create_core_member(request, payload: CoreMemberCreateSchema):
         raise HttpResponseBadRequest("Er bestaat al een gebruiker met dit E-mailadres.")
     except Exception as e:
         # Catch any other exceptions
-        return JsonResponse({"error": f"Er liep iets fout bij het aanmaken van de gebruiker: {str(e)}"}, status=400)
+        return JsonResponse({"error": f"Er liep iets fout bij het aanmaken van de gebruiker: {str(e)}"}, status=400, content_type="application/json")
     
 @router.get("/", response=List[CoreMemberSchema])
 def get_core_members(request):
