@@ -62,3 +62,38 @@ def get_core_members(request):
 
     # Return the list of CoreMemberSchema objects
     return core_members
+
+@router.get("/{id}", response=CoreMemberSchema)
+def get_core_member(request, id: str):
+    # Get the user with the specified ID
+    user = auth.get_user(id)
+
+    # Return a CoreMemberSchema object
+    return CoreMemberSchema(
+        id= user.uid,
+        email= user.email,
+        display_name= user.display_name,
+        phone_number= user.phone_number
+    )
+
+@router.delete("/{id}")
+def delete_core_member(request, id: str):
+    # Delete the user with the specified ID
+    auth.delete_user(id)
+
+    # Return a success message
+    return {"message": "Gebruiker succesvol verwijderd."}
+
+@router.put("/{id}")
+def update_core_member(request, id: str, payload: CoreMemberCreateSchema):
+    # Update the user with the specified ID
+    user = auth.update_user(
+        id,
+        email = payload.email,
+        display_name = payload.display_name,
+        phone_number = payload.phone_number
+    )
+
+    # Return a success message
+    return {"message": "Gebruiker succesvol geüpdatet."}
+

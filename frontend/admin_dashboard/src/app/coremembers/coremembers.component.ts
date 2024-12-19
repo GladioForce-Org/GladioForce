@@ -8,6 +8,7 @@ import { AuthService } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { CoreMember } from '../interfaces/core-member';
 
+
 @Component({
   selector: 'app-coremembers',
   standalone: true,
@@ -31,6 +32,7 @@ export class CoremembersComponent implements OnInit {
 
   coreMembers: CoreMember[] = [];
 
+
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
     private authService: AuthService,
@@ -53,7 +55,8 @@ export class CoremembersComponent implements OnInit {
         this.changeUser(user);
       } else {
         // No user is signed in, you can handle this as needed (e.g., showing login form)
-        this.changeUser(null);
+        this.changeUser(null)
+
       }
     });
 
@@ -120,10 +123,21 @@ export class CoremembersComponent implements OnInit {
   }
 
   editCoreMember(coreMember: CoreMember) {
-    //implementation follows
   }
 
   deleteCoreMember(coreMember: CoreMember) {
-    //implementation follows
-  }
+    if (coreMember.id !== undefined) {
+      this.apiService.deleteCoreMember(coreMember.id).subscribe({
+      next: (result) => {
+        this.getCoreMembers();
+      },
+      error: (error) => {
+        console.log(error);
+      }
+      });
+    } else {
+      console.log('Core member ID is undefined');
+    }
+   }
+
 }

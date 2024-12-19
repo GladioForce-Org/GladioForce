@@ -26,4 +26,17 @@ export class ApiService {
   getAllCoreMembers(): Observable<CoreMember[]> {
     return this.http.get<CoreMember[]>(`${this.baseUrl}/coremembers/`);
   }
+
+  getCoreMember(id: number): Observable<CoreMember> {
+    return this.http.get<CoreMember>(`${this.baseUrl}/coremembers/${id}`);
+  }
+
+  updateCoreMember(id: number, coreMember: CoreMember): Observable<CoreMember> {
+    return this.http.put<CoreMember>(`${this.baseUrl}/coremembers/${id}`, coreMember);
+  }
+
+  deleteCoreMember(id: number): Observable<CoreMember> {
+    return this.http.delete<CoreMember>(`${this.baseUrl}/coremembers/${id}`);
+  }
+
 }
