@@ -1,7 +1,7 @@
 from ninja import Schema, Router
-from ..schemas import CoreMemberCreateSchema
+from data_collectie.schemas import CoreMemberCreateSchema
 from typing import List
-from ..services import get_tshirt_or_none, get_size_or_none
+from data_collectie.services import get_tshirt_or_none, get_size_or_none
 from gladio_backend.auth.auth import FirebaseAuth
 from firebase_admin import auth
 from django.http import HttpResponseForbidden, HttpResponseBadRequest, JsonResponse

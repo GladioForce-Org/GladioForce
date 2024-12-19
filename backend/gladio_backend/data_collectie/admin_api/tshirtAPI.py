@@ -1,8 +1,8 @@
 from ninja import Router
 from typing import List
-from ..models import Tshirt, Size, AvailableTshirt, Edition
+from data_collectie.models import Tshirt, Size, AvailableTshirt, Edition
 from gladio_backend.auth.auth import FirebaseAuth
-from ..schemas import TshirtSchema, SizeSchema, AvailableTshirtSchema
+from data_collectie.schemas import TshirtSchema, SizeSchema, AvailableTshirtSchema
 
 router = Router(tags=["Tshirt_admin"], auth=FirebaseAuth())
 
