@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CoreMember } from '../interfaces/core-member';
+import { environment } from '../../environments/environment';
+import { environment as prodEnvironment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:8000/api';
+  private baseUrl = environment.apiUrl
 
   constructor(private http: HttpClient) { }
 
@@ -19,5 +21,9 @@ export class ApiService {
   // coreMemberApi
   createCoreMember(coreMember: CoreMember): Observable<CoreMember> {
     return this.http.post<CoreMember>(`${this.baseUrl}/coremembers/`, coreMember);
+  }
+
+  getAllCoreMembers(): Observable<CoreMember[]> {
+    return this.http.get<CoreMember[]>(`${this.baseUrl}/coremembers/`);
   }
 }
