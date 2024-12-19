@@ -4,7 +4,7 @@ from .admin_api import clubApi
 from .admin_api import volunteerApi
 from .admin_api import coreMemberApi
 from gladio_backend.auth.auth import FirebaseAuth
-from .link_api.router import router
+from .link_api.router import router as link_router
 from .admin_api import tshirtAPI
 from vuilbakken.api import container_api
 
@@ -19,7 +19,7 @@ def auth(request):
 
 api.add_router("/clubs", clubApi.router)
 api.add_router("/volunteers", volunteerApi.router)
-api.add_router("/collection", router)
+api.add_router("/collection", link_router)
 api.add_router("/coremembers", coreMemberApi.router)
 api.add_router("/tshirts", tshirtAPI.router)
 api.add_router("/vuilbakken", container_api, auth=auth)
