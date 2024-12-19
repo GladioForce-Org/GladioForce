@@ -75,6 +75,11 @@ class CoreMemberCreateSchema(Schema):
     display_name: Optional[str] = None
     phone_number: Optional[str] = None
 
+class CoreMemberSchema(Schema):
+    id: str
+    email: str
+    display_name: Optional[str] = None
+    phone_number: Optional[str] = None
 
 class SizeSchema(Schema):
     id: int
