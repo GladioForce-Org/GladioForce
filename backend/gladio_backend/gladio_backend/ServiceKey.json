@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "gladioforceauth",
+  "private_key_id": "55b526edd304fd56a2f88efa89816df2e08da650",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDTibeNDtpbcdjS\n9Tl7dVTv3vd1PBxbiXr3sUHfwhgrryk08pywqJTQrzk1k7pgPSsTXyUkzSWdiMHR\nrlCX07reuS0O+Ybe1gOg5kram7EAStN+JECeyQMWbYxb18o6aW1+sraKkLQXllab\nNG1Mqk/x4ixirpNDV6Bb31ZNgFmuvRs4IMIttm4K6kBnQc/eGsS59hwzWMPNFemc\nfqal5dzvmrHuQvgi98h1IYVQtYf/aXiOsgKEKyb4SQKxbKpsxjCjDmaNF8mlbiAq\n9k7vVPkMrDBdkVcLnIqDi0NAmqYQQsm7CtoO1QybquP9bt1/R+PnQb6MxSiWry/J\n3eLC7+vBAgMBAAECggEAAiORA5Ae4nB9l28mAaWSEkrYMwtEjiMPEeoXlxed/vMV\nIOqYbauGtbAlN/F3yk6pXNdyx13Q/41zyEGm9vdhGwIW/ovEsq7J9+/cLzxbxyZP\n38/7XJ+pCapZ56PVm6RCmIFeGdCUwZhM5TeGfhFKyvtVJOT3ADtRQnHjrCzxZd7m\n7T0qiVFs9Yzj46QipDssLDanXOF3Bkr9MWf8LsVPt7Uvvd8Pr4+Uy+U6gZnFUYSm\nQB39D5xStco23yWSFbz61RR58s1XeeQ/DvoRmY8KLF1bJLXyvme2KKIgcNS/9k7Q\ntF/U9t4QQwsYkzUzzrO/zmQENmbeegLwYY4uNfmFsQKBgQD03BPP3jYMjXQ2KxXT\nQ7yzfEW5gfVFU01CVMwlY4UZ6AfTsOcQgCGvgGp5Fcvy0u+AuqK/7/DzSC91adto\nuTr9oIqPRg4aHx/G3IS1EPfpcs6JLWGs/Sb89K48JonA++CqLT+5j2UtSJLoNNYL\ngz0inpOI3+BIOnZr2RqdtNfFLwKBgQDdKYkrjltx2n49ifDmUAI5p7xlcr4vwqny\nVKJwOhMNUvFXpmKDuciRLJe6yHSPRHDJLJAXuUtVYfbJBPMpwlPdOWG0h7LJD21m\n/7bqXdvgcVsCl0w0erW4sUOhhDrTalxS3GUjD4XXr4r/A6krIdCcZp/PyIx04Zkx\ndroWow8CDwKBgQCds5Rq/6Ht6bjcHlm7LFg/fR1nAeVXFfSfcP/eYL9b1Q4dcEUR\nYoTPhLSOcdRd+y7XyNyDI+UauvYd9+ShCROOQDSdXDA+8KbFrEcoWtpgl1mgDgNn\np8/RgUEqamO0UET9NZFiUJGIXcKIHWdyGL9qKZm5wP6xZj3Y7gXvZobFbwKBgQC2\nnumpka9o4CaF4jWNuFteCGfEzW7GOVPjyocnbIz235px6e5HH03CsrPHhGbbNoR7\nWdTSAit2oaIKc4/m15QwhIVtcO/snlSUTGtaM46wUmn4Rb6jRwBvNdDGuk1o7da2\nhU7uGI9Ifqej0/4Io6+CtisYhF2W1gKNmaAnuRVXeQKBgDb1XGI77Naw8RB9Qfl1\nPcntM9z4/Q9L97eW56O2Q59OP8+nBNRcOsiL8FNiDlcmLxrl16nJWrPavNp2Q6Gh\nF7oZ75PI0ZjZi/ZqGKNz0scNRBiX/uZou/ds1gJ8ivJ+7IaZlUwYOqJrFzp4JclV\nXk47sKGm/SxzVBOq9jrj5ps8\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-27v8x@gladioforceauth.iam.gserviceaccount.com",
+  "client_id": "109531650245067464758",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-27v8x%40gladioforceauth.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

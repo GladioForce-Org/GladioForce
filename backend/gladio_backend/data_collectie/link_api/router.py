@@ -19,12 +19,13 @@ def get_club(request, club_link: str):
         return {"status": "error", "message": str(e)}
 
 #get all volunteers of a club with link
-@router.get("/{club_link}/volunteers", response=List[VolunteerSchemaOut])
-def get_volunteers(club_link: str):
+@router.get("/volunteers/{club_link}", response=List[VolunteerSchemaOut])
+def get_volunteers(request, club_link: str):
+    print(club_link)
     try:
         club = Club.objects.get(link = club_link)
         volunteers = Volunteer.objects.filter(club = club)
-        return list(volunteers)
+        return volunteers
     except Club.DoesNotExist:
         raise Http404(f"Club with link {club_link} does not exist")
     except Exception as e:
