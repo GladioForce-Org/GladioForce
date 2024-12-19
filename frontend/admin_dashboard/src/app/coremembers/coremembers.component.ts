@@ -90,8 +90,14 @@ export class CoremembersComponent implements OnInit {
 
   private correctPhoneNumber() {
     // Phone number correction for Belgium to comply with Firebase's format
-    if (this.coreMemberToCreate.phone_number !== undefined && this.coreMemberToCreate.phone_number[0] === '0') {
-      this.coreMemberToCreate.phone_number = '+32' + this.coreMemberToCreate.phone_number?.slice(0); //remove the first 0
+    if (this.coreMemberToCreate.phone_number !== undefined) {
+      // remove all forward slashes
+      this.coreMemberToCreate.phone_number = this.coreMemberToCreate.phone_number.replace(/\//g, '');
+
+      // remove the first zero
+      if (this.coreMemberToCreate.phone_number[0] === '0') {
+        this.coreMemberToCreate.phone_number = '+32' + this.coreMemberToCreate.phone_number?.slice(1); //remove the first 0
+      }
     }
   }
 
