@@ -1,5 +1,5 @@
 export interface CoreMember {
-    id?: string;
+    id?: number;
     email: string;
     display_name?: string;
     phone_number?: string;
