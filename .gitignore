@@ -80,11 +80,5 @@ __pycache__/
 
 **/.DS_Store
 **/Thumbs.db
-/environments/
-/environment.ts
 .venv/
 
-**/ServiceKey.json
-
-**/environment.ts
-**/environment.prod.ts

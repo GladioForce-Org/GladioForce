@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class ClubService {
 
-  private baseUrl = 'http://localhost:8000/api/clubs/';
+  private baseUrl = 'http://localhost:8000/api/collection/';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -29,6 +29,6 @@ export class ClubService {
   }
 
   getVolunteersByClubLink(link: string): Observable<Volunteer[]> {
-    return this.httpClient.get<Volunteer[]>(`${this.baseUrl}${link}/volunteers`);
+    return this.httpClient.get<Volunteer[]>(`${this.baseUrl}`+'volunteers/'+`${link}`);
   }
 }
