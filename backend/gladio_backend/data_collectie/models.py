@@ -45,7 +45,7 @@ class Tshirt(models.Model):
 class AvailableTshirt(models.Model):
     tshirt = models.ForeignKey(Tshirt, on_delete=models.CASCADE)
     edition = models.ForeignKey(Edition, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.DecimalField(max_digits=6, decimal_places=2, null=True)
 
     def __str__(self):
         return f"{self.tshirt} - {self.edition}"
@@ -102,3 +102,4 @@ class TimeRegistration(models.Model):
 
     def __str__(self):
         return f"{self.volunteer} - Day {self.day} - {self.edition}"
+    
