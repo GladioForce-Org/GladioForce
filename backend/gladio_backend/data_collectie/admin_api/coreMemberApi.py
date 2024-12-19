@@ -1,5 +1,5 @@
 from ninja import Schema, Router
-from data_collectie.schemas import CoreMemberCreateSchema
+from data_collectie.schemas import CoreMemberCreateSchema, CoreMemberSchema
 from typing import List
 from data_collectie.services import get_tshirt_or_none, get_size_or_none
 from gladio_backend.auth.auth import FirebaseAuth
@@ -35,3 +35,30 @@ def create_core_member(request, payload: CoreMemberCreateSchema):
         # Catch any other exceptions
         return JsonResponse({"error": f"Er liep iets fout bij het aanmaken van de gebruiker: {str(e)}"}, status=400)
     
+@router.get("/", response=List[CoreMemberSchema])
+def get_core_members(request):
+    # Create an empty list to store the core members
+    core_members = []
+
+    # Start from the first page of users
+    page = auth.list_users()
+
+    while page:
+        # Iterate over the users in this page
+        for user in page.users:
+            # Create a CoreMemberSchema instance for each user
+            core_members.append(CoreMemberSchema(
+                id= user.uid,
+                email= user.email,
+                display_name= user.display_name,
+                phone_number= user.phone_number
+            ))
+        
+        # Check if there are more users to paginate
+        if page.next_page_token:
+            page = auth.list_users(next_page_token=page.next_page_token)
+        else:
+            break
+
+    # Return the list of CoreMemberSchema objects
+    return core_members
