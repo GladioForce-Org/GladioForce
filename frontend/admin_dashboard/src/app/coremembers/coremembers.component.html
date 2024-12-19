@@ -7,6 +7,10 @@
           <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
           <input id="email" type="email" [(ngModel)]="emailUserCreate" name="email" required class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
         </div>
+        <div class="mb-4">
+          <p *ngIf="userCreated !==''" class="text-green-600 font-semibold mt-3">{{ userCreated }}</p>
+          <p *ngIf="errorUserCreation !==''" class="text-red-600 font-semibold mt-3">{{ errorUserCreation }}</p>
+        </div>
         <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
           Registreer
         </button>

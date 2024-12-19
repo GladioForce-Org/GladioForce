@@ -5,6 +5,8 @@ import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
+import { ApiService } from '../services/api.service';
+import { CoreMember } from '../interfaces/core-member';
 
 @Component({
   selector: 'app-coremembers',
@@ -31,7 +33,11 @@ export class CoremembersComponent implements OnInit {
 
   errorLoggedOut = '';
 
-  constructor(private changeDetectorRef: ChangeDetectorRef, private authService: AuthService) {
+  constructor(
+    private changeDetectorRef: ChangeDetectorRef,
+    private authService: AuthService,
+    private apiService: ApiService
+  ) {
     // Initialize Firebase with your Firebase configuration
     this.firebaseApp = initializeApp(environment.firebaseConfig);
   }
@@ -59,31 +65,29 @@ export class CoremembersComponent implements OnInit {
   // Create a new user (sign up)
   signUp() {
     this.userCreated = ''
+    this.errorUserCreation = '';
     
-    // setPersistence(this.auth, browserLocalPersistence) // this ensures the newly created user isn't logged in automatically (= Firebases's default behaviour)
-    //   .then(() => {
-        // Creates a user with temporary password
-        createUserWithEmailAndPassword(this.auth, this.emailUserCreate, this.generateTemporaryPassword())
-          .then((userCredential) => {
-            this.changeUser(userCredential.user);
+    let coreMember: CoreMember = {
+      email: this.emailUserCreate
+    }
 
-            this.userCreated = 'Gebruiker aangemaakt';
-            this.errorUserCreation = '';
-    
-            sendPasswordResetEmail(this.auth, this.emailUserCreate)
-            .then(() => {
-              alert('Wachtwoord-resetlink is verzonden naar het e-mailadres van de gebruiker.');
-            })
-            .catch((error) => {
-              alert('Fout bij het verzenden van de resetlink: ' + error.message);
-            });
-          })
-          .catch((error) => {
-            this.errorUserCreation = 'Error bij registreren!';
-          }
-        );
-    //   }
-    // );
+    this.apiService.createCoreMember(coreMember).subscribe({
+      next: (result) => {
+        //console.log(result);
+        this.userCreated = 'Gebruiker aangemaakt';
+
+        sendPasswordResetEmail(this.auth, this.emailUserCreate)
+        .then(() => {
+          alert('Wachtwoord-resetlink is verzonden naar het e-mailadres van de gebruiker.');
+        })
+        .catch((error) => {
+          alert('Fout bij het verzenden van de resetlink: ' + error.message);
+        });
+      },
+      error: (error) => {
+        this.errorUserCreation = error;
+      }
+    })
   }
 
 

@@ -87,3 +87,4 @@ __pycache__/
 **/ServiceKey.json
 
 **/environment.ts
+**/environment.prod.ts
