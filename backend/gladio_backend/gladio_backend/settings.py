@@ -12,21 +12,30 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import firebase_admin
+from firebase_admin import credentials
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+Settings_DIR = os.path.dirname(__file__)
+service_key = os.path.join(Settings_DIR, 'ServiceKey.json')
 
+
+cred = credentials.Certificate(service_key)
+if not firebase_admin._apps:
+    firebase_admin.initialize_app(cred)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x4@bnn0a%)^-tmx!4hp&aov2-gl75qiwd+a9ko8_xi@m#dk466'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-x4@bnn0a%)^-tmx!4hp&aov2-gl75qiwd+a9ko8_xi@m#dk466')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', os.getenv('ALB_DNS')]
 
 
 # Application definition
@@ -43,10 +52,17 @@ INSTALLED_APPS = [
     'vuilbakken',
 ]
 
+
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
     "http://localhost:4201",
+
 ]
+
+domain_url = os.getenv('DOMAIN_URL')
+if domain_url:
+    CORS_ALLOWED_ORIGINS.append(domain_url)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -172,5 +172,5 @@ sudo docker push 482617122788.dkr.ecr.us-east-1.amazonaws.com/gladioforce-backen
 6. Check if image has been pushed to ECR
 
 ```bash
-aws ecr list-images --repository-name gladiolen --region us-east-1
+aws ecr list-images --repository-name gladioforce-backend --region us-east-1
 ```

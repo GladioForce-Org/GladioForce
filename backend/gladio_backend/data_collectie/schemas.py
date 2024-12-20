@@ -1,5 +1,5 @@
 from ninja import Schema
-from typing import Optional
+from typing import Optional, List
 
 class ClubCreateSchema(Schema):
     name: str
@@ -69,3 +69,31 @@ class VolunteerSchemaOut(Schema):
     tshirt_id: Optional[int] = None
     club_id: int
     size_id: Optional[int] = None
+
+class CoreMemberCreateSchema(Schema):
+    email: str
+    display_name: Optional[str] = None
+    phone_number: Optional[str] = None
+
+class CoreMemberSchema(Schema):
+    id: str
+    email: str
+    display_name: Optional[str] = None
+    phone_number: Optional[str] = None
+
+class SizeSchema(Schema):
+    id: int
+    size: str
+
+class TshirtSchema(Schema):
+    id: int
+    model: str
+    sizes: List[int] 
+
+class AvailableTshirtSchema(Schema):
+    id: int
+    tshirt_id: int
+    edition_id: int
+    price:Optional[float] = None
+
+

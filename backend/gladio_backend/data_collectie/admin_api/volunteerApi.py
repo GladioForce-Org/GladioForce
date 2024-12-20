@@ -1,23 +1,27 @@
 from ninja import Schema, Router
-from .models import Volunteer, Club, AvailableTshirt, Size
-from .schemas import VolunteerSchemaOut, VolunteerCreateSchema, VolunteerSchemaPatch
+from data_collectie.models import Volunteer, Club, AvailableTshirt, Size
+from data_collectie.schemas import VolunteerSchemaOut, VolunteerCreateSchema, VolunteerSchemaPatch
 from typing import List
-from .services import get_tshirt_or_none, get_size_or_none
+from data_collectie.services import get_tshirt_or_none, get_size_or_none
+from gladio_backend.auth.auth import FirebaseAuth
 
 
-router = Router(tags=["Volunteers"])
+router = Router(tags=["Volunteers_admin"], auth=FirebaseAuth())
 
 @router.get("/", response=List[VolunteerSchemaOut])
 def get_volunteers(request):
     volunteers = Volunteer.objects.all()
     return volunteers
 
-#make volunteer for club
-@router.post("/{club_link}")
-def create_volunteer(request, club_link: str, payload: VolunteerCreateSchema):
-    club = Club.objects.get(link = club_link)
-    volunteer = Volunteer.objects.create(club = club, **payload.dict())
-    return {"id": volunteer.id, "first_name": volunteer.first_name}
+# #make volunteer for club
+@router.post("/{club_id}")
+def create_volunteer(request, club_id: int, payload: VolunteerCreateSchema):
+    try:
+        club = Club.objects.get(id = club_id)
+        volunteer = Volunteer.objects.create(club = club, **payload.dict())
+        return {"status": "ok", "message": "Volunteer created successfully"}
+    except Club.DoesNotExist:
+        return {"status": "error", "message": f"Club with ID {club_id} does not exist"}
 
 @router.delete("/{volunteer_id}")
 def delete_volunteer(request, volunteer_id: int):

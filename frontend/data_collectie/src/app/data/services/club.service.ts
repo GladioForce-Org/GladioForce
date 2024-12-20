@@ -3,13 +3,15 @@ import { Injectable } from '@angular/core';
 import { Club } from '../types/club';
 import { Volunteer } from '../types/volunteer';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { environment as prodEnvironment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClubService {
 
-  private baseUrl = 'http://localhost:8000/api/clubs/';
+  private baseUrl = environment.apiUrl + '/collection/';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -29,6 +31,6 @@ export class ClubService {
   }
 
   getVolunteersByClubLink(link: string): Observable<Volunteer[]> {
-    return this.httpClient.get<Volunteer[]>(`${this.baseUrl}${link}/volunteers`);
+    return this.httpClient.get<Volunteer[]>(`${this.baseUrl}`+'volunteers/'+`${link}`);
   }
 }

@@ -13,7 +13,7 @@ output "labrole_id" {
 }
 
 
-#retrieve ECR repository url --> !!!Needs to be created upfront!!!
+#retrieve ECR repository url --> !!!Needs to be created upfront using AWS WebInterface!!!
 
 
 data "aws_ecr_repository" "gladioforce-repo" {
@@ -88,6 +88,59 @@ resource "aws_vpc_endpoint" "s3" {
   )
 }
 
+
+###############################
+# VPC Endpoint secrets manager
+###############################
+
+
+resource "aws_vpc_endpoint" "secrets_manager" {
+  vpc_id            = aws_vpc.vpc.id
+  service_name      = "com.amazonaws.${var.region}.secretsmanager" # Use the correct region in the service name
+  vpc_endpoint_type = "Interface"
+
+  # Enable Private DNS to use the standard Secrets Manager endpoint name
+  private_dns_enabled = true
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
+  subnet_ids          = [aws_subnet.private_subnets[0].id]
+
+
+  tags = merge(
+    local.common_tags,
+    tomap({ "Name" = "${local.prefix}-vpc-endpoint-secretsmanager" })
+  )
+}
+
+
+
+
+##############################
+# VPC Endpoint Cloudwatch logs
+##############################
+
+resource "aws_vpc_endpoint" "cloudwatch_logs" {
+  vpc_id             = aws_vpc.vpc.id
+  service_name       = "com.amazonaws.${var.region}.logs"
+  security_group_ids = [aws_security_group.vpc_endpoints.id]
+  subnet_ids         = [aws_subnet.private_subnets[0].id]
+  vpc_endpoint_type  = "Interface"
+
+  private_dns_enabled = true
+
+  tags = merge(
+    local.common_tags,
+    tomap({ "Name" = "${local.prefix}-vpc-endpoint-cloudwatch" })
+  )
+}
+
+# setup cloudwatch log group
+
+resource "aws_cloudwatch_log_group" "gladioforce_backend" {
+  name              = "/ecs/${local.prefix}-gladioforce-backend"
+  retention_in_days = 30
+}
+
+
 #Fargate capacity provider
 
 resource "aws_ecs_cluster_capacity_providers" "ecs_web_tier_fargate" {
@@ -125,6 +178,14 @@ resource "aws_ecs_task_definition" "gladioforce_backend" {
           "value": "${aws_db_instance.db_app.address}"
         },
         {
+          "name": "ALB_DNS",
+          "value": "10.0.1.100"
+        },
+        {
+          "name": "DOMAIN_URL",
+          "value": "https://www.gladioforce.org"
+        },
+        {
           "name": "DB_NAME",
           "value": "gladio"
         }],
@@ -136,12 +197,25 @@ resource "aws_ecs_task_definition" "gladioforce_backend" {
         {
           "name": "DB_PASSWORD",
           "valueFrom": "${aws_secretsmanager_secret.database_password_secret.arn}:DB_PASSWORD::"
+        },
+        {
+          "name" : "SECRET_KEY",
+          "valueFrom": "${aws_secretsmanager_secret.app_secret_key.arn}:SECRET_KEY::"
         }
+
     ],
     "memory": ${var.container_memory},
-    "image": "${var.ecr_image}",
+    "image": "${var.ecr_image}:latest",
     "essential": true,
-    "name": "gladioforce-backend"
+    "name": "gladioforce-backend",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/ecs/${local.prefix}-gladioforce-backend",
+        "awslogs-region": "${var.region}",
+        "awslogs-stream-prefix": "ecs"
+      }
+    }
   }
 ]
 TASK_DEFINITION
@@ -156,7 +230,7 @@ TASK_DEFINITION
 
   tags = merge(
     local.common_tags,
-    tomap({ "Name" = "${local.prefix}-db-instance" })
+    tomap({ "Name" = "${local.prefix}-backend-container" })
   )
 }
 
@@ -170,11 +244,11 @@ resource "aws_ecs_service" "gladioforce_backend" {
   launch_type      = "FARGATE"
   platform_version = "1.4.0"
 
-
-  service_registries {
-    registry_arn = aws_service_discovery_service.gladioforce_backend.arn
-  }
-
+  #### Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ####
+  # service_registries {
+  #   registry_arn = aws_service_discovery_service.gladioforce_backend.arn
+  # }
+  #### Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ####
   lifecycle {
     ignore_changes = [
     desired_count]
@@ -189,6 +263,15 @@ resource "aws_ecs_service" "gladioforce_backend" {
     assign_public_ip = false
   }
 
+  #### ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ####
+
+  # load_balancer {
+  #   target_group_arn = aws_lb_target_group.ecs.arn
+  #   container_name   = "gladioforce-backend"
+  #   container_port   = 8000
+
+  # }
+  #### ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ####
 
   tags = merge(
     local.common_tags,
@@ -251,22 +334,193 @@ resource "aws_appautoscaling_policy" "asg_cpu" {
 }
 
 
-resource "aws_service_discovery_private_dns_namespace" "ecs_namespace" {
-  name        = "my-ecs-namespace"
-  vpc         = aws_vpc.vpc.id
-  description = "Private DNS namespace for ECS services"
-}
 
-resource "aws_service_discovery_service" "gladioforce_backend" {
-  name         = "gladioforce-backend"
-  namespace_id = aws_service_discovery_private_dns_namespace.ecs_namespace.id
-  dns_config {
-    namespace_id   = aws_service_discovery_private_dns_namespace.ecs_namespace.id
-    routing_policy = "MULTIVALUE"
-    dns_records {
-      ttl  = 60
-      type = "A"
-    }
+# How to get the containers private ip address to add it to the nginx configuration.
+
+
+resource "null_resource" "fetch_private_ip" {
+  provisioner "local-exec" {
+    command = <<EOT
+      #!/bin/bash
+      MAX_RETRIES=24
+      RETRIES=0
+      TASK_ARN=""
+
+      echo "Waiting for a task to start in the ECS cluster..."
+
+      while [ -z "$TASK_ARN" ] || [ "$TASK_ARN" = "None" ]; do
+        TASK_ARN=$(aws ecs list-tasks --cluster gladiolen-ecs-cluster --query 'taskArns[0]' --output text 2>/dev/null)
+
+        if [ -n "$TASK_ARN" ] && [ "$TASK_ARN" != "None" ]; then
+          echo "Found TASK_ARN: $TASK_ARN"
+          break
+        fi
+
+        RETRIES=$((RETRIES + 1))
+        if [ $RETRIES -ge $MAX_RETRIES ]; then
+          echo "No tasks started in the ECS cluster within the timeout period. Exiting."
+          exit 1
+        fi
+
+        echo "No tasks found yet. Retrying in 60 seconds... ($RETRIES/$MAX_RETRIES)"
+        sleep 60
+      done
+
+
+      echo "Checking the status of the task..."
+
+      MAX_STATUS_RETRIES=24
+      STATUS_RETRIES=0
+
+      while true; do
+        TASK_STATUS=$(aws ecs describe-tasks --cluster gladiolen-ecs-cluster --tasks "$TASK_ARN" --query 'tasks[0].lastStatus' --output text 2>/dev/null)
+
+        if [ "$TASK_STATUS" = "RUNNING" ]; then
+          echo "Task has reached RUNNING state."
+          break
+        fi
+
+        STATUS_RETRIES=$((STATUS_RETRIES + 1))
+        if [ $STATUS_RETRIES -ge $MAX_STATUS_RETRIES ]; then
+          echo "Task did not reach RUNNING state within the timeout period. Exiting."
+          exit 1
+        fi
+
+        echo "Task is not running yet. Retrying in 20 seconds... ($STATUS_RETRIES/$MAX_STATUS_RETRIES)"
+        sleep 20
+      done
+
+      ENI_ID=$(aws ecs describe-tasks --cluster gladiolen-ecs-cluster --tasks "$TASK_ARN" --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' --output text 2>/dev/null)
+
+      if [ -z "$ENI_ID" ]; then
+        echo "Failed to retrieve ENI_ID. Exiting."
+        exit 1
+      fi
+
+      PRIVATE_IP=$(aws ec2 describe-network-interfaces --network-interface-ids "$ENI_ID" --query 'NetworkInterfaces[0].PrivateIpAddress' --output text 2>/dev/null)
+
+      if [ -z "$PRIVATE_IP" ]; then
+        echo "Failed to retrieve PRIVATE_IP. Exiting."
+        exit 1
+      fi
+
+      # Trim trailing newlines from PRIVATE_IP
+      PRIVATE_IP=$(echo "$PRIVATE_IP" | sed ':a;N;$!ba;s/\n*$//')
+
+      echo "Private IP: $PRIVATE_IP"
+      echo -n "$PRIVATE_IP" > private_ip.txt
+    EOT
   }
+
+
+  depends_on = [aws_db_instance.db_app]
+
 }
 
+# Read the Private IP from the generated file
+data "local_file" "private_ip" {
+  filename = "private_ip.txt"
+
+  depends_on = [null_resource.fetch_private_ip]
+
+
+}
+
+# Output the Private IP for use in other resources
+output "container_private_ip" {
+  value = data.local_file.private_ip.content
+}
+
+
+
+#### ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ####
+
+#We use a application load balancer to link our NGINX to the backend containers
+
+
+
+# resource "aws_lb" "alb" {
+#   name               = "${local.prefix}-if-alb"
+#   internal           = true
+#   load_balancer_type = "network"
+#   security_groups    = [aws_security_group.alb_sg.id]
+
+#   subnets = [aws_subnet.private_subnets[0].id]
+
+#   tags = merge(
+#     local.common_tags,
+#     tomap({ "Name" = "${local.prefix}-if-alb" })
+#   )
+
+# }
+
+
+
+
+
+# resource "aws_lb_target_group" "ecs" {
+#   name        = "${local.prefix}-if-alb-tg-ecs"
+#   port        = 8000
+#   protocol    = "TCP"
+#   vpc_id      = aws_vpc.vpc.id
+#   target_type = "ip"
+
+#   health_check {
+#     enabled             = true
+#     interval            = 30
+#     path                = "/"
+#     timeout             = 5
+#     matcher             = "200"
+#     healthy_threshold   = 2
+#     unhealthy_threshold = 2
+#   }
+
+
+#   tags = merge(
+#     local.common_tags,
+#     tomap({ "Name" = "${local.prefix}-if-alb-tg-ecs" })
+#   )
+
+# }
+
+
+# resource "aws_lb_listener" "https" {
+#   load_balancer_arn = aws_lb.alb.arn
+#   port              = "8000"
+#   protocol          = "TCP"
+
+
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.ecs.arn
+#   }
+
+#   tags = merge(
+#     local.common_tags,
+#     tomap({ "Name" = "${local.prefix}-if-alb-ls-ecs" })
+#   )
+# }
+
+
+
+
+# resource "aws_service_discovery_private_dns_namespace" "ecs_namespace" {
+#   name        = "my-ecs-namespace"
+#   vpc         = aws_vpc.vpc.id
+#   description = "Private DNS namespace for ECS services"
+# }
+
+# resource "aws_service_discovery_service" "gladioforce_backend" {
+#   name         = "gladioforce-backend"
+#   namespace_id = aws_service_discovery_private_dns_namespace.ecs_namespace.id
+#   dns_config {
+#     namespace_id   = aws_service_discovery_private_dns_namespace.ecs_namespace.id
+#     routing_policy = "MULTIVALUE"
+#     dns_records {
+#       ttl  = 60
+#       type = "A"
+#     }
+#   }
+# }
+
+#### ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ####

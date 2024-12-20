@@ -4,7 +4,8 @@
 
 # Create the S3 bucket
 resource "aws_s3_bucket" "admin_dashboard" {
-  bucket = "admin-dashboard"
+  bucket        = "admin-dashboard-gladioforce"
+  force_destroy = true
 
   tags = merge(
     local.common_tags,
@@ -22,11 +23,23 @@ resource "aws_s3_bucket_policy" "admin_dashboard" {
       {
         Effect    = "Allow",
         Principal = "*",
-        Action    = "s3:GetObject",
+        Action    = ["s3:GetObject", "s3:GetObjectVersion"],
         Resource  = "${aws_s3_bucket.admin_dashboard.arn}/*",
+        Sid       = "PublicRead",
       }
     ]
   })
+
+  depends_on = [aws_s3_bucket_public_access_block.admin_dashboard]
+}
+
+resource "aws_s3_bucket_public_access_block" "admin_dashboard" {
+  bucket = aws_s3_bucket.admin_dashboard.id
+
+  block_public_acls       = false # Allow public ACLs
+  block_public_policy     = false # Allow public bucket policies
+  ignore_public_acls      = false # Do not ignore public ACLs
+  restrict_public_buckets = false # Allow public access at the bucket level
 }
 
 # Enable website hosting configuration using aws_s3_bucket_website_configuration
@@ -40,6 +53,8 @@ resource "aws_s3_bucket_website_configuration" "admin_dashboard" {
   error_document {
     key = "index.html"
   }
+
+
 }
 
 # Output the bucket website endpoint
@@ -51,7 +66,7 @@ output "admin_dashboard_bucket_website_url" {
 resource "null_resource" "admin_dashboard_upload" {
   provisioner "local-exec" {
     command = <<EOT
-    aws s3 sync ./dist/my-angular-app s3://${aws_s3_bucket.admin_dashboard.bucket} --delete
+    aws s3 sync ../frontend/admin_dashboard/dist/admin_dashboard/browser s3://${aws_s3_bucket.admin_dashboard.bucket} --delete
     EOT
   }
 
@@ -70,7 +85,8 @@ resource "null_resource" "admin_dashboard_upload" {
 
 # Create the S3 bucket
 resource "aws_s3_bucket" "datacollectie" {
-  bucket = "datacollectie"
+  bucket        = "datacollectie-gladioforce"
+  force_destroy = true
 
   tags = merge(
     local.common_tags,
@@ -88,11 +104,24 @@ resource "aws_s3_bucket_policy" "datacollectie" {
       {
         Effect    = "Allow",
         Principal = "*",
-        Action    = "s3:GetObject",
+        Action    = ["s3:GetObject", "s3:GetObjectVersion"],
         Resource  = "${aws_s3_bucket.datacollectie.arn}/*",
+        Sid       = "PublicRead",
       }
     ]
   })
+
+  depends_on = [aws_s3_bucket_public_access_block.datacollectie]
+}
+
+
+resource "aws_s3_bucket_public_access_block" "datacollectie" {
+  bucket = aws_s3_bucket.datacollectie.id
+
+  block_public_acls       = false # Allow public ACLs
+  block_public_policy     = false # Allow public bucket policies
+  ignore_public_acls      = false # Do not ignore public ACLs
+  restrict_public_buckets = false # Allow public access at the bucket level
 }
 
 # Enable website hosting configuration using aws_s3_bucket_website_configuration
@@ -106,6 +135,7 @@ resource "aws_s3_bucket_website_configuration" "datacollectie" {
   error_document {
     key = "index.html"
   }
+
 }
 
 # Output the bucket website endpoint
@@ -113,16 +143,16 @@ output "datacollectie_bucket_website_url" {
   value = aws_s3_bucket_website_configuration.datacollectie.website_endpoint
 }
 
-# Sync Angular build files to S3
-resource "null_resource" "datacollectie_upload" {
-  provisioner "local-exec" {
-    command = <<EOT
-    aws s3 sync ./dist/my-angular-app s3://${aws_s3_bucket.datacollectie.bucket} --delete
-    EOT
-  }
+# # Sync Angular build files to S3
+# resource "null_resource" "datacollectie_upload" {
+#   provisioner "local-exec" {
+#     command = <<EOT
+#     aws s3 sync ../frontend/datacollectie/dist/browser s3://${aws_s3_bucket.datacollectie.bucket} --delete
+#     EOT
+#   }
 
-  depends_on = [aws_s3_bucket_policy.datacollectie]
-}
+#   depends_on = [aws_s3_bucket_policy.datacollectie]
+# }
 
 # # Output the bucket URL
 # output "datacollectie_website_url" {
@@ -130,7 +160,11 @@ resource "null_resource" "datacollectie_upload" {
 # }
 
 
+data "aws_key_pair" "mykeypair" {
+  key_name           = "nginx"
+  include_public_key = true
 
+}
 
 
 
@@ -141,28 +175,36 @@ resource "aws_instance" "nginx" {
   instance_type   = "t2.micro"
   subnet_id       = aws_subnet.public_subnets[0].id
   security_groups = [aws_security_group.internet_nginx_sg.id]
+  key_name        = data.aws_key_pair.mykeypair.key_name
+  private_ip      = "10.0.1.100" # Static private IP address
 
   user_data = <<-EOF
 #!/bin/bash
 # Update and install necessary packages
-apt-get update
-apt-get install -y nginx python3-certbot-nginx
+sudo apt-get update
+sudo apt-get install -y nginx python3-certbot-dns-cloudflare
 
 # Enable nginx service
-systemctl start nginx
-systemctl enable nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
 
 # Obtain SSL certificates using Certbot
 # Replace with your domain name
-DOMAIN_NAME="${var.cloudflare_domain}"
+DOMAIN_NAME="www.${var.cloudflare_domain}"
 EMAIL="${var.cloudflare_email}"
-echo 'dns_cloudflare_api_token = ${var.cloudflare_api_token}' > cloudflare-credentials
+sudo touch ~/cloudflare-credentials
+echo 'dns_cloudflare_api_token = ${var.cloudflare_api_token}' | sudo tee ~/cloudflare-credentials > /dev/null
 
 # Certbot command to obtain and install certificates
-certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials cloudflare-credentials --agree-tos -d $DOMAIN_NAME --server https://acme-v02.api.letsencrypt.org/directory --email $EMAIL
+# Staging
+sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $DOMAIN_NAME --server https://acme-staging-v02.api.letsencrypt.org/directory --email $EMAIL
+# production
+#sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $DOMAIN_NAME --server https://acme-v02.api.letsencrypt.org/directory --email $EMAIL 
+sleep 180
 
-# Optional: Set up NGINX server block
-cat <<EOT > /etc/nginx/sites-available/default
+
+#Set up NGINX server block
+cat <<EOT > /etc/nginx/sites-available/gladiolen
 server {
     listen 80;
     server_name $DOMAIN_NAME;
@@ -172,7 +214,7 @@ server {
 }
 
 server {
-    listen 443 ssl;
+    listen 443 ssl http2;
     server_name $DOMAIN_NAME;
 
     # SSL configuration
@@ -181,32 +223,49 @@ server {
     ssl_trusted_certificate /etc/letsencrypt/live/$DOMAIN_NAME/chain.pem;
 
     # Your static file and API configuration
-    location /static/ {
-        proxy_pass https://s3.amazonaws.com/your-angular-bucket-name/;
-        proxy_set_header Host \$host;
+    location / {
+        proxy_pass http://${aws_s3_bucket_website_configuration.admin_dashboard.website_endpoint}/;
+        proxy_set_header Host ${aws_s3_bucket_website_configuration.admin_dashboard.website_endpoint};
         proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+
+        # Ensure Angular routes work without 404 errors
+        try_files $uri $uri/ /index.html;
     }
 
     location /api/ {
-        proxy_pass http://django-backend.local:8000/;
+        # Use the container's private IP address dynamically
+        proxy_pass http://${data.local_file.private_ip.content}:8000/;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+
     }
+
+
 }
 EOT
 
 # Reload NGINX to apply changes
-systemctl reload nginx
+sudo ln -s /etc/nginx/sites-available/gladiolen /etc/nginx/sites-enabled/
+sudo nginx -t | sudo tee ~/nginx-config-test > /dev/null
+sudo systemctl reload nginx
 
 # Set up a cron job to renew certificates automatically
-echo "0 0,12 * * * certbot renew --non-interactive --no-self-upgrade --dns-cloudflare --dns-cloudflare-credentials cloudflare-credentials --agree-tos --server https://acme-v02.api.letsencrypt.org/directory  --email $EMAIL && systemctl reload nginx" > /etc/cron.d/certbot-renew
+# staging
+echo "0 0 1 * * certbot renew --non-interactive --no-self-upgrade --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos --server https://acme-staging-v02.api.letsencrypt.org/directory  --email $EMAIL && systemctl reload nginx" | sudo tee /etc/cron.d/certbot-renew > /dev/null
+# production
+#echo "0 0 1 * * certbot renew --non-interactive --no-self-upgrade --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos --server https://acme-v02.api.letsencrypt.org/directory  --email $EMAIL && systemctl reload nginx" | sudo tee /etc/cron.d/certbot-renew > /dev/null
+
+
 EOF
 
   tags = merge(
     local.common_tags,
     tomap({ "Name" = "${local.prefix}-nginx" })
   )
+
+  depends_on = [data.local_file.private_ip]
 }
 
 
@@ -218,16 +277,16 @@ data "cloudflare_zone" "gladioforce" {
   name = var.cloudflare_domain
 }
 
-resource "cloudflare_record" "cname" {
+resource "cloudflare_record" "a" {
   zone_id = data.cloudflare_zone.gladioforce.id
   name    = "www"
-  content = aws_instance.nginx.public_dns
-  type    = "CNAME"
+  content = aws_eip.nginx.public_ip
+  type    = "A"
   proxied = false
 
 }
 
 
 output "url_application" {
-  value = "${cloudflare_record.cname.name}.${var.cloudflare_domain}"
+  value = "${cloudflare_record.a.name}.${var.cloudflare_domain}"
 }

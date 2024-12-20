@@ -1,7 +1,7 @@
 // src/app/auth.component.ts
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FirebaseApp, initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, Persistence, browserLocalPersistence, AuthError, Auth, setPersistence } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, Persistence, browserLocalPersistence, AuthError, Auth, setPersistence, sendPasswordResetEmail, sendEmailVerification } from 'firebase/auth';
 import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -72,6 +72,24 @@ export class AuthComponent implements OnInit {
         this.changeUser(userCredential.user);
         this.userCreated = 'Gebruiker aangemaakt';
         this.errorUserCreation = '';
+        
+
+        sendPasswordResetEmail(this.auth, this.emailUserCreate)
+        .then(() => {
+          alert('Wachtwoord-resetlink is verzonden naar je e-mail. Stel een nieuw wachtwoord in!');
+        })
+        .catch((error) => {
+          alert('Fout bij het verzenden van de resetlink: ' + error.message);
+        });
+        // // Send email verification
+        // sendEmailVerification(userCredential.user)
+        // .then(() => {
+        //   this.errorUserCreation = '';
+        //   alert('Verificatielink is verzonden naar je e-mail!');
+        // })
+        // .catch((error) => {
+        //   this.errorUserCreation = 'Verificatielink kon niet worden verzonden.';
+        // });
       })
       .catch((error) => {
         this.errorUserCreation = 'Error bij registreren!';
@@ -90,7 +108,7 @@ export class AuthComponent implements OnInit {
   // Sign in with email and password
   signIn() {
     this.errorAuthentication = '';
-    
+
     setPersistence(this.auth, browserLocalPersistence).then(() => {
       let email = this.email !== null ? this.email.toString() : '';
       signInWithEmailAndPassword(this.auth, email, this.password)
@@ -124,10 +142,16 @@ export class AuthComponent implements OnInit {
 
   }
 
+  async getIdToken(): Promise<string | null> {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    return user ? await user.getIdToken() : null;
+  }
+
   // Sign out the user
   signOut() {
     this.errorLoggedOut = '';
-  
+
     signOut(this.auth)
       .then(() => {
         this.changeUser(null);
