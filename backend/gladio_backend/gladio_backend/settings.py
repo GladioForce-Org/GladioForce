@@ -52,11 +52,17 @@ INSTALLED_APPS = [
     'vuilbakken',
 ]
 
+
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
     "http://localhost:4201",
-    os.getenv('DOMAIN_URL')
+
 ]
+
+domain_url = os.getenv('DOMAIN_URL')
+if domain_url:
+    CORS_ALLOWED_ORIGINS.append(domain_url)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
