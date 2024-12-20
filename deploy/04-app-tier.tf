@@ -182,6 +182,10 @@ resource "aws_ecs_task_definition" "gladioforce_backend" {
           "value": "10.0.1.100"
         },
         {
+          "name": "DOMAIN_URL",
+          "value": "https://www.gladioforce.org"
+        },
+        {
           "name": "DB_NAME",
           "value": "gladio"
         }],
