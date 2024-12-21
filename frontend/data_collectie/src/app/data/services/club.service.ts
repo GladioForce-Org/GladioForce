@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Club } from '../types/club';
 import { Volunteer } from '../types/volunteer';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-import { environment as prodEnvironment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
+// import { environment as prodEnvironment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +31,13 @@ export class ClubService {
   }
 
   getVolunteersByClubLink(link: string): Observable<Volunteer[]> {
-    return this.httpClient.get<Volunteer[]>(`${this.baseUrl}`+'volunteers/'+`${link}`);
+    return this.httpClient.get<Volunteer[]>(`${this.baseUrl}` + 'volunteers/' + `${link}`);
+  }
+
+  postVolunteer(link: string, volunteer: Volunteer): Observable<Volunteer> {
+    let headers = new HttpHeaders();
+    headers = headers.set('Content-Type', 'application/json; charset=utf-8');
+
+    return this.httpClient.post<Volunteer>(`${this.baseUrl}${link}`, volunteer, { headers: headers });
   }
 }
