@@ -99,18 +99,6 @@ def delete_size(request, size_id: int):
 def available_tshirts_list_view(request):
     return list_all_available_tshirts()
 
-@router.get('/list_aiavailable_tshirts', response=List[AvailableTshirtSchema])
-def list_available_tshirts(request):
-    available_tshirts = AvailableTshirt.objects.all()
-    return [
-        {
-            "id": available_tshirt.id,
-            "tshirt_id": available_tshirt.tshirt.id,
-            "edition_id": available_tshirt.edition.id,
-            "price": available_tshirt.price
-        }
-        for available_tshirt in available_tshirts
-    ]
 
 # Get Available T-shirt
 @router.get("/available_tshirts/{available_tshirt_id}", response=AvailableTshirtResponseSchema)

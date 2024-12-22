@@ -27,17 +27,24 @@ def create_test_data(apps, schema_editor):
         city="Sample City"
     )
     edition = Edition.objects.create(year=2024)
+    edition2 = Edition.objects.create(year=2023)
     size = Size.objects.create(size="M")
     size2 = Size.objects.create(size="L")
     size3 = Size.objects.create(size="XL")
     tshirt = Tshirt.objects.create(model="Unisex")
-    tshirt2 = Tshirt.objects.create(model='mens')
+    tshirt2 = Tshirt.objects.create(model='Men')
+    tshirt3 = Tshirt.objects.create(model='Women')
+    tshirt3.size.add(size)
+    tshirt3.size.add(size2)
     tshirt2.size.add(size)
     tshirt2.size.add(size2)
     tshirt.size.add(size)
     tshirt.size.add(size2)
+    tshirt.size.add(size3)
     available_tshirt = AvailableTshirt.objects.create(tshirt=tshirt, edition=edition, price=20.00)
     available_tshirt2 = AvailableTshirt.objects.create(tshirt=tshirt2, edition=edition, price=25.00)
+    available_tshirt4 = AvailableTshirt.objects.create(tshirt=tshirt3, edition=edition)
+    available_tshirt3 = AvailableTshirt.objects.create(tshirt=tshirt, edition=edition2, price=20.00)
     Volunteer.objects.create(
         first_name="Jane",
         last_name="Doe",
@@ -52,7 +59,7 @@ def create_test_data(apps, schema_editor):
         last_name="Smith",
         national_registry_number="987654321",
         works_day2=True,
-        tshirt=available_tshirt,
+        tshirt=available_tshirt2,
         club=club,
         size=size2
     )
@@ -138,7 +145,7 @@ class Migration(migrations.Migration):
             name='AvailableTshirt',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('price', models.DecimalField(decimal_places=2, max_digits=6)),
+                ('price', models.DecimalField(decimal_places=2, max_digits=6, null=True)),
                 ('edition', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='data_collectie.edition')),
                 ('tshirt', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='data_collectie.tshirt')),
             ],
