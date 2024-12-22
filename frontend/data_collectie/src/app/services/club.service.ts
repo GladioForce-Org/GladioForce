@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 })
 export class ClubService {
 
-  private baseUrl = environment.apiUrl + '/clubs/';
+  private baseUrl = environment.apiUrl + '/collection/';
 
   constructor(private httpClient: HttpClient) { }
 
