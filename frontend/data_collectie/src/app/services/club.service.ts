@@ -4,7 +4,6 @@ import { Club } from '../interfaces/club';
 import { Volunteer } from '../interfaces/volunteer';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { environment as prodEnvironment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'

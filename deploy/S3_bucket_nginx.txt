@@ -1,0 +1,66 @@
+#!/bin/bash
+# Update and install necessary packages
+sudo apt-get update
+sudo apt-get install -y nginx python3-certbot-dns-cloudflare
+
+# Enable nginx service
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+# Obtain SSL certificates using Certbot
+# Replace with your domain name
+DOMAIN_NAME="www.${var.cloudflare_domain}"
+EMAIL="${var.cloudflare_email}"
+sudo touch ~/cloudflare-credentials
+echo 'dns_cloudflare_api_token = ${var.cloudflare_api_token}' | sudo tee ~/cloudflare-credentials > /dev/null
+
+# Certbot command to obtain and install certificates
+# Staging
+sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $DOMAIN_NAME --server https://acme-staging-v02.api.letsencrypt.org/directory --email $EMAIL
+# production
+#sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $DOMAIN_NAME --server https://acme-v02.api.letsencrypt.org/directory --email $EMAIL 
+sleep 180
+
+
+#Set up NGINX server block
+cat <<EOT > /etc/nginx/sites-available/gladiolen
+server {
+    listen 80;
+    server_name $DOMAIN_NAME;
+
+    # Redirect HTTP to HTTPS
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name $DOMAIN_NAME;
+
+    # SSL configuration
+    ssl_certificate /etc/letsencrypt/live/$DOMAIN_NAME/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN_NAME/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/$DOMAIN_NAME/chain.pem;
+
+    # Your static file and API configuration
+    location / {
+        proxy_pass http://${aws_s3_bucket_website_configuration.admin_dashboard.website_endpoint}/;
+        proxy_set_header Host ${aws_s3_bucket_website_configuration.admin_dashboard.website_endpoint};
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+
+        # Ensure Angular routes work without 404 errors
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+        # Use the container's private IP address dynamically
+        proxy_pass http://${data.local_file.private_ip.content}:8000/;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+
+    }
+
+
+}
+EOT

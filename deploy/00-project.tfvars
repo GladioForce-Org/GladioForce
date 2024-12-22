@@ -71,6 +71,7 @@ ecr_image         = "482617122788.dkr.ecr.us-east-1.amazonaws.com/gladioforce-ba
 ##################################################
 
 cloudflare_domain = "gladioforce.org"
+private_key_path  = "/home/pieter/nginx.pem"
 
 
 ##################EC2 configuration###############

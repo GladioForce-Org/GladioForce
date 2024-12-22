@@ -3,6 +3,7 @@ import { LinkComponent } from "./link/link.component";
 import { DropdownButtonComponent } from "./dropdown-button/dropdown-button.component";
 import { IconButtonComponent } from "./icon-button/icon-button.component";
 import { AuthService } from '../services/auth.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,6 +14,7 @@ import { AuthService } from '../services/auth.service';
 })
 export class SidebarComponent implements OnInit {
   email: string = 'Niet Aangemeld'; //provided by Authservice
+  apiUrl: string = environment.apiUrl;
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -24,6 +26,7 @@ export class SidebarComponent implements OnInit {
     this.authService.email$.subscribe((email) => {
       this.email = email ?? 'Niet Aangemeld';
       this.changeDetectorRef.detectChanges();
+      this.apiUrl = environment.apiUrl;
     });
   }
 }

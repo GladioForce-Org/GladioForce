@@ -190,6 +190,12 @@ variable "cloudflare_domain" {
 variable "cloudflare_email" {
   description = "The cloudflare domain the DNS settings need to be changed"
 }
+
+
+variable "private_key_path" {
+
+  description = "location of private key for ssh connection to EC2, must refer to github secret in later phase"
+}
 # ###################### Bastion - host #############################
 
 
