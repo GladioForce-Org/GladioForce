@@ -7,7 +7,7 @@ services:
     ports:
       - "4200:4200" # Used for debugging if needed
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
     command: ["npm", "run", "start","--","--host", "0.0.0.0", "--poll", "2000"]
     depends_on:
       - backend
@@ -22,7 +22,7 @@ services:
     ports:
       - "4201:4201" # Used for debugging if needed
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
     command: ["npm", "run", "start", "--", "--port", "4201","--host", "0.0.0.0", "--poll", "2000"]
     depends_on:
       - backend

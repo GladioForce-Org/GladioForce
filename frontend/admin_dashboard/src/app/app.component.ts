@@ -4,6 +4,7 @@ import { initFlowbite } from 'flowbite';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { FooterComponent } from './footer/footer.component';
 
+
 declare var firebase: any; //Declares firebase globally
 
 @Component({
@@ -15,6 +16,7 @@ declare var firebase: any; //Declares firebase globally
 })
 export class AppComponent {
   title = 'admin_dashboard';
+
 
   constructor(
     private router: Router

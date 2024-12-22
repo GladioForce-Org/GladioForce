@@ -1,147 +1,141 @@
-## Static file hosting in S3 buckets
+# ## Static file hosting in S3 buckets
 
-## Admin dashboard 
+# ## Admin dashboard 
 
-# Create the S3 bucket
-resource "aws_s3_bucket" "admin_dashboard" {
-  bucket        = "admin-dashboard-gladioforce"
-  force_destroy = true
+# # Create the S3 bucket
+# resource "aws_s3_bucket" "admin_dashboard" {
+#   bucket        = "admin-dashboard-gladioforce"
+#   force_destroy = true
 
-  tags = merge(
-    local.common_tags,
-    tomap({ "Name" = "${local.prefix}-s3-admin-dashboard" })
-  )
-}
+#   tags = merge(
+#     local.common_tags,
+#     tomap({ "Name" = "${local.prefix}-s3-admin-dashboard" })
+#   )
+# }
 
-# Attach bucket policy for public access
-resource "aws_s3_bucket_policy" "admin_dashboard" {
-  bucket = aws_s3_bucket.admin_dashboard.id
+# # Attach bucket policy for public access
+# resource "aws_s3_bucket_policy" "admin_dashboard" {
+#   bucket = aws_s3_bucket.admin_dashboard.id
 
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect    = "Allow",
-        Principal = "*",
-        Action    = ["s3:GetObject", "s3:GetObjectVersion"],
-        Resource  = "${aws_s3_bucket.admin_dashboard.arn}/*",
-        Sid       = "PublicRead",
-      }
-    ]
-  })
+#   policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Effect    = "Allow",
+#         Principal = "*",
+#         Action    = ["s3:GetObject", "s3:GetObjectVersion"],
+#         Resource  = "${aws_s3_bucket.admin_dashboard.arn}/*",
+#         Sid       = "PublicRead",
+#       }
+#     ]
+#   })
 
-  depends_on = [aws_s3_bucket_public_access_block.admin_dashboard]
-}
+#   depends_on = [aws_s3_bucket_public_access_block.admin_dashboard]
+# }
 
-resource "aws_s3_bucket_public_access_block" "admin_dashboard" {
-  bucket = aws_s3_bucket.admin_dashboard.id
+# resource "aws_s3_bucket_public_access_block" "admin_dashboard" {
+#   bucket = aws_s3_bucket.admin_dashboard.id
 
-  block_public_acls       = false # Allow public ACLs
-  block_public_policy     = false # Allow public bucket policies
-  ignore_public_acls      = false # Do not ignore public ACLs
-  restrict_public_buckets = false # Allow public access at the bucket level
-}
+#   block_public_acls       = false # Allow public ACLs
+#   block_public_policy     = false # Allow public bucket policies
+#   ignore_public_acls      = false # Do not ignore public ACLs
+#   restrict_public_buckets = false # Allow public access at the bucket level
+# }
 
-# Enable website hosting configuration using aws_s3_bucket_website_configuration
-resource "aws_s3_bucket_website_configuration" "admin_dashboard" {
-  bucket = aws_s3_bucket.admin_dashboard.id
+# # Enable website hosting configuration using aws_s3_bucket_website_configuration
+# resource "aws_s3_bucket_website_configuration" "admin_dashboard" {
+#   bucket = aws_s3_bucket.admin_dashboard.id
 
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "index.html"
-  }
+#   index_document {
+#     suffix = "index.html"
+#   }
 
 
-}
 
-# Output the bucket website endpoint
-output "admin_dashboard_bucket_website_url" {
-  value = aws_s3_bucket_website_configuration.admin_dashboard.website_endpoint
-}
+# }
 
-# Sync Angular build files to S3
-resource "null_resource" "admin_dashboard_upload" {
-  provisioner "local-exec" {
-    command = <<EOT
-    aws s3 sync ../frontend/admin_dashboard/dist/admin_dashboard/browser s3://${aws_s3_bucket.admin_dashboard.bucket} --delete
-    EOT
-  }
-
-  depends_on = [aws_s3_bucket_policy.admin_dashboard]
-}
-
-# # Output the bucket URL
+# # Output the bucket website endpoint
 # output "admin_dashboard_bucket_website_url" {
-#   value = aws_s3_bucket.admin_dashboard.website_endpoint
+#   value = aws_s3_bucket_website_configuration.admin_dashboard.website_endpoint
+# }
+
+# # Sync Angular build files to S3
+# resource "null_resource" "admin_dashboard_upload" {
+#   provisioner "local-exec" {
+#     command = <<EOT
+#     aws s3 sync ../frontend/admin_dashboard/dist/admin_dashboard/browser s3://${aws_s3_bucket.admin_dashboard.bucket} --delete
+#     EOT
+#   }
+
+#   depends_on = [aws_s3_bucket_policy.admin_dashboard]
+# }
+
+# # # Output the bucket URL
+# # output "admin_dashboard_bucket_website_url" {
+# #   value = aws_s3_bucket.admin_dashboard.website_endpoint
+# # }
+
+
+
+
+# ## Datacollectie
+
+# # Create the S3 bucket
+# resource "aws_s3_bucket" "datacollectie" {
+#   bucket        = "datacollectie-gladioforce"
+#   force_destroy = true
+
+#   tags = merge(
+#     local.common_tags,
+#     tomap({ "Name" = "${local.prefix}-s3-datacollectie" })
+#   )
+# }
+
+# # Attach bucket policy for public access
+# resource "aws_s3_bucket_policy" "datacollectie" {
+#   bucket = aws_s3_bucket.datacollectie.id
+
+#   policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Effect    = "Allow",
+#         Principal = "*",
+#         Action    = ["s3:GetObject", "s3:GetObjectVersion"],
+#         Resource  = "${aws_s3_bucket.datacollectie.arn}/*",
+#         Sid       = "PublicRead",
+#       }
+#     ]
+#   })
+
+#   depends_on = [aws_s3_bucket_public_access_block.datacollectie]
 # }
 
 
+# resource "aws_s3_bucket_public_access_block" "datacollectie" {
+#   bucket = aws_s3_bucket.datacollectie.id
+
+#   block_public_acls       = false # Allow public ACLs
+#   block_public_policy     = false # Allow public bucket policies
+#   ignore_public_acls      = false # Do not ignore public ACLs
+#   restrict_public_buckets = false # Allow public access at the bucket level
+# }
+
+# # Enable website hosting configuration using aws_s3_bucket_website_configuration
+# resource "aws_s3_bucket_website_configuration" "datacollectie" {
+#   bucket = aws_s3_bucket.datacollectie.id
+
+#   index_document {
+#     suffix = "index.html"
+#   }
 
 
-## Datacollectie
+# }
 
-# Create the S3 bucket
-resource "aws_s3_bucket" "datacollectie" {
-  bucket        = "datacollectie-gladioforce"
-  force_destroy = true
-
-  tags = merge(
-    local.common_tags,
-    tomap({ "Name" = "${local.prefix}-s3-datacollectie" })
-  )
-}
-
-# Attach bucket policy for public access
-resource "aws_s3_bucket_policy" "datacollectie" {
-  bucket = aws_s3_bucket.datacollectie.id
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect    = "Allow",
-        Principal = "*",
-        Action    = ["s3:GetObject", "s3:GetObjectVersion"],
-        Resource  = "${aws_s3_bucket.datacollectie.arn}/*",
-        Sid       = "PublicRead",
-      }
-    ]
-  })
-
-  depends_on = [aws_s3_bucket_public_access_block.datacollectie]
-}
-
-
-resource "aws_s3_bucket_public_access_block" "datacollectie" {
-  bucket = aws_s3_bucket.datacollectie.id
-
-  block_public_acls       = false # Allow public ACLs
-  block_public_policy     = false # Allow public bucket policies
-  ignore_public_acls      = false # Do not ignore public ACLs
-  restrict_public_buckets = false # Allow public access at the bucket level
-}
-
-# Enable website hosting configuration using aws_s3_bucket_website_configuration
-resource "aws_s3_bucket_website_configuration" "datacollectie" {
-  bucket = aws_s3_bucket.datacollectie.id
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "index.html"
-  }
-
-}
-
-# Output the bucket website endpoint
-output "datacollectie_bucket_website_url" {
-  value = aws_s3_bucket_website_configuration.datacollectie.website_endpoint
-}
+# # Output the bucket website endpoint
+# output "datacollectie_bucket_website_url" {
+#   value = aws_s3_bucket_website_configuration.datacollectie.website_endpoint
+# }
 
 # # Sync Angular build files to S3
 # resource "null_resource" "datacollectie_upload" {
@@ -188,6 +182,7 @@ sudo apt-get install -y nginx python3-certbot-dns-cloudflare
 sudo systemctl start nginx
 sudo systemctl enable nginx
 
+
 # Obtain SSL certificates using Certbot
 # Replace with your domain name
 DOMAIN_NAME="www.${var.cloudflare_domain}"
@@ -224,14 +219,22 @@ server {
 
     # Your static file and API configuration
     location / {
-        proxy_pass http://${aws_s3_bucket_website_configuration.admin_dashboard.website_endpoint}/;
-        proxy_set_header Host ${aws_s3_bucket_website_configuration.admin_dashboard.website_endpoint};
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-
-        # Ensure Angular routes work without 404 errors
-        try_files $uri $uri/ /index.html;
+        root /var/www/admin;
+        index index.html;
+        try_files \$uri /index.html;
     }
+
+    # location /app2/ {
+    #     root /var/www/app2;
+    #     index index.html;
+    #     try_files \$uri /index.html;
+    # }
+
+    # location /app3/ {
+    #     root /var/www/app3;
+    #     index index.html;
+    #     try_files \$uri /index.html;
+    # }
 
     location /api/ {
         # Use the container's private IP address dynamically
@@ -260,6 +263,7 @@ echo "0 0 1 * * certbot renew --non-interactive --no-self-upgrade --dns-cloudfla
 
 EOF
 
+
   tags = merge(
     local.common_tags,
     tomap({ "Name" = "${local.prefix}-nginx" })
@@ -269,6 +273,56 @@ EOF
 }
 
 
+
+resource "null_resource" "upload_app_files" {
+  depends_on = [aws_instance.nginx]
+
+  provisioner "file" {
+    source      = "../frontend/admin_dashboard/dist/admin_dashboard/browser/admin.zip"
+    destination = "/home/ubuntu/admin.zip"
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = file(var.private_key_path)
+      host        = aws_eip.nginx.public_ip
+    }
+  }
+
+  # provisioner "file" {
+  #   source      = "../frontend/another_app/dist/another_app/browser"
+  #   destination = "/home/ec2-user/another.zip"
+
+  #   connection {
+  #     type        = "ssh"
+  #     user        = "ec2-user"
+  #     private_key = file(var.private_key_path)
+  #     host        = aws_instance.nginx.public_ip
+  #   }
+  # }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo apt update -y",
+      "sudo mkdir -p /var/www/admin",
+      "sudo mkdir -p /var/www/data",
+      "sudo apt install unzip -y",
+      "sudo unzip /home/ubuntu/admin.zip -d /var/www/admin",
+      # "sudo unzip /home/ec2-user/app2.zip -d /var/www/app2",
+      # "sudo unzip /home/ec2-user/app3.zip -d /var/www/app3",
+      "sudo chown -R www-data:www-data /var/www",
+      "sudo chmod -R 755 /var/www",
+      "service restart nginx || true" #suppress error, reload happens but terraform fails
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = file(var.private_key_path)
+      host        = aws_eip.nginx.public_ip
+    }
+  }
+}
 
 
 # Create a CNAME record on cloudflare pointing to the DNS name of the internet facing loadbalancer
@@ -290,3 +344,10 @@ resource "cloudflare_record" "a" {
 output "url_application" {
   value = "${cloudflare_record.a.name}.${var.cloudflare_domain}"
 }
+
+
+
+
+
+
+
