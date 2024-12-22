@@ -7,6 +7,8 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { CoreMember } from '../interfaces/core-member';
+import { HttpErrorResponse } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-coremembers',
@@ -20,7 +22,7 @@ export class CoremembersComponent implements OnInit {
   private auth: Auth = getAuth();
 
   // Store email and password input fields in the component
-  emailUserCreate: string = '';
+  coreMemberToCreate: CoreMember = { email: '' };
   email: string | null = ''; //provided by Authservice
   password: string = '';
   user: any = null; //holds authenticated user
@@ -29,9 +31,8 @@ export class CoremembersComponent implements OnInit {
   userCreated = '';
   errorUserCreation = '';
 
-  errorAuthentication = '';
+  coreMembers: CoreMember[] = [];
 
-  errorLoggedOut = '';
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -42,12 +43,10 @@ export class CoremembersComponent implements OnInit {
     this.firebaseApp = initializeApp(environment.firebaseConfig);
   }
 
-
   async ngOnInit() {
     this.authService.email$.subscribe((email) => {
       this.email = email;
       this.changeDetectorRef.detectChanges();
-
     });
 
     this.auth.onAuthStateChanged((user) => {
@@ -57,106 +56,71 @@ export class CoremembersComponent implements OnInit {
         this.changeUser(user);
       } else {
         // No user is signed in, you can handle this as needed (e.g., showing login form)
-        this.changeUser(null);
+        this.changeUser(null)
+
       }
     });
+
+    this.getCoreMembers();
   }
 
-  // Create a new user (sign up)
+  // Create a new core member
   signUp() {
     this.userCreated = ''
     this.errorUserCreation = '';
-    
-    let coreMember: CoreMember = {
-      email: this.emailUserCreate
-    }
 
-    this.apiService.createCoreMember(coreMember).subscribe({
+    this.correctPhoneNumber();
+
+    this.apiService.createCoreMember(this.coreMemberToCreate).subscribe({
       next: (result) => {
         //console.log(result);
         this.userCreated = 'Gebruiker aangemaakt';
 
-        sendPasswordResetEmail(this.auth, this.emailUserCreate)
+        sendPasswordResetEmail(this.auth, this.coreMemberToCreate.email)
         .then(() => {
           alert('Wachtwoord-resetlink is verzonden naar het e-mailadres van de gebruiker.');
         })
         .catch((error) => {
           alert('Fout bij het verzenden van de resetlink: ' + error.message);
         });
+
+        this.getCoreMembers();
+      },
+      error: (error: HttpErrorResponse) => {
+        if (error.error) { // Check if error.error exists
+          try {
+            console.log("parsing");
+            const parsedError = JSON.parse(JSON.stringify(error.error)); // Try to parse it as JSON
+            this.errorUserCreation = parsedError.error || parsedError.message || "An error occurred."; // Access error or message property
+          } catch (parseError) {
+            console.error("Failed to parse error response:", parseError);
+            this.errorUserCreation = "An error occurred."; // Fallback message
+          }
+        } else {
+          this.errorUserCreation = 'An unknown error occurred.'; // Generic fallback
+        }
+        console.error('User creation error:', error); // Keep logging the full error for debugging
+      }
+    });
+  }
+
+  private correctPhoneNumber() {
+    // Phone number correction for Belgium to comply with Firebase's format
+    if (this.coreMemberToCreate.phone_number !== undefined && this.coreMemberToCreate.phone_number[0] === '0') {
+      this.coreMemberToCreate.phone_number = '+32' + this.coreMemberToCreate.phone_number?.slice(0); //remove the first 0
+    }
+  }
+
+  // Get core members
+  private getCoreMembers() {
+    this.apiService.getAllCoreMembers().subscribe({
+      next: (result) => {
+        this.coreMembers = result;
       },
       error: (error) => {
-        this.errorUserCreation = error;
+        console.log(error);
       }
-    })
-  }
-
-
-  private generateTemporaryPassword() {
-    let possible: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,./;'[]\=-)(*&^%$#@!~`";
-    const lengthOfCode: number = 40;
-
-    let text = "";
-    for (let i = 0; i < lengthOfCode; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-
-    return text;
-  }
-  
-  // Sign in with email and password
-  signIn() {
-    this.errorAuthentication = '';
-
-    setPersistence(this.auth, browserLocalPersistence).then(() => {
-      let email = this.email !== null ? this.email.toString() : '';
-      signInWithEmailAndPassword(this.auth, email, this.password)
-      .then((userCredential) => {
-        this.changeUser(userCredential.user);
-        this.errorAuthentication = '';
-      })
-      .catch((error: AuthError) => {
-        // Handle errors during sign-in
-        const errorCode = error.code;
-        const errorMessage = error.message;
-
-        switch (errorCode) {
-          case "auth/invalid-email":
-            this.errorAuthentication = "Ongeldig e-mailadres.";
-            break;
-          case "auth/user-disabled":
-            this.errorAuthentication = "Gebruikersaccount is uitgeschakeld.";
-            break;
-          case "auth/user-not-found":
-            this.errorAuthentication = "Geen gebruiker gevonden met dit e-mailadres.";
-            break;
-          case "auth/wrong-password":
-            this.errorAuthentication = "Onjuist wachtwoord.";
-            break;
-          default:
-            this.errorAuthentication = `Error: ${errorMessage} (Code: ${errorCode})`;
-        }
-      });
-    })
-
-  }
-
-  async getIdToken(): Promise<string | null> {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    return user ? await user.getIdToken() : null;
-  }
-
-  // Sign out the user
-  signOut() {
-    this.errorLoggedOut = '';
-
-    signOut(this.auth)
-      .then(() => {
-        this.changeUser(null);
-      })
-      .catch((error) => {
-        this.errorLoggedOut = 'Error bij afmelden!';
-      });
+    });
   }
 
   changeUser(user: any) {
@@ -164,4 +128,23 @@ export class CoremembersComponent implements OnInit {
     this.changeDetectorRef.detectChanges();
     console.log(this.user);
   }
+
+  editCoreMember(coreMember: CoreMember) {
+  }
+
+  deleteCoreMember(coreMember: CoreMember) {
+    if (coreMember.id !== undefined) {
+      this.apiService.deleteCoreMember(coreMember.id).subscribe({
+      next: (result) => {
+        this.getCoreMembers();
+      },
+      error: (error) => {
+        console.log(error);
+      }
+      });
+    } else {
+      console.log('Core member ID is undefined');
+    }
+   }
+
 }

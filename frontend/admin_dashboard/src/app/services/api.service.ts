@@ -8,7 +8,9 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class ApiService {
+  
   private baseUrl = environment.apiUrl;
+
 
   constructor(private http: HttpClient) { }
 
@@ -21,4 +23,21 @@ export class ApiService {
   createCoreMember(coreMember: CoreMember): Observable<CoreMember> {
     return this.http.post<CoreMember>(`${this.baseUrl}/coremembers/`, coreMember);
   }
+
+  getAllCoreMembers(): Observable<CoreMember[]> {
+    return this.http.get<CoreMember[]>(`${this.baseUrl}/coremembers/`);
+  }
+
+  getCoreMember(id: number): Observable<CoreMember> {
+    return this.http.get<CoreMember>(`${this.baseUrl}/coremembers/${id}`);
+  }
+
+  updateCoreMember(id: number, coreMember: CoreMember): Observable<CoreMember> {
+    return this.http.put<CoreMember>(`${this.baseUrl}/coremembers/${id}`, coreMember);
+  }
+
+  deleteCoreMember(id: number): Observable<CoreMember> {
+    return this.http.delete<CoreMember>(`${this.baseUrl}/coremembers/${id}`);
+  }
+
 }
