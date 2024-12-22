@@ -1,0 +1,14 @@
+tshirst admin page
+
+--                                        select edition--
+
+
+
+--          table with availableTshirts                --
+
+
+
+when creating new availableTshisrt
+
+
+-- dropdown select existing sizes (multiple!!!) or create new one -- dropdown select model or create new one --  set price --

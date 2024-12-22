@@ -29,9 +29,15 @@ def create_test_data(apps, schema_editor):
     edition = Edition.objects.create(year=2024)
     size = Size.objects.create(size="M")
     size2 = Size.objects.create(size="L")
+    size3 = Size.objects.create(size="XL")
     tshirt = Tshirt.objects.create(model="Unisex")
+    tshirt2 = Tshirt.objects.create(model='mens')
+    tshirt2.size.add(size)
+    tshirt2.size.add(size2)
     tshirt.size.add(size)
+    tshirt.size.add(size2)
     available_tshirt = AvailableTshirt.objects.create(tshirt=tshirt, edition=edition, price=20.00)
+    available_tshirt2 = AvailableTshirt.objects.create(tshirt=tshirt2, edition=edition, price=25.00)
     Volunteer.objects.create(
         first_name="Jane",
         last_name="Doe",
