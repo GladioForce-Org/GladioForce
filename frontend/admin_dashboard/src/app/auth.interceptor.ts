@@ -8,13 +8,15 @@ import {
 import { Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { getAuth } from 'firebase/auth';
+import { environment } from '../environments/environment';
+
 
 export const AuthInterceptor: HttpInterceptorFn = (
   req: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> => {
   const auth = getAuth();
-  const apiUrl = 'http://localhost:8000/api';
+  const apiUrl = environment.apiUrl;
 
   console.log('Intercepting request:', req.url);
 

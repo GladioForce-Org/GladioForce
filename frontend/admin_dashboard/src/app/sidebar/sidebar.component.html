@@ -41,8 +41,12 @@
     <ul class="space-y-2 mt-5">
       <app-link linkName="Home" link="/home" icon="home"></app-link>
 
-      <li>        
-        <app-dropdown-button name="Beheer" dropdownreference="dropdown-pages" icon="file-text"></app-dropdown-button>
+      <li>
+        <app-dropdown-button
+          name="Beheer"
+          dropdownreference="dropdown-pages"
+          icon="file-text"
+        ></app-dropdown-button>
 
         <ul id="dropdown-pages" class="hidden space-y-2">
           <app-link linkName="Vuilbakken" link="/containers"></app-link>
@@ -52,7 +56,11 @@
       </li>
 
       <li>
-        <app-dropdown-button name="Vrijwilligers" dropdownreference="dropdown-clubs" icon="file-text"></app-dropdown-button>
+        <app-dropdown-button
+          name="Vrijwilligers"
+          dropdownreference="dropdown-clubs"
+          icon="file-text"
+        ></app-dropdown-button>
 
         <ul id="dropdown-clubs" class="hidden space-y-2">
           <app-link linkName="Verenigingen" link="/clubs"></app-link>
@@ -77,9 +85,8 @@
         </ul>
       </li> -->
       <!-- <app-link linkName="Authenticatie" link="/auth" icon="lock"></app-link> -->
-      <app-link linkName="Docs" link="http://localhost:8000/api/docs" icon="clipboard"></app-link>
+      <app-link linkName="Docs" [link]="apiUrl" icon="clipboard"></app-link>
       <app-link linkName="Help" link="/help" icon="help-circle"></app-link>
-
     </ul>
   </div>
 
@@ -87,8 +94,18 @@
   <div
     class="hidden absolute bottom-0 left-0 justify-center p-4 space-x-4 w-full lg:flex bg-white dark:bg-gray-800 z-20 border-r border-gray-200 dark:border-gray-700"
   >
-    <app-icon-button linkName="" link="#"  icon="sliders"></app-icon-button>
-    <app-icon-button linkName="Instellingen" tooltipReference="settings" link="/settings" icon="settings"></app-icon-button>
-    <app-icon-button [linkName]="email" tooltipReference="mail"  link="/auth" icon="user"></app-icon-button>
+    <app-icon-button linkName="" link="#" icon="sliders"></app-icon-button>
+    <app-icon-button
+      linkName="Instellingen"
+      tooltipReference="settings"
+      link="/settings"
+      icon="settings"
+    ></app-icon-button>
+    <app-icon-button
+      [linkName]="email"
+      tooltipReference="mail"
+      link="/auth"
+      icon="user"
+    ></app-icon-button>
   </div>
 </aside>

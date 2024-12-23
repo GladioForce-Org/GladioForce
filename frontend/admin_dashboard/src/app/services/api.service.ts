@@ -3,13 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CoreMember } from '../interfaces/core-member';
 import { environment } from '../../environments/environment';
-import { environment as prodEnvironment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = environment.apiUrl
+
+  private baseUrl = environment.apiUrl;
+
 
   constructor(private http: HttpClient) { }
 
@@ -38,5 +39,8 @@ export class ApiService {
   deleteCoreMember(id: number): Observable<CoreMember> {
     return this.http.delete<CoreMember>(`${this.baseUrl}/coremembers/${id}`);
   }
+
+
+  // calls for tshirts
 
 }

@@ -2,9 +2,10 @@ from ninja import Router
 from typing import List
 from data_collectie.models import Tshirt, Size, AvailableTshirt, Edition
 from gladio_backend.auth.auth import FirebaseAuth
-from data_collectie.schemas import TshirtSchema, SizeSchema, AvailableTshirtSchema
+from data_collectie.schemas import TshirtSchema, SizeSchema, AvailableTshirtsResponseSchema, AvailableTshirtSchema, AvailableTshirtResponseSchema
+from data_collectie.services import list_all_available_tshirts, get_available_tshirt_details
 
-router = Router(tags=["Tshirt_admin"], auth=FirebaseAuth())
+router = Router(tags=["Tshirt_admin"], auth=None)
 
 # List T-shirts
 @router.get("/tshirts", response=List[TshirtSchema])
@@ -94,18 +95,16 @@ def delete_size(request, size_id: int):
 
 
 #list available tshirts
-@router.get("/available_tshirts", response=List[AvailableTshirtSchema])
-def list_available_tshirts(request):
-    available_tshirts = AvailableTshirt.objects.all()
-    return [
-        {
-            "id": available_tshirt.id,
-            "tshirt_id": available_tshirt.tshirt.id,
-            "edition_id": available_tshirt.edition.id,
-            "price": available_tshirt.price
-        }
-        for available_tshirt in available_tshirts
-    ]
+@router.get("/available-tshirts", response=List[AvailableTshirtsResponseSchema])
+def available_tshirts_list_view(request):
+    return list_all_available_tshirts()
+
+
+# Get Available T-shirt
+@router.get("/available_tshirts/{available_tshirt_id}", response=AvailableTshirtResponseSchema)
+def get_available_tshirt(request, available_tshirt_id: int):
+    return get_available_tshirt_details(available_tshirt_id)
+
 
 # Create Available T-shirt
 @router.post("/available_tshirts", response=AvailableTshirtSchema)
