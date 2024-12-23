@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { ClubFormComponent } from './club-form/club-form.component';
+import { ClubRegistrationComponent } from './club-registration/club-registration.component';
 
 export const routes: Routes = [
     {
         path: ':link',
-        component: ClubFormComponent
+        component: ClubRegistrationComponent
     },
 ];

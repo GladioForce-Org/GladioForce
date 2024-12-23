@@ -1,0 +1,28 @@
+<div class="max-w-4xl mx-auto p-4">
+    <!-- Title -->
+    <h1 class="text-3xl font-bold text-gray-900 mb-4 text-center">Gladiolen 2025</h1>
+
+    <!-- Club Info Form -->
+    @if (club) {
+    <app-club-info-form [club]="club" />
+
+    <div class="mt-8">
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <h2 class="text-2xl font-semibold text-gray-700">Vrijwilligers</h2>
+            <button type="button" (click)="openModal()"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-md w-auto px-5 py-2.5 text-center disabled:opacity-50">
+                Vrijwilliger toevoegen
+            </button>
+        </div>
+    </div>
+
+    @if(isModalOpen){
+    <app-volunteer-form-modal [isModalOpen]="isModalOpen" (modalClosed)="onModalClosed()" />
+    }
+
+    <!-- Volunteer List -->
+    @if (volunteers) {
+    <app-volunteer-list [volunteers]="volunteers" />
+    }
+    }
+</div>
