@@ -81,6 +81,10 @@ class CoreMemberSchema(Schema):
     display_name: Optional[str] = None
     phone_number: Optional[str] = None
 
+class editionSchema(Schema):
+    id: int
+    year: int
+
 class SizeSchema(Schema):
     id: int
     size: str
@@ -96,4 +100,16 @@ class AvailableTshirtSchema(Schema):
     edition_id: int
     price:Optional[float] = None
 
+class AvailableTshirtsResponseSchema(Schema):
+    id: int
+    tshirt_id: int
+    edition_id: int
+    model: str
+    sizes: List[str]
+    price: Optional[float]
 
+class AvailableTshirtResponseSchema(Schema):
+    id: int
+    model: str
+    sizes: List[str]
+    price: Optional[float]

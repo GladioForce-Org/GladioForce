@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class ApiService {
-  
+
   private baseUrl = environment.apiUrl;
 
 
@@ -39,5 +39,8 @@ export class ApiService {
   deleteCoreMember(id: number): Observable<CoreMember> {
     return this.http.delete<CoreMember>(`${this.baseUrl}/coremembers/${id}`);
   }
+
+
+  // calls for tshirts
 
 }
