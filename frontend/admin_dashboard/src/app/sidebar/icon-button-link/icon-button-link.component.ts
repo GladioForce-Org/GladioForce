@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FeatherIconComponent } from '../../feather-icon/feather-icon.component';
 
 @Component({
-  selector: 'app-icon-button',
+  selector: 'app-icon-button-link',
   standalone: true,
   imports: [CommonModule, FeatherIconComponent],
-  templateUrl: './icon-button.component.html',
-  styleUrl: './icon-button.component.scss'
+  templateUrl: './icon-button-link.component.html',
+  styleUrl: './icon-button-link.component.scss'
 })
-export class IconButtonComponent {
+export class IconButtonLinkComponent {
   @Input() linkName: string = '';
   @Input() link: string = ''
   @Input() icon: string = '';
