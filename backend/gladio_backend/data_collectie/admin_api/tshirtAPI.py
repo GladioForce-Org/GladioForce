@@ -3,7 +3,7 @@ from typing import List
 from data_collectie.models import Tshirt, Size, AvailableTshirt, Edition
 from gladio_backend.auth.auth import FirebaseAuth
 from data_collectie.schemas import TshirtSchema, SizeSchema, AvailableTshirtsResponseSchema, AvailableTshirtSchema, AvailableTshirtResponseSchema
-from data_collectie.services import list_all_available_tshirts, get_available_tshirt_details
+from data_collectie.services import list_all_available_tshirts, get_available_tshirt_details, list_all_available_tshirts_by_edition
 
 router = Router(tags=["Tshirt_admin"], auth=None)
 
@@ -94,10 +94,11 @@ def delete_size(request, size_id: int):
     return {"status": "ok"}
 
 
-#list available tshirts
-@router.get("/available-tshirts", response=List[AvailableTshirtsResponseSchema])
-def available_tshirts_list_view(request):
-    return list_all_available_tshirts()
+#list available tshirts by edition
+@router.get("/available-tshirts/{edition_id}", response=List[AvailableTshirtsResponseSchema], auth=None)
+def available_tshirts_list_view(request, edition_id: int):
+    available_tshirts = list_all_available_tshirts_by_edition(edition_id)
+    return available_tshirts
 
 
 # Get Available T-shirt
