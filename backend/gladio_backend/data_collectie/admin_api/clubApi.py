@@ -20,6 +20,12 @@ def get_clubs(request):
     clubs = Club.objects.all()
     return list(clubs.values())
 
+#get participating clubs
+@router.get("/participating/{edition_id}")
+def get_participating_clubs(request, edition_id: int):
+    participating_clubs = ParticipatingClub.objects.filter(edition_id=edition_id).select_related('club')
+    return list(participating_clubs.values())
+
 @router.post("/")
 def create_club(request, payload: ClubCreateSchema):
     club = Club.objects.create(**payload.dict())
