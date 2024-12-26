@@ -11,7 +11,7 @@ describe('IconButtonComponent', () => {
       imports: [IconButtonComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(IconButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

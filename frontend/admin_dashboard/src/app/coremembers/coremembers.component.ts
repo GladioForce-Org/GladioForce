@@ -8,12 +8,14 @@ import { AuthService } from '../services/auth.service';
 import { ApiService } from '../services/api.service';
 import { CoreMember } from '../interfaces/core-member';
 import { HttpErrorResponse } from '@angular/common/http';
+import { IconButtonComponent } from "../components/icon-button/icon-button.component";
+import { HelpersService } from '../services/helpers.service';
 
 
 @Component({
   selector: 'app-coremembers',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IconButtonComponent],
   templateUrl: './coremembers.component.html',
   styleUrl: './coremembers.component.scss'
 })
@@ -37,7 +39,8 @@ export class CoremembersComponent implements OnInit {
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
     private authService: AuthService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private helperService: HelpersService
   ) {
     // Initialize Firebase with your Firebase configuration
     this.firebaseApp = initializeApp(environment.firebaseConfig);
@@ -87,27 +90,19 @@ export class CoremembersComponent implements OnInit {
         this.getCoreMembers();
       },
       error: (error: HttpErrorResponse) => {
-        if (error.error) { // Check if error.error exists
-          try {
-            console.log("parsing");
-            const parsedError = JSON.parse(JSON.stringify(error.error)); // Try to parse it as JSON
-            this.errorUserCreation = parsedError.error || parsedError.message || "An error occurred."; // Access error or message property
-          } catch (parseError) {
-            console.error("Failed to parse error response:", parseError);
-            this.errorUserCreation = "An error occurred."; // Fallback message
-          }
-        } else {
-          this.errorUserCreation = 'An unknown error occurred.'; // Generic fallback
-        }
-        console.error('User creation error:', error); // Keep logging the full error for debugging
+        this.errorUserCreation = this.helperService.parseError(error);
       }
     });
   }
 
   private correctPhoneNumber() {
     // Phone number correction for Belgium to comply with Firebase's format
-    if (this.coreMemberToCreate.phone_number !== undefined && this.coreMemberToCreate.phone_number[0] === '0') {
-      this.coreMemberToCreate.phone_number = '+32' + this.coreMemberToCreate.phone_number?.slice(0); //remove the first 0
+    if (this.coreMemberToCreate.phone_number !== undefined) {
+      this.coreMemberToCreate.phone_number = this.coreMemberToCreate.phone_number.replace(/\//g, "").replace(/\s/g, ""); //removes all forward slashes and spaces
+
+      if (this.coreMemberToCreate.phone_number[0] === '0') {
+        this.coreMemberToCreate.phone_number = '+32' + this.coreMemberToCreate.phone_number?.slice(1); //remove the first 0
+      }
     }
   }
 
