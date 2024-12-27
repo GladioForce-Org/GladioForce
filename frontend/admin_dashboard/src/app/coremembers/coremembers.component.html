@@ -87,6 +87,12 @@
           <td class="py-2 px-4 border-b text-center">
             <div class="flex justify-center gap-4">
               <app-icon-button
+                (click)="openModal(coreMember)"
+                icon="edit"
+              >
+              </app-icon-button>
+
+              <app-icon-button
                 (click)="deleteCoreMember(coreMember)"
                 icon="trash-2"
               ></app-icon-button>
@@ -97,3 +103,50 @@
     </table>
   </div>
 </div>
+
+<!-- Edit Window -->
+<app-modal
+  *ngIf="selectedCoreMember !== null"
+  #modalComponent
+  [header]="selectedCoreMember.email"
+  [maxWidth]="500"
+>
+  <!-- Here you can write the HTML to edit the selectedCoreMember -->
+
+  <form (submit)="editCoreMember()" class="text-left">
+    <!-- Display Name Field -->
+    <div class="mb-2">
+      <label for="displayname" class="block text-sm font-medium text-gray-700">Displaynaam</label>
+      <input
+        type="text"
+        id="displayname"
+        name="displayname"
+        [(ngModel)]="selectedCoreMember.display_name"
+        #address="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </div>
+
+    <!-- Phone Number Field -->
+    <div class="mb-8">
+      <label for="phonenumber" class="block text-sm font-medium text-gray-700">Telefoon</label>
+      <input
+        type="text"
+        id="phonenumber"
+        name="phonenumber"
+        [(ngModel)]="selectedCoreMember.phone_number"
+        #address="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </div>
+
+    <div class="mb-4">
+      <p *ngIf="userEdited !==''" class="text-green-600 font-semibold mt-3">{{ userEdited }}</p>
+      <p *ngIf="errorUserEdited !==''" class="text-red-600 font-semibold mt-3">{{ errorUserEdited }}</p>
+    </div>
+    <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      Kernlid Aanpassen
+    </button>
+  </form>
+
+</app-modal>
