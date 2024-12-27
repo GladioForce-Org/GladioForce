@@ -81,8 +81,12 @@ class CoreMemberSchema(Schema):
     display_name: Optional[str] = None
     phone_number: Optional[str] = None
 
-class editionSchema(Schema):
+class EditionSchema(Schema):
     id: int
+    year: int
+    isCurrentEdition: bool
+
+class EditionCreateSchema(Schema):
     year: int
 
 class SizeSchema(Schema):
