@@ -26,7 +26,7 @@ export class CoremembersComponent implements OnInit {
 
   // Store email and password input fields in the component
   coreMemberToCreate: CoreMember = { email: '' };
-  email: string | null = ''; //provided by Authservice
+  email: string | null | undefined = ''; //provided by Authservice
   password: string = '';
   user: any = null; //holds authenticated user
 
@@ -102,7 +102,7 @@ export class CoremembersComponent implements OnInit {
     });
   }
 
-  private correctPhoneNumber(coreMember: CoreMember): string | undefined {
+  private correctPhoneNumber(coreMember: CoreMember): string | null | undefined {
     // Phone number correction for Belgium to comply with Firebase's format
     if (coreMember.phone_number !== undefined && coreMember.phone_number !== null) {
       coreMember.phone_number = coreMember.phone_number.replace(/\//g, "").replace(/\s/g, ""); //removes all forward slashes and spaces
@@ -151,6 +151,9 @@ export class CoremembersComponent implements OnInit {
 
   // Edit (Modal for popup and Edit Function)
   openModal(coreMember: CoreMember) {
+    this.userEdited = '';
+    this.errorUserEdited = '';  
+
     this.selectedCoreMember = coreMember;
 
     if (this.modalComponent) { // Wait until the view is initialized (you may have to click twice the first time but who cares)
@@ -164,6 +167,14 @@ export class CoremembersComponent implements OnInit {
 
     if (this.selectedCoreMember !== null && this.selectedCoreMember.id !== undefined) {
       this.selectedCoreMember.phone_number = this.correctPhoneNumber(this.selectedCoreMember);
+
+      // BUG FIX: needed to be able to empty the fields again
+      // if (this.selectedCoreMember.phone_number === undefined || this.selectedCoreMember.phone_number === '') {
+      //   // Otherwise you can't remove the phone number!
+      //   this.selectedCoreMember.phone_number = null;
+      // }
+
+      //ALSO FOR DISPLAYNAME
 
       this.apiService.updateCoreMember(this.selectedCoreMember.id, this.selectedCoreMember).subscribe({
         next: (result) => {
