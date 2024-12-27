@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FirebaseApp, initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, Persistence, browserLocalPersistence, AuthError, Auth, setPersistence, sendPasswordResetEmail, sendEmailVerification } from 'firebase/auth';
+import { getAuth, Auth, sendPasswordResetEmail } from 'firebase/auth';
 import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -10,12 +10,13 @@ import { CoreMember } from '../interfaces/core-member';
 import { HttpErrorResponse } from '@angular/common/http';
 import { IconButtonComponent } from "../components/icon-button/icon-button.component";
 import { HelpersService } from '../services/helpers.service';
+import { ModalComponent } from "../components/modal/modal.component";
 
 
 @Component({
   selector: 'app-coremembers',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconButtonComponent],
+  imports: [CommonModule, FormsModule, IconButtonComponent, ModalComponent],
   templateUrl: './coremembers.component.html',
   styleUrl: './coremembers.component.scss'
 })
@@ -25,7 +26,7 @@ export class CoremembersComponent implements OnInit {
 
   // Store email and password input fields in the component
   coreMemberToCreate: CoreMember = { email: '' };
-  email: string | null = ''; //provided by Authservice
+  email: string | null | undefined = ''; //provided by Authservice
   password: string = '';
   user: any = null; //holds authenticated user
 
@@ -33,8 +34,14 @@ export class CoremembersComponent implements OnInit {
   userCreated = '';
   errorUserCreation = '';
 
-  coreMembers: CoreMember[] = [];
+  userEdited = '';
+  errorUserEdited = '';
 
+  coreMembers: CoreMember[] = [];
+  selectedCoreMember: CoreMember | null = null;
+
+  //Modal
+  @ViewChild('modalComponent') modalComponent!: ModalComponent;
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -69,15 +76,15 @@ export class CoremembersComponent implements OnInit {
 
   // Create a new core member
   signUp() {
-    this.userCreated = ''
+    this.userCreated = '';
     this.errorUserCreation = '';
 
-    this.correctPhoneNumber();
+    this.coreMemberToCreate.phone_number = this.correctPhoneNumber(this.coreMemberToCreate);
 
     this.apiService.createCoreMember(this.coreMemberToCreate).subscribe({
       next: (result) => {
         //console.log(result);
-        this.userCreated = 'Gebruiker aangemaakt';
+        this.userCreated = 'Gebruiker aangemaakt.';
 
         sendPasswordResetEmail(this.auth, this.coreMemberToCreate.email)
         .then(() => {
@@ -95,15 +102,17 @@ export class CoremembersComponent implements OnInit {
     });
   }
 
-  private correctPhoneNumber() {
+  private correctPhoneNumber(coreMember: CoreMember): string | null | undefined {
     // Phone number correction for Belgium to comply with Firebase's format
-    if (this.coreMemberToCreate.phone_number !== undefined) {
-      this.coreMemberToCreate.phone_number = this.coreMemberToCreate.phone_number.replace(/\//g, "").replace(/\s/g, ""); //removes all forward slashes and spaces
+    if (coreMember.phone_number !== undefined && coreMember.phone_number !== null) {
+      coreMember.phone_number = coreMember.phone_number.replace(/\//g, "").replace(/\s/g, ""); //removes all forward slashes and spaces
 
-      if (this.coreMemberToCreate.phone_number[0] === '0') {
-        this.coreMemberToCreate.phone_number = '+32' + this.coreMemberToCreate.phone_number?.slice(1); //remove the first 0
+      if (coreMember.phone_number[0] === '0') {
+        coreMember.phone_number = '+32' + coreMember.phone_number?.slice(1); //remove the first 0
       }
     }
+
+    return coreMember.phone_number;
   }
 
   // Get core members
@@ -124,9 +133,7 @@ export class CoremembersComponent implements OnInit {
     console.log(this.user);
   }
 
-  editCoreMember(coreMember: CoreMember) {
-  }
-
+  // Delete
   deleteCoreMember(coreMember: CoreMember) {
     if (coreMember.id !== undefined) {
       this.apiService.deleteCoreMember(coreMember.id).subscribe({
@@ -140,6 +147,46 @@ export class CoremembersComponent implements OnInit {
     } else {
       console.log('Core member ID is undefined');
     }
-   }
+  }
 
+  // Edit (Modal for popup and Edit Function)
+  openModal(coreMember: CoreMember) {
+    this.userEdited = '';
+    this.errorUserEdited = '';  
+
+    this.selectedCoreMember = coreMember;
+
+    if (this.modalComponent) { // Wait until the view is initialized (you may have to click twice the first time but who cares)
+      this.modalComponent.openModal();  
+    }
+  }
+
+  editCoreMember() {
+    this.userEdited = '';
+    this.errorUserEdited = '';  
+
+    if (this.selectedCoreMember !== null && this.selectedCoreMember.id !== undefined) {
+      this.selectedCoreMember.phone_number = this.correctPhoneNumber(this.selectedCoreMember);
+
+      // BUG FIX: needed to be able to empty the fields again
+      // if (this.selectedCoreMember.phone_number === undefined || this.selectedCoreMember.phone_number === '') {
+      //   // Otherwise you can't remove the phone number!
+      //   this.selectedCoreMember.phone_number = null;
+      // }
+
+      //ALSO FOR DISPLAYNAME
+
+      this.apiService.updateCoreMember(this.selectedCoreMember.id, this.selectedCoreMember).subscribe({
+        next: (result) => {
+          //console.log(result);
+          this.userEdited = 'Gebruiker aangepast.';
+  
+          this.getCoreMembers();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.errorUserEdited = this.helperService.parseError(error);
+        }
+      });
+    }
+  }
 }
