@@ -153,35 +153,34 @@ export class CoremembersComponent implements OnInit {
   // Edit (Modal for popup and Edit Function)
   openModal(coreMember: CoreMember) {
     this.userEdited = '';
-    this.errorUserEdited = '';  
+    this.errorUserEdited = '';
 
     this.selectedCoreMember = coreMember;
 
     if (this.modalComponent) { // Wait until the view is initialized (you may have to click twice the first time but who cares)
-      this.modalComponent.openModal();  
+      this.modalComponent.openModal();
     }
   }
 
   editCoreMember() {
     this.userEdited = '';
-    this.errorUserEdited = '';  
+    this.errorUserEdited = '';
 
     if (this.selectedCoreMember !== null && this.selectedCoreMember.id !== undefined) {
+      // Correct phone number and handle empty case
       this.selectedCoreMember.phone_number = this.correctPhoneNumber(this.selectedCoreMember);
+      if (!this.selectedCoreMember.phone_number || this.selectedCoreMember.phone_number.trim() === '') {
+        this.selectedCoreMember.phone_number = null; // Ensure null is sent
+      }
 
-      // // BUG FIX: needed to be able to empty the fields again
-      // if (this.selectedCoreMember.phone_number === undefined || this.selectedCoreMember.phone_number === '') {
-      //   // Otherwise you can't remove the phone number!
-      //   this.selectedCoreMember.phone_number = null;
-      // }
-
-      //ALSO FOR DISPLAYNAME
+      // Handle empty case for display_name as well
+      if (!this.selectedCoreMember.display_name || this.selectedCoreMember.display_name.trim() === '') {
+        this.selectedCoreMember.display_name = null; // Ensure null is sent
+      }
 
       this.apiService.updateCoreMember(this.selectedCoreMember.id, this.selectedCoreMember).subscribe({
         next: (result) => {
-          //console.log(result);
           this.userEdited = 'Gebruiker aangepast.';
-  
           this.getCoreMembers();
         },
         error: (error: HttpErrorResponse) => {
