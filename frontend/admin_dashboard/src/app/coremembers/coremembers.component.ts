@@ -11,12 +11,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { IconButtonComponent } from "../components/icon-button/icon-button.component";
 import { HelpersService } from '../services/helpers.service';
 import { ModalComponent } from "../components/modal/modal.component";
+import { FeatherIconComponent } from "../feather-icon/feather-icon.component";
 
 
 @Component({
   selector: 'app-coremembers',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconButtonComponent, ModalComponent],
+  imports: [CommonModule, FormsModule, IconButtonComponent, ModalComponent, FeatherIconComponent],
   templateUrl: './coremembers.component.html',
   styleUrl: './coremembers.component.scss'
 })
@@ -145,7 +146,7 @@ export class CoremembersComponent implements OnInit {
       }
       });
     } else {
-      console.log('Core member ID is undefined');
+      console.log('Kernlid ID is niet gedefiniëerd.');
     }
   }
 
@@ -168,7 +169,7 @@ export class CoremembersComponent implements OnInit {
     if (this.selectedCoreMember !== null && this.selectedCoreMember.id !== undefined) {
       this.selectedCoreMember.phone_number = this.correctPhoneNumber(this.selectedCoreMember);
 
-      // BUG FIX: needed to be able to empty the fields again
+      // // BUG FIX: needed to be able to empty the fields again
       // if (this.selectedCoreMember.phone_number === undefined || this.selectedCoreMember.phone_number === '') {
       //   // Otherwise you can't remove the phone number!
       //   this.selectedCoreMember.phone_number = null;
