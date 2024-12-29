@@ -81,5 +81,20 @@ export class ApiService {
     return this.http.delete(`${this.baseUrl}/tshirts/available_tshirts/${id}`);
   }
 
+  //get sizes /api/tshirts/sizes
+  getSizes(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/tshirts/sizes`);
+  }
+
+  //create size /api/tshirts/sizes
+  createSize(size: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/tshirts/sizes`, size);
+  }
+
+  //delete size /api/tshirts/sizes/:size
+  deleteSize(size: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/tshirts/sizes/${size}`);
+  }
+
 
 }

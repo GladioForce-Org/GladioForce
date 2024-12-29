@@ -3,7 +3,7 @@ from typing import List
 from data_collectie.models import Tshirt, Size, AvailableTshirt, Edition
 from django.http import JsonResponse
 from gladio_backend.auth.auth import FirebaseAuth
-from data_collectie.schemas import TshirtSchema, SizeSchema, AvailableTshirtsResponseSchema, AvailableTshirtSchema, AvailableTshirtResponseSchema, AvailableTshirtInSchema
+from data_collectie.schemas import TshirtSchema, SizeSchema, AvailableTshirtsResponseSchema, AvailableTshirtSchema, AvailableTshirtResponseSchema, AvailableTshirtInSchema, SizeCreateSchema
 from data_collectie.services import list_all_available_tshirts, get_available_tshirt_details, list_all_available_tshirts_by_edition
 router = Router(tags=["Tshirt_admin"], auth=None)
 
@@ -68,7 +68,7 @@ def list_sizes(request):
 
 # Create Size
 @router.post("/sizes", response=SizeSchema)
-def create_size(request, data: SizeSchema):
+def create_size(request, data: SizeCreateSchema):
     size = Size.objects.create(size=data.size)
     return {
         "id": size.id,

@@ -93,6 +93,9 @@ class SizeSchema(Schema):
     id: int
     size: str
 
+class SizeCreateSchema(Schema):
+    size: str
+
 class TshirtSchema(Schema):
     id: int
     model: str

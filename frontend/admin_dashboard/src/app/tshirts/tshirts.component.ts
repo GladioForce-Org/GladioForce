@@ -29,16 +29,40 @@ export class TshirtsComponent implements OnInit {
   errorTshirtCreation: string = '';
   tshirtEdited: string = '';
   errorTshirtEdit: string = '';
+  sizeToCreate: string = '';
 
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.loadTshirts();
+    this.loadSizes();
+    
   }
 
   loadTshirts(): void {
     this.apiService.getAvailableTshirts().subscribe((data: AvailableTshirt[]) => {
       this.availableTshirts = data;
+    });
+  }
+
+  loadSizes(): void {
+    this.apiService.getSizes().subscribe((data: string[]) => {
+      this.newTshirt.sizes = data;
+    });
+  }
+
+  createSize(): void {
+    this.apiService.createSize(this.sizeToCreate).subscribe(() => {
+      this.loadSizes();
+      this.sizeToCreate = ''; // Reset the input field after creating the size
+    }, error => {
+      console.error('Er is een fout opgetreden bij het aanmaken van de maat.', error);
+    });
+  }
+
+  deleteSize(size: number): void {
+    this.apiService.deleteSize(size).subscribe(() => {
+      this.loadSizes();
     });
   }
 
