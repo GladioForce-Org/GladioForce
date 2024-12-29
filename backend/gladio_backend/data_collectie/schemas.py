@@ -104,6 +104,11 @@ class AvailableTshirtSchema(Schema):
     edition_id: int
     price:Optional[float] = None
 
+class AvailableTshirtInSchema(Schema):
+    tshirt_id: int
+    price:Optional[float] = None
+
+
 class AvailableTshirtsResponseSchema(Schema):
     id: int
     tshirt_id: int

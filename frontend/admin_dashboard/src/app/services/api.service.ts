@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { CoreMember } from '../interfaces/core-member';
 import { environment } from '../../environments/environment';
 import { Edition } from '../interfaces/edition';
+import { AvailableTshirt } from '../interfaces/available-tshirt';
 
 @Injectable({
   providedIn: 'root'
@@ -59,5 +60,26 @@ export class ApiService {
   }
 
   // calls for tshirts
+
+  //list all available tshirts for the current edition /tshirts/available-tshirts/current/
+  getAvailableTshirts(): Observable<any> {
+    return this.http.get<AvailableTshirt>(`${this.baseUrl}/tshirts/available-tshirts/current/`);
+  }
+
+  //add tshirt /tshirts/available_tshirts
+  addTshirt(tshirt: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/tshirts/available_tshirts`, tshirt);
+  }
+
+  //update tshirt /tshirts/available_tshirts/:id
+  updateTshirt(tshirt: any, id: number): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/tshirts/available_tshirts/${id}`, tshirt);
+  }
+
+  //delete tshirt /tshirts/available_tshirts/:id
+  deleteTshirt(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/tshirts/available_tshirts/${id}`);
+  }
+
 
 }
