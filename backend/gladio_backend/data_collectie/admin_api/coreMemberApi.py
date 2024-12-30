@@ -86,14 +86,42 @@ def delete_core_member(request, id: str):
 
 @router.put("/{id}")
 def update_core_member(request, id: str, payload: CoreMemberCreateSchema):
-    # Update the user with the specified ID
+    # Normalize empty fields to None for Firebase
+    phone_number = payload.phone_number if payload.phone_number and payload.phone_number.strip() else None
+    display_name = payload.display_name if payload.display_name and payload.display_name.strip() else None
+    email = payload.email if payload.email and payload.email.strip() else None
+
+    # Use auth.DELETE_ATTRIBUTE to clear a field if necessary
+    update_kwargs = {}
+
+    if display_name is None:
+        update_kwargs['display_name'] = auth.DELETE_ATTRIBUTE  # To delete the display_name if it's empty
+    else:
+        update_kwargs['display_name'] = display_name
+
+    if phone_number is None:
+        update_kwargs['phone_number'] = auth.DELETE_ATTRIBUTE  # To delete the phone_number if it's empty
+    else:
+        update_kwargs['phone_number'] = phone_number
+
+    if email is None:
+        update_kwargs['email'] = auth.DELETE_ATTRIBUTE  # To delete the email if it's empty
+    else:
+        update_kwargs['email'] = email
+
+    # Update the user with Firebase Auth
     user = auth.update_user(
         id,
-        email = payload.email,
-        display_name = payload.display_name,
-        phone_number = payload.phone_number
+        **update_kwargs
     )
 
-    # Return a success message
-    return {"message": "Gebruiker succesvol geüpdatet."}
-
+    # Return the updated user details
+    updated_user = auth.get_user(id)
+    return {
+        "message": "Gebruiker succesvol geüpdatet.",
+        "user": {
+            "email": updated_user.email,
+            "display_name": updated_user.display_name,
+            "phone_number": updated_user.phone_number,
+        }
+    }
