@@ -93,6 +93,9 @@ class SizeSchema(Schema):
     id: int
     size: str
 
+class SizeCreateSchema(Schema):
+    size: str
+
 class TshirtSchema(Schema):
     id: int
     model: str
@@ -103,6 +106,11 @@ class AvailableTshirtSchema(Schema):
     tshirt_id: int
     edition_id: int
     price:Optional[float] = None
+
+class AvailableTshirtInSchema(Schema):
+    tshirt_id: int
+    price:Optional[float] = None
+
 
 class AvailableTshirtsResponseSchema(Schema):
     id: int
