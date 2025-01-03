@@ -1,7 +1,7 @@
 // src/app/auth.component.ts
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FirebaseApp, initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, Persistence, browserLocalPersistence, AuthError, Auth, setPersistence, sendPasswordResetEmail, sendEmailVerification } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, signOut, browserLocalPersistence, AuthError, Auth, setPersistence, sendPasswordResetEmail } from 'firebase/auth';
 import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -19,19 +19,14 @@ export class AuthComponent implements OnInit {
   private auth: Auth = getAuth();
 
   // Store email and password input fields in the component
-  emailUserCreate: string = '';
   email: string | null = ''; //provided by Authservice
   password: string = '';
-  registrationPassword: string = '';
-  repeatedRegistrationPassword: string = '';
   user: any = null; //holds authenticated user
 
+  passwordResetEmail: string = '';
+
   // Messages
-  userCreated = '';
-  errorUserCreation = '';
-
   errorAuthentication = '';
-
   errorLoggedOut = '';
 
   constructor(private changeDetectorRef: ChangeDetectorRef, private authService: AuthService) {
@@ -57,52 +52,6 @@ export class AuthComponent implements OnInit {
         this.changeUser(null);
       }
     });
-  }
-
-  // Create a new user (sign up)
-  signUp() {
-    this.userCreated = ''
-
-    if (this.registrationPassword !== this.repeatedRegistrationPassword) {
-      return;
-    }
-
-    createUserWithEmailAndPassword(this.auth, this.emailUserCreate, this.registrationPassword)
-      .then((userCredential) => {
-        this.changeUser(userCredential.user);
-        this.userCreated = 'Gebruiker aangemaakt';
-        this.errorUserCreation = '';
-        
-
-        sendPasswordResetEmail(this.auth, this.emailUserCreate)
-        .then(() => {
-          alert('Wachtwoord-resetlink is verzonden naar je e-mail. Stel een nieuw wachtwoord in!');
-        })
-        .catch((error) => {
-          alert('Fout bij het verzenden van de resetlink: ' + error.message);
-        });
-        // // Send email verification
-        // sendEmailVerification(userCredential.user)
-        // .then(() => {
-        //   this.errorUserCreation = '';
-        //   alert('Verificatielink is verzonden naar je e-mail!');
-        // })
-        // .catch((error) => {
-        //   this.errorUserCreation = 'Verificatielink kon niet worden verzonden.';
-        // });
-      })
-      .catch((error) => {
-        this.errorUserCreation = 'Error bij registreren!';
-      });
-  }
-
-  // Method to check if the passwords match
-  checkPasswordsMatch() {
-    if (this.registrationPassword !== this.repeatedRegistrationPassword) {
-      this.errorUserCreation = 'Wachtwoorden zijn niet gelijk!';
-    } else {
-      this.errorUserCreation = '';
-    }
   }
 
   // Sign in with email and password
@@ -165,5 +114,17 @@ export class AuthComponent implements OnInit {
     this.user = user;
     this.changeDetectorRef.detectChanges();
     console.log(this.user);
+  }
+
+  resetPassword() {
+    if (this.passwordResetEmail !== '') {
+      sendPasswordResetEmail(this.auth, this.passwordResetEmail)
+      .then(() => {
+        alert('Wachtwoord-resetlink is verzonden naar het e-mailadres van de gebruiker.');
+      })
+      .catch((error) => {
+        alert('Fout bij het verzenden van de resetlink: ' + error.message);
+      });
+    }
   }
 }

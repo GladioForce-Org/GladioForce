@@ -81,12 +81,19 @@ class CoreMemberSchema(Schema):
     display_name: Optional[str] = None
     phone_number: Optional[str] = None
 
-class editionSchema(Schema):
+class EditionSchema(Schema):
     id: int
+    year: int
+    isCurrentEdition: bool
+
+class EditionCreateSchema(Schema):
     year: int
 
 class SizeSchema(Schema):
     id: int
+    size: str
+
+class SizeCreateSchema(Schema):
     size: str
 
 class TshirtSchema(Schema):
@@ -99,6 +106,11 @@ class AvailableTshirtSchema(Schema):
     tshirt_id: int
     edition_id: int
     price:Optional[float] = None
+
+class AvailableTshirtInSchema(Schema):
+    tshirt_id: int
+    price:Optional[float] = None
+
 
 class AvailableTshirtsResponseSchema(Schema):
     id: int

@@ -6,6 +6,7 @@ from .admin_api import coreMemberApi
 from gladio_backend.auth.auth import FirebaseAuth
 from .link_api.router import router as link_router
 from .admin_api import tshirtAPI
+from .admin_api import editionApi
 from vuilbakken.api import container_api
 
 
@@ -22,4 +23,5 @@ api.add_router("/volunteers", volunteerApi.router)
 api.add_router("/collection", link_router)
 api.add_router("/coremembers", coreMemberApi.router)
 api.add_router("/tshirts", tshirtAPI.router)
+api.add_router("/editions", editionApi.router)
 api.add_router("/vuilbakken", container_api, auth=None)

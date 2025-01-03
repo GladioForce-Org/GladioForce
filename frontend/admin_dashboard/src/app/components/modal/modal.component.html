@@ -1,0 +1,40 @@
+<!-- overlay when the modal is open -->
+<div
+[ngClass]="isModalOpen ? 'block' : 'hidden'" 
+class="fixed inset-0 bg-gray-800 bg-opacity-20 flex justify-center items-center"
+(click)="closeModalOnOutsideClick($event)"
+>
+    <!-- Modal window -->
+    <div
+        class="mr-10 bg-white dark:bg-gray-900 dark:text-gray-100 rounded-lg shadow-lg max-w-full w-full relative"
+        [ngClass]="{
+            'sizebar-opened-margin': screenSize === 'large', 
+            'ml-10': screenSize === 'small' 
+        }"
+        [ngStyle]="{
+            'max-width': maxWidth > 0 ? maxWidth + 'px' : 'none',
+            'min-height': minHeight > 0 ? minHeight + 'px' : 'none'
+        }"
+    >
+        <!-- Modal Header (with absolute positioning, centered) -->
+        <div class="bg-gray-500 w-full text-white rounded-tl-lg rounded-tr-lg flex justify-between items-center p-2">
+            <!-- Centered Header Text -->
+            <div class="text-center mx-auto">
+                <h1 class="text-2xl">{{ header }}</h1>
+            </div>
+        
+            <!-- Close button (top right) -->
+            <app-icon-button
+                (click)="closeModal()"
+                icon="x"
+                class="ml-2"
+            >
+            </app-icon-button>
+        </div>
+
+        <!-- User's content for the modal -->
+        <div class="text-center p-4">
+            <ng-content></ng-content>    
+        </div>
+    </div>
+</div>

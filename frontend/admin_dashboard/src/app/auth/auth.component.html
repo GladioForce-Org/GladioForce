@@ -1,38 +1,10 @@
-<div class="auth-container max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
-  <!-- Sign up form -->
-  <div class="auth-form">
-    <p> Laat deze voorlopig nog even staan tot we een basis admin account hebben (voor testdoeleinden).</p>
-    <p> Via 'Kernleden' gaat de request via de backend en moet je ingelogd zijn om een gebruiker aan te maken!</p>
-    <h1 class="text-2xl font-semibold text-center mb-4">Registreren</h1>
-    <form (submit)="signUp()">
-      <div class="mb-4">
-        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-        <input id="email" type="email" [(ngModel)]="emailUserCreate" name="email" required class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-      </div>
-      <div class="mb-4">
-        <label for="password" class="block text-sm font-medium text-gray-700">Wachtwoord</label>
-        <input id="password" type="password" [(ngModel)]="registrationPassword" name="password" required (ngModelChange)="checkPasswordsMatch()" class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-      </div>
-      <div class="mb-4">
-        <label for="repeatpassword" class="block text-sm font-medium text-gray-700">Herhaal Wachtwoord</label>
-        <input id="repeatpassword" type="password" [(ngModel)]="repeatedRegistrationPassword" name="repeatpassword" required (ngModelChange)="checkPasswordsMatch()" class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-        <p *ngIf="userCreated !==''" class="text-green-600 font-semibold mt-3">{{ userCreated }}</p>
-        <p *ngIf="errorUserCreation !==''" class="text-red-600 font-semibold mt-3">{{ errorUserCreation }}</p>
-      </div>
-      <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        Registreer
-      </button>
-    </form>
-  </div>
-</div>
-
-<div class="auth-container max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg" *ngIf="user === null">
+<div class="auth-container max-w-md mx-auto mt-10 p-6 bg-white" *ngIf="user === null">
   <!-- Sign in form -->
   <div class="auth-form">
     <h1 class="text-2xl font-semibold text-center mb-4">Aanmelden</h1>
     <form (submit)="signIn()">
       <div class="mb-4">
-        <label for="signinEmail" class="block text-sm font-medium text-gray-700">Email</label>
+        <label for="signinEmail" class="block text-sm font-medium text-gray-700">E-mail</label>
         <input id="signinEmail" type="email" [(ngModel)]="email" name="email" required class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
       </div>
       <div class="mb-4">
@@ -40,19 +12,32 @@
         <input id="signinPassword" type="password" [(ngModel)]="password" name="password" required class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
         <p *ngIf="errorAuthentication !==''" class="text-red-600 font-semibold mt-3">{{ errorAuthentication }}</p>
       </div>
-      <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         Aanmelden
       </button>
     </form>
   </div>
+
+  <hr class="my-10">
+  
+  <!-- Request Password reset -->
+  <form (submit)="resetPassword()">
+    <div class="mb-4">
+      <label for="passwordResetEmail" class="block text-sm font-medium text-gray-700">E-mail</label>
+      <input id="passwordResetEmail" type="email" [(ngModel)]="passwordResetEmail" name="passwordResetEmail" required class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+    </div>
+    <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      Wachtwoord vergeten
+    </button>
+  </form>
 </div>
 
-<div class="auth-container max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg" *ngIf="user !== null">
+<div class="auth-container max-w-md mx-auto mt-10 p-6 bg-white" *ngIf="user !== null">
   <!-- User info and sign-out -->
   <div class="text-center">
     <h3 class="text-xl font-semibold mb-4">Welkom, {{ email }}!</h3>
     <p *ngIf="errorLoggedOut !==''" class="text-red-600 font-semibold mt-3 mb-3">{{ errorLoggedOut }}</p>
-    <button (click)="signOut()" class="px-4 py-2 bg-purple-400 text-gray-900 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+    <button (click)="signOut()" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
       Afmelden
     </button>
   </div>

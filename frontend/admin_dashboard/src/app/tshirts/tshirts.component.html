@@ -1,1 +1,204 @@
-<p>tshirts works!</p>
+<!-- Add T-shirt Form -->
+<div class="mt-8 mx-10">
+  <h2 class="text-2xl font-semibold text-gray-700 mb-4">Add New T-shirt</h2>
+  <form (submit)="addTshirt()" class="text-left">
+    <!-- Model Field -->
+    <div class="mb-4">
+      <label for="model" class="block text-sm font-medium text-gray-700">Model</label>
+      <input
+        type="text"
+        id="model"
+        name="model"
+        [(ngModel)]="newTshirt.model"
+        #model="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+            <p *ngIf="model.invalid && (model.dirty || model.touched)" class="text-red-500 text-xs mt-1">
+        Model is verplicht.
+            </p>
+          </div>
+
+          <!-- Sizes Field -->
+          <div class="mb-4">
+            <label for="sizes" class="block text-sm font-medium text-gray-700">Maten</label>
+            <div class="relative">
+              <!-- Dropdown Trigger -->
+              <button
+                class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                (click)="dropdownOpen = !dropdownOpen"
+              >
+                {{ newTshirt.sizes.length ? newTshirt.sizes.join(', ') : 'Select Sizes' }}
+              </button>
+          
+              <!-- Dropdown Menu -->
+              <div
+                *ngIf="dropdownOpen"
+                class="absolute w-full mt-2 bg-white border rounded-md shadow-lg z-10"
+              >
+                <!-- Existing Sizes -->
+                <div *ngFor="let size of availableSizes" class="flex items-center justify-between px-4 py-2">
+                  <label class="inline-flex items-center">
+                    <input
+                      type="checkbox"
+                      [value]="size"
+                      (change)="toggleSize(size.size)"
+                      [checked]="newTshirt.sizes.includes(size.size)"
+                      class="form-checkbox"
+                    />
+                    <span class="ml-2">{{ size.size }}</span>
+                  </label>
+                  <button
+                    class="text-red-500 text-sm"
+                    (click)="deleteSize(size.id)"
+                    *ngIf="!newTshirt.sizes.includes(size.size)"
+                  >
+                    Delete
+                  </button>
+                </div>
+          
+                <!-- Add New Size -->
+                <div class="px-4 py-2 border-t">
+                  <input
+                    type="text"
+                    [(ngModel)]="sizeToCreate"
+                    name="sizeToCreate"
+                    placeholder="Add new size"
+                    class="w-full px-2 py-1 border rounded-md"
+                  />
+                  <button
+                    (click)="createSize()"
+                    class="mt-2 w-full bg-indigo-500 text-white px-4 py-1 rounded-md"
+                  >
+                    Add Size
+                  </button>
+                </div>
+              </div>
+            </div>
+          
+            <!-- Validation -->
+            <p *ngIf="!newTshirt.sizes?.length" class="text-red-500 text-xs mt-1">
+              Maten zijn verplicht.
+            </p>
+          </div>
+
+    <!-- Price Field -->
+    <div class="mb-4">
+      <label for="price" class="block text-sm font-medium text-gray-700">Prijs</label>
+      <input
+        type="text"
+        id="price"
+        name="price"
+        [(ngModel)]="newTshirt.price"
+        #price="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+      <p *ngIf="price.invalid && (price.dirty || price.touched)" class="text-red-500 text-xs mt-1">
+        Prijs is verplicht.
+      </p>
+    </div>
+
+    <button type="submit" class="w-full py-2 px-4 bg-green-400 text-gray-900 rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      T-shirt Toevoegen
+    </button>
+  </form>
+</div>
+
+<!-- T-shirts table -->
+<div class="mt-8 mx-10">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-semibold text-gray-700">T-shirts</h2>
+    </div>
+    <div class="overflow-x-auto rounded-md shadow overflow-y-auto">
+      <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+        <thead>
+          <tr class="bg-gray-50">
+            <th class="py-3 px-4 border-b text-start">Model</th>
+            <th class="py-3 px-4 border-b text-start">Editie Jaar</th>
+            <th class="py-3 px-4 border-b text-start">Maten</th>
+            <th class="py-3 px-4 border-b text-start">Prijs</th>
+            <th class="py-3 px-4 border-b text-center">Acties</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tshirt of availableTshirts" class="hover:bg-gray-100">
+            <td class="py-2 px-4 border-b text-start">{{ tshirt.model }}</td>
+            <td class="py-2 px-4 border-b text-start">{{ tshirt.edition_year }}</td>
+            <td class="py-2 px-4 border-b text-start">{{ tshirt.sizes.join(', ') }}</td>
+            <td class="py-2 px-4 border-b text-start">{{ tshirt.price }}</td>
+            <td class="py-2 px-4 border-b text-center">
+              <div class="flex justify-center gap-4">
+                <button (click)="openEditModal(tshirt)" class="text-blue-500 hover:text-blue-700">Edit</button>
+                <button (click)="deleteTshirt(tshirt.id)" class="text-red-500 hover:text-red-700">Delete</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</div>
+
+<!-- Edit T-shirt Modal -->
+<app-modal
+  *ngIf="selectedTshirt !== null"
+  #editModal
+  [header]="'Edit T-shirt ' + selectedTshirt.model"
+  [maxWidth]="500"
+>
+  <form (submit)="updateTshirt(selectedTshirt)" class="text-left">
+    <!-- Model Field -->
+    <div class="mb-4">
+      <label for="editModel" class="block text-sm font-medium text-gray-700">Model</label>
+      <input
+        type="text"
+        id="editModel"
+        name="editModel"
+        [(ngModel)]="selectedTshirt.model"
+        #editModel="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+      <p *ngIf="editModel.invalid && (editModel.dirty || editModel.touched)" class="text-red-500 text-xs mt-1">
+        Model is verplicht.
+      </p>
+    </div>
+
+    <!-- Sizes Field -->
+    <div class="mb-4">
+      <label for="editSizes" class="block text-sm font-medium text-gray-700">Maten (comma separated)</label>
+      <input
+        type="text"
+        id="editSizes"
+        name="editSizes"
+        [(ngModel)]="selectedTshirt.sizes"
+        #editSizes="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+      <p *ngIf="editSizes.invalid && (editSizes.dirty || editSizes.touched)" class="text-red-500 text-xs mt-1">
+        Maten zijn verplicht.
+      </p>
+    </div>
+
+    <!-- Price Field -->
+    <div class="mb-4">
+      <label for="editPrice" class="block text-sm font-medium text-gray-700">Prijs</label>
+      <input
+        type="text"
+        id="editPrice"
+        name="editPrice"
+        [(ngModel)]="selectedTshirt.price"
+        #editPrice="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+      <p *ngIf="editPrice.invalid && (editPrice.dirty || editPrice.touched)" class="text-red-500 text-xs mt-1">
+        Prijs is verplicht.
+      </p>
+    </div>
+
+    <div class="mb-4">
+      <p *ngIf="tshirtEdited !==''" class="text-green-600 font-semibold mt-3">{{ tshirtEdited }}</p>
+      <p *ngIf="errorTshirtEdit !==''" class="text-red-600 font-semibold mt-3">{{ errorTshirtEdit }}</p>
+    </div>
+    <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      T-shirt Aanpassen
+    </button>
+  </form>
+</app-modal>

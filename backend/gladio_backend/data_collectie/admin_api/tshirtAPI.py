@@ -1,10 +1,10 @@
 from ninja import Router
 from typing import List
 from data_collectie.models import Tshirt, Size, AvailableTshirt, Edition
+from django.http import JsonResponse
 from gladio_backend.auth.auth import FirebaseAuth
-from data_collectie.schemas import TshirtSchema, SizeSchema, AvailableTshirtsResponseSchema, AvailableTshirtSchema, AvailableTshirtResponseSchema
-from data_collectie.services import list_all_available_tshirts, get_available_tshirt_details
-
+from data_collectie.schemas import TshirtSchema, SizeSchema, AvailableTshirtsResponseSchema, AvailableTshirtSchema, AvailableTshirtResponseSchema, AvailableTshirtInSchema, SizeCreateSchema
+from data_collectie.services import list_all_available_tshirts, get_available_tshirt_details, list_all_available_tshirts_by_edition
 router = Router(tags=["Tshirt_admin"], auth=None)
 
 # List T-shirts
@@ -68,7 +68,7 @@ def list_sizes(request):
 
 # Create Size
 @router.post("/sizes", response=SizeSchema)
-def create_size(request, data: SizeSchema):
+def create_size(request, data: SizeCreateSchema):
     size = Size.objects.create(size=data.size)
     return {
         "id": size.id,
@@ -94,32 +94,42 @@ def delete_size(request, size_id: int):
     return {"status": "ok"}
 
 
-#list available tshirts
-@router.get("/available-tshirts", response=List[AvailableTshirtsResponseSchema])
-def available_tshirts_list_view(request):
-    return list_all_available_tshirts()
+#list available tshirts by edition
+@router.get("/available-tshirts/{edition_id}", response=List[AvailableTshirtsResponseSchema], auth=None)
+def available_tshirts_list_view(request, edition_id: int):
+    available_tshirts = list_all_available_tshirts_by_edition(edition_id)
+    return available_tshirts
+
+#list all available tshirts for current edition
+@router.get("/available-tshirts/current/")
+def available_tshirts_current_edition_view(request):
+    current_edition = Edition.objects.filter(isCurrentEdition=True).first()
+    if not current_edition:
+        return JsonResponse({"error": "No current edition found"}, status=404)
+    available_tshirts = list_all_available_tshirts_by_edition(current_edition.id)
+    return available_tshirts
 
 
-# Get Available T-shirt
+# Get Available T-shirt details
 @router.get("/available_tshirts/{available_tshirt_id}", response=AvailableTshirtResponseSchema)
 def get_available_tshirt(request, available_tshirt_id: int):
     return get_available_tshirt_details(available_tshirt_id)
 
 
-# Create Available T-shirt
+# Create Available T-shirt for current edition
 @router.post("/available_tshirts", response=AvailableTshirtSchema)
-def create_available_tshirt(request, data: AvailableTshirtSchema):
-    available_tshirt = AvailableTshirt.objects.create(
-        tshirt_id=data.tshirt_id,
-        edition_id=data.edition_id,
-        price=data.price
-    )
+def create_available_tshirt(request, data: AvailableTshirtInSchema):
+    current_edition = Edition.objects.filter(isCurrentEdition=True).first()
+    if not current_edition:
+        return JsonResponse({"error": "No current edition found"}, status=404)
+    available_tshirt = AvailableTshirt.objects.create(tshirt_id=data.tshirt_id, edition_id=current_edition.id, price=data.price)
     return {
         "id": available_tshirt.id,
         "tshirt_id": available_tshirt.tshirt.id,
         "edition_id": available_tshirt.edition.id,
         "price": available_tshirt.price
     }
+
 
 # update Available T-shirt(set price)
 @router.patch("/available_tshirts/{available_tshirt_id}", response=AvailableTshirtSchema)

@@ -11,6 +11,7 @@ import { DocumentsComponent } from './documents/documents.component';
 import { HelpComponent } from './info/info.component';
 import { SettingsComponent } from './settings/settings.component';
 import { AuthComponent } from './auth/auth.component';
+import { EditionComponent } from './edition/edition.component';
 
 export const routes: Routes = [
     {path: 'home', component: HomeComponent},
@@ -25,5 +26,6 @@ export const routes: Routes = [
     {path: 'help', component: HelpComponent},
     {path: 'settings', component: SettingsComponent},
     {path: 'auth', component: AuthComponent},
+    {path: 'editions', component: EditionComponent},
     { path: '', redirectTo: '/home', pathMatch: 'full' }, // Default route
 ];
