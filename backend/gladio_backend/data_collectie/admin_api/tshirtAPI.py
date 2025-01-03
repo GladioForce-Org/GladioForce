@@ -3,8 +3,9 @@ from typing import List
 from data_collectie.models import Tshirt, Size, AvailableTshirt, Edition
 from django.http import JsonResponse
 from gladio_backend.auth.auth import FirebaseAuth
-from data_collectie.schemas import TshirtSchema, SizeSchema, AvailableTshirtsResponseSchema, AvailableTshirtSchema, AvailableTshirtResponseSchema, AvailableTshirtInSchema, SizeCreateSchema
+from data_collectie.schemas import TshirtSchema, SizeSchema, AvailableTshirtsResponseSchema, AvailableTshirtSchema, AvailableTshirtResponseSchema, AvailableTshirtInSchema, SizeCreateSchema, TshirtCreateSchema
 from data_collectie.services import list_all_available_tshirts, get_available_tshirt_details, list_all_available_tshirts_by_edition
+from django.shortcuts import get_object_or_404
 router = Router(tags=["Tshirt_admin"], auth=None)
 
 # List T-shirts
@@ -22,7 +23,7 @@ def list_tshirts(request):
 
 # Create T-shirt(model)
 @router.post("/tshirts", response=TshirtSchema)
-def create_tshirt(request, data: TshirtSchema):
+def create_tshirt(request, data: TshirtCreateSchema):
     tshirt = Tshirt.objects.create(model=data.model)
     tshirt.size.set(data.sizes)  # Assign the ManyToMany relationship
     return {
@@ -33,9 +34,10 @@ def create_tshirt(request, data: TshirtSchema):
 
 # update T-shirt(model)
 @router.patch("/tshirts/{tshirt_id}", response=TshirtSchema)
-def update_tshirt(request, tshirt_id: int, data: TshirtSchema):
+def update_tshirt(request, tshirt_id: int, data: TshirtCreateSchema):
     tshirt = Tshirt.objects.get(id=tshirt_id)
-    tshirt.model = data.model
+    if data.model:
+        tshirt.model = data.model
     tshirt.size.set(data.sizes)
     tshirt.save()
     return {
@@ -115,6 +117,11 @@ def available_tshirts_current_edition_view(request):
 def get_available_tshirt(request, available_tshirt_id: int):
     return get_available_tshirt_details(available_tshirt_id)
 
+@router.get("/tshirt_sizes/{tshirt_id}/")
+def get_tshirt_sizes(request, tshirt_id: int):
+    tshirt = get_object_or_404(Tshirt, id=tshirt_id)
+    sizes = tshirt.size.all()
+    return [{"id": size.id, "size": size.size} for size in sizes]
 
 # Create Available T-shirt for current edition
 @router.post("/available_tshirts", response=AvailableTshirtSchema)

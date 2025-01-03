@@ -96,5 +96,10 @@ export class ApiService {
     return this.http.delete(`${this.baseUrl}/tshirts/sizes/${size}`);
   }
 
+  //get sizes by tshirt id /tshirt_sizes/{tshirt_id}/
+  getSizesByTshirtId(tshirtId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/tshirts/tshirt_sizes/${tshirtId}/`);
+  }
+
 
 }
