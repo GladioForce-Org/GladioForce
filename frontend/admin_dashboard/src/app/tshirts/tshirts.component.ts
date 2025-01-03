@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { AvailableTshirt } from '../interfaces/available-tshirt';
+import { Size } from '../interfaces/size';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -30,6 +31,8 @@ export class TshirtsComponent implements OnInit {
   tshirtEdited: string = '';
   errorTshirtEdit: string = '';
   sizeToCreate: string = '';
+  availableSizes: Size[] = [];
+  dropdownOpen = false;
 
   constructor(private apiService: ApiService) {}
 
@@ -42,23 +45,51 @@ export class TshirtsComponent implements OnInit {
   loadTshirts(): void {
     this.apiService.getAvailableTshirts().subscribe((data: AvailableTshirt[]) => {
       this.availableTshirts = data;
+
     });
   }
 
+  toggleSize(size: string) {
+    const index = this.newTshirt.sizes.indexOf(size);
+      if (index === -1) {
+        this.newTshirt.sizes.push(size);
+      } else {
+        this.newTshirt.sizes.splice(index, 1);
+      }
+    }
+
   loadSizes(): void {
-    this.apiService.getSizes().subscribe((data: string[]) => {
-      this.newTshirt.sizes = data;
+    this.apiService.getSizes().subscribe((data: any[]) => {
+      this.availableSizes = data;
+      console.log(this.availableSizes);
     });
   }
 
   createSize(): void {
-    this.apiService.createSize(this.sizeToCreate).subscribe(() => {
-      this.loadSizes();
-      this.sizeToCreate = ''; // Reset the input field after creating the size
-    }, error => {
-      console.error('Er is een fout opgetreden bij het aanmaken van de maat.', error);
-    });
+    if (!this.sizeToCreate.trim()) {
+      // Optional: Prevent sending empty strings
+      console.warn('Size cannot be empty.');
+      return;
+    }
+
+    const requestBody = { size: this.sizeToCreate.trim() }; // Create the request body object
+
+    this.apiService.createSize(requestBody).subscribe(
+      () => {
+        console.log('Size created:', this.sizeToCreate); // More informative log
+        this.loadSizes();
+        this.sizeToCreate = '';
+      },
+      (error) => {
+        console.error('Error creating size:', error); // More informative error log
+        // Optionally handle specific error codes and display messages to the user
+        if (error.status === 400) {
+          console.error("Bad Request: Perhaps the size already exists or is invalid.")
+        }
+      }
+    );
   }
+
 
   deleteSize(size: number): void {
     this.apiService.deleteSize(size).subscribe(() => {

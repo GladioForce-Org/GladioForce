@@ -87,8 +87,8 @@ export class ApiService {
   }
 
   //create size /api/tshirts/sizes
-  createSize(size: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/tshirts/sizes`, size);
+  createSize(sizeData: { size: string }): Observable<any> {
+    return this.http.post(this.baseUrl + '/tshirts/sizes', sizeData); // Correctly sending the JSON body
   }
 
   //delete size /api/tshirts/sizes/:size
