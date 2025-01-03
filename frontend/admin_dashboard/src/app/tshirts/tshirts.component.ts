@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { AvailableTshirt } from '../interfaces/available-tshirt';
 import { Size } from '../interfaces/size';
@@ -16,7 +15,7 @@ import { ModalComponent } from '../components/modal/modal.component';
   styleUrl: './tshirts.component.scss'
 })
 
-export class TshirtsComponent implements OnInit {
+export class TshirtsComponent implements OnInit, AfterViewInit {
   availableTshirts: AvailableTshirt[] = [];
   newTshirt: Omit<AvailableTshirt, 'edition_year'> = {
     id: 0,
@@ -34,6 +33,7 @@ export class TshirtsComponent implements OnInit {
   availableSizes: Size[] = [];
   dropdownOpen = false;
   selectedModelId: number = 0;
+  @ViewChild('editModal') editModal!: ModalComponent;
 
   constructor(private apiService: ApiService) {}
 
@@ -41,6 +41,13 @@ export class TshirtsComponent implements OnInit {
     this.loadTshirts();
     this.loadSizes();
     
+  }
+
+  ngAfterViewInit(): void {
+    // Ensure the modal is properly initialized
+    if (this.editModal) {
+      this.editModal.closeModal();
+    }
   }
 
   CreateSize(): void {
@@ -188,6 +195,11 @@ export class TshirtsComponent implements OnInit {
 
   openEditModal(tshirt: AvailableTshirt): void {
     this.selectedTshirt = { ...tshirt };
+    setTimeout(() => {
+      if (this.editModal) {
+        this.editModal.openModal();
+      }
+    });
   }
 
   resetSizes(): void {
