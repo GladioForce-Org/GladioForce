@@ -43,6 +43,12 @@ export class TshirtsComponent implements OnInit {
     
   }
 
+  CreateSize(): void {
+    this.apiService.createSize({ size: this.sizeToCreate }).subscribe(() => {
+      this.loadSizes();
+    });
+  }
+
   onModelChange(): void {
     if (this.selectedModelId != 0) {
       // Fetch sizes for the selected model
