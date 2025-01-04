@@ -1,60 +1,58 @@
-<div class="auth-container max-w-md mx-auto mt-10 p-6">
+<div class="max-w-md mx-auto mt-10 p-6">
   <!-- Register New Core Members Form -->
-  <div class="auth-form">
-    <h1 class="text-2xl font-semibold text-center mb-4">Nieuw Kernlid Toevoegen</h1>
-    <form (submit)="signUp()">
-      <!-- Email Field -->
-      <div class="mb-2">
-        <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
-        <input
-          required
-          type="text"
-          id="email"
-          name="email"
-          [(ngModel)]="coreMemberToCreate.email"
-          #address="ngModel"
-          class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <p *ngIf="address.invalid && (address.dirty || address.touched)" class="text-red-500 text-xs mt-1">
-          E-mail is verplicht.
-        </p>
-      </div>
+  <h1 class="text-2xl font-semibold text-center mb-4">Nieuw Kernlid Toevoegen</h1>
+  <form (submit)="signUp()">
+    <!-- Email Field -->
+    <div class="mb-2">
+      <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
+      <input
+        required
+        type="text"
+        id="email"
+        name="email"
+        [(ngModel)]="coreMemberToCreate.email"
+        #address="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+      <p *ngIf="address.invalid && (address.dirty || address.touched)" class="text-red-500 text-xs mt-1">
+        E-mail is verplicht.
+      </p>
+    </div>
 
-      <!-- Display Name Field -->
-      <div class="mb-2">
-        <label for="displayname" class="block text-sm font-medium text-gray-700">Displaynaam</label>
-        <input
-          type="text"
-          id="displayname"
-          name="displayname"
-          [(ngModel)]="coreMemberToCreate.display_name"
-          #address="ngModel"
-          class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-        />
-      </div>
+    <!-- Display Name Field -->
+    <div class="mb-2">
+      <label for="displayname" class="block text-sm font-medium text-gray-700">Displaynaam</label>
+      <input
+        type="text"
+        id="displayname"
+        name="displayname"
+        [(ngModel)]="coreMemberToCreate.display_name"
+        #address="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </div>
 
-      <!-- Phone Number Field -->
-      <div class="mb-8">
-        <label for="phonenumber" class="block text-sm font-medium text-gray-700">Telefoon</label>
-        <input
-          type="text"
-          id="phonenumber"
-          name="phonenumber"
-          [(ngModel)]="coreMemberToCreate.phone_number"
-          #address="ngModel"
-          class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-        />
-      </div>
+    <!-- Phone Number Field -->
+    <div class="mb-8">
+      <label for="phonenumber" class="block text-sm font-medium text-gray-700">Telefoon</label>
+      <input
+        type="text"
+        id="phonenumber"
+        name="phonenumber"
+        [(ngModel)]="coreMemberToCreate.phone_number"
+        #address="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </div>
 
-      <div class="mb-4">
-        <p *ngIf="userCreated !==''" class="text-green-600 font-semibold mt-3">{{ userCreated }}</p>
-        <p *ngIf="errorUserCreation !==''" class="text-red-600 font-semibold mt-3">{{ errorUserCreation }}</p>
-      </div>
-      <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        Registreer Kernlid
-      </button>
-    </form>
-  </div>
+    <div class="mb-4">
+      <p *ngIf="userCreated !==''" class="text-green-600 font-semibold mt-3">{{ userCreated }}</p>
+      <p *ngIf="errorUserCreation !==''" class="text-red-600 font-semibold mt-3">{{ errorUserCreation }}</p>
+    </div>
+    <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      Registreer Kernlid
+    </button>
+  </form>
 </div>
 
 <!-- coremember table )-->

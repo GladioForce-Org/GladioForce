@@ -13,4 +13,13 @@ export class DropdownButtonComponent {
   @Input() name: string = '';
   @Input() dropdownreference: string = '';
   @Input() icon: string = '';
+  public isDropdownOpen: boolean = false;
+
+  public toggleDropdown() {
+    if (this.isDropdownOpen) {
+      this.isDropdownOpen = false;
+    } else {
+      this.isDropdownOpen = true;
+    }
+  }
 }
