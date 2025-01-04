@@ -99,7 +99,11 @@ class SizeCreateSchema(Schema):
 class TshirtSchema(Schema):
     id: int
     model: str
-    sizes: List[int] 
+    sizes: List[int]
+
+class TshirtCreateSchema(Schema):
+    model: Optional[str] = None
+    sizes: List[int]
 
 class AvailableTshirtSchema(Schema):
     id: int

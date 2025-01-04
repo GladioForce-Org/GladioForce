@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { AvailableTshirt } from '../interfaces/available-tshirt';
 import { Size } from '../interfaces/size';
@@ -16,7 +15,7 @@ import { ModalComponent } from '../components/modal/modal.component';
   styleUrl: './tshirts.component.scss'
 })
 
-export class TshirtsComponent implements OnInit {
+export class TshirtsComponent implements OnInit, AfterViewInit {
   availableTshirts: AvailableTshirt[] = [];
   newTshirt: Omit<AvailableTshirt, 'edition_year'> = {
     id: 0,
@@ -33,6 +32,8 @@ export class TshirtsComponent implements OnInit {
   sizeToCreate: string = '';
   availableSizes: Size[] = [];
   dropdownOpen = false;
+  selectedModelId: number = 0;
+  @ViewChild('editModal') editModal!: ModalComponent;
 
   constructor(private apiService: ApiService) {}
 
@@ -40,6 +41,46 @@ export class TshirtsComponent implements OnInit {
     this.loadTshirts();
     this.loadSizes();
     
+  }
+
+  ngAfterViewInit(): void {
+    // Ensure the modal is properly initialized
+    if (this.editModal) {
+      this.editModal.closeModal();
+    }
+  }
+
+  CreateSize(): void {
+    this.apiService.createSize({ size: this.sizeToCreate }).subscribe(() => {
+      this.loadSizes();
+    });
+  }
+
+  onModelChange(): void {
+    if (this.selectedModelId != 0) {
+      // Fetch sizes for the selected model
+      this.apiService.getSizesByTshirtId(this.selectedModelId).subscribe(
+        (sizes) => { // Update sizes for the selected model
+            this.newTshirt.sizes = sizes.map((size: Size) => size.size); // Pre-select sizes for the selected model
+          console.log('Sizes for selected model:', this.availableSizes);
+        },
+        (error) => {
+          console.error('Error fetching sizes for model:', error);
+        }
+      );
+    } else {
+      // Handle "Create New" by fetching all sizes
+      this.apiService.getSizes().subscribe(
+        (sizes) => {
+          this.availableSizes = sizes; // Load all available sizes
+          this.newTshirt.sizes = []; // Clear previously selected sizes
+          console.log('All sizes reloaded for "Create New".');
+        },
+        (error) => {
+          console.error('Error loading sizes for "Create New":', error);
+        }
+      );
+    }
   }
 
   loadTshirts(): void {
@@ -58,36 +99,56 @@ export class TshirtsComponent implements OnInit {
       }
     }
 
-  loadSizes(): void {
-    this.apiService.getSizes().subscribe((data: any[]) => {
-      this.availableSizes = data;
-      console.log(this.availableSizes);
-    });
-  }
+    loadSizes(): void {
+      this.apiService.getSizes().subscribe(
+        (sizes) => {
+          this.availableSizes = sizes; // Load all available sizes
+          console.log('All sizes loaded:', this.availableSizes);
+        },
+        (error) => {
+          console.error('Error loading all sizes:', error);
+        }
+      );
+    }
 
-  createSize(): void {
+  createOrUpdateSize(): void {
     if (!this.sizeToCreate.trim()) {
-      // Optional: Prevent sending empty strings
       console.warn('Size cannot be empty.');
       return;
     }
 
-    const requestBody = { size: this.sizeToCreate.trim() }; // Create the request body object
+    const requestBody = { size: this.sizeToCreate.trim() };
 
-    this.apiService.createSize(requestBody).subscribe(
-      () => {
-        console.log('Size created:', this.sizeToCreate); // More informative log
-        this.loadSizes();
-        this.sizeToCreate = '';
-      },
-      (error) => {
-        console.error('Error creating size:', error); // More informative error log
-        // Optionally handle specific error codes and display messages to the user
-        if (error.status === 400) {
-          console.error("Bad Request: Perhaps the size already exists or is invalid.")
+    if (this.selectedModelId == 0) {
+      console.log('Creating new size:', this.sizeToCreate);
+      // Create a new size
+      this.apiService.createSize(requestBody).subscribe(
+        () => {
+          console.log('Size created:', this.sizeToCreate);
+          this.loadSizes();
+          this.sizeToCreate = '';
+        },
+        (error) => {
+          console.error('Error creating size:', error);
+          if (error.status === 400) {
+            console.error("Bad Request: Perhaps the size already exists or is invalid.");
+          }
         }
-      }
-    );
+      );
+    } else {
+      // Patch the t-shirt with the updated sizes
+      const updatedTshirt = { ...this.selectedTshirt, sizes: [...this.newTshirt.sizes, this.sizeToCreate.trim()] };
+      this.apiService.updateTshirt(updatedTshirt, this.selectedModelId).subscribe(
+        () => {
+          console.log('T-shirt updated with new size:', this.sizeToCreate);
+          this.loadTshirts();
+          this.sizeToCreate = '';
+        },
+        (error) => {
+          console.error('Error updating t-shirt with new size:', error);
+        }
+      );
+    }
   }
 
 
@@ -121,6 +182,11 @@ export class TshirtsComponent implements OnInit {
     });
   }
 
+
+  toggleDropdown(): void {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
   deleteTshirt(id: number): void {
     this.apiService.deleteTshirt(id).subscribe(() => {
       this.loadTshirts();
@@ -129,6 +195,16 @@ export class TshirtsComponent implements OnInit {
 
   openEditModal(tshirt: AvailableTshirt): void {
     this.selectedTshirt = { ...tshirt };
+    setTimeout(() => {
+      if (this.editModal) {
+        this.editModal.openModal();
+      }
+    });
+  }
+
+  resetSizes(): void {
+    this.loadSizes();
+    this.newTshirt.sizes = []; // Clear selected sizes
   }
 
   resetNewTshirt(): void {
