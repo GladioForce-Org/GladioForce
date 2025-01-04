@@ -183,7 +183,7 @@ resource "aws_ecs_task_definition" "gladioforce_backend" {
         },
         {
           "name": "DOMAIN_URL",
-          "value": "https://www.gladioforce.org"
+          "value": "[\\"https://admin.gladioforce.org\\", \\"https://data.gladioforce.org\\", \\"https://dumpster.gladioforce.org\\"]"
         },
         {
           "name": "DB_NAME",
