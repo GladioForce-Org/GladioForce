@@ -6,17 +6,19 @@ import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
+import { LoadingComponent } from "../components/loading/loading.component";
 
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingComponent],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss']
 })
 export class AuthComponent implements OnInit {
   private firebaseApp: FirebaseApp;
   private auth: Auth = getAuth();
+  public loading: boolean = false;
 
   // Store email and password input fields in the component
   email: string | null = ''; //provided by Authservice
@@ -34,23 +36,27 @@ export class AuthComponent implements OnInit {
     this.firebaseApp = initializeApp(environment.firebaseConfig);
   }
 
-
   async ngOnInit() {
+    this.loading = true;
+  
+    // Subscribe to email$ observable
     this.authService.email$.subscribe((email) => {
       this.email = email;
       this.changeDetectorRef.detectChanges();
-
     });
-
+  
+    // Auth state change handling
     this.auth.onAuthStateChanged((user) => {
       if (user) {
-        // User is signed in, so update the state with the user information
+        // User is signed in, update the state with the user information
         this.email = user.email;
         this.changeUser(user);
       } else {
-        // No user is signed in, you can handle this as needed (e.g., showing login form)
+        // No user is signed in, handle accordingly
         this.changeUser(null);
       }
+      // Set loading to false after processing the auth state change
+      this.loading = false;
     });
   }
 

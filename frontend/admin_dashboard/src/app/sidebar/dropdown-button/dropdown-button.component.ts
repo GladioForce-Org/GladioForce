@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { FeatherIconComponent } from '../../feather-icon/feather-icon.component';
+import { FeatherIconComponent } from '../../components/feather-icon/feather-icon.component';
 
 @Component({
   selector: 'app-dropdown-button',

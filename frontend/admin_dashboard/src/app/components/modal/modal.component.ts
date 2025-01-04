@@ -1,5 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FeatherIconComponent } from "../../feather-icon/feather-icon.component";
+import { FeatherIconComponent } from "../feather-icon/feather-icon.component";
 import { CommonModule, NgClass } from '@angular/common';
 import { IconButtonComponent } from "../icon-button/icon-button.component";
 import { ScreenSizeService } from '../../services/screen-size.service';

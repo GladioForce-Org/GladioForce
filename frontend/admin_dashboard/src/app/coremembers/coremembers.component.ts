@@ -11,19 +11,22 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { IconButtonComponent } from "../components/icon-button/icon-button.component";
 import { HelpersService } from '../services/helpers.service';
 import { ModalComponent } from "../components/modal/modal.component";
-import { FeatherIconComponent } from "../feather-icon/feather-icon.component";
+import { FeatherIconComponent } from "../components/feather-icon/feather-icon.component";
+import { LoadingComponent } from "../components/loading/loading.component";
 
 
 @Component({
   selector: 'app-coremembers',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconButtonComponent, ModalComponent, FeatherIconComponent],
+  imports: [CommonModule, FormsModule, IconButtonComponent, ModalComponent, FeatherIconComponent, LoadingComponent],
   templateUrl: './coremembers.component.html',
   styleUrl: './coremembers.component.scss'
 })
 export class CoremembersComponent implements OnInit {
   private firebaseApp: FirebaseApp;
   private auth: Auth = getAuth();
+
+  public loading = false;
 
   // Store email and password input fields in the component
   coreMemberToCreate: CoreMember = { email: '' };
@@ -38,11 +41,15 @@ export class CoremembersComponent implements OnInit {
   userEdited = '';
   errorUserEdited = '';
 
+  userDeleted = '';
+  errorUserDeletion = '';
+
   coreMembers: CoreMember[] = [];
   selectedCoreMember: CoreMember | null = null;
 
   //Modal
-  @ViewChild('modalComponent') modalComponent!: ModalComponent;
+  @ViewChild('editModal') editModal!: ModalComponent;
+  @ViewChild('deleteModal') deleteModal!: ModalComponent;
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -84,7 +91,6 @@ export class CoremembersComponent implements OnInit {
 
     this.apiService.createCoreMember(this.coreMemberToCreate).subscribe({
       next: (result) => {
-        //console.log(result);
         this.userCreated = 'Gebruiker aangemaakt.';
 
         sendPasswordResetEmail(this.auth, this.coreMemberToCreate.email)
@@ -118,12 +124,16 @@ export class CoremembersComponent implements OnInit {
 
   // Get core members
   private getCoreMembers() {
+    this.loading = true;
+
     this.apiService.getAllCoreMembers().subscribe({
       next: (result) => {
         this.coreMembers = result;
+        this.loading = false;
       },
       error: (error) => {
         console.log(error);
+        this.loading = false;
       }
     });
   }
@@ -131,37 +141,21 @@ export class CoremembersComponent implements OnInit {
   changeUser(user: any) {
     this.user = user;
     this.changeDetectorRef.detectChanges();
-    console.log(this.user);
   }
 
-  // Delete
-  deleteCoreMember(coreMember: CoreMember) {
-    if (coreMember.id !== undefined) {
-      this.apiService.deleteCoreMember(coreMember.id).subscribe({
-      next: (result) => {
-        this.getCoreMembers();
-      },
-      error: (error) => {
-        console.log(error);
-      }
-      });
-    } else {
-      console.log('Kernlid ID is niet gedefiniëerd.');
-    }
-  }
-
-  // Edit (Modal for popup and Edit Function)
-  openModal(coreMember: CoreMember) {
+  // Edit Popup
+  openEditModal(coreMember: CoreMember) {
     this.userEdited = '';
     this.errorUserEdited = '';
 
-    this.selectedCoreMember = coreMember;
+    this.selectedCoreMember = {...coreMember}; // {...} ensures a copy is made and not a reference
 
-    if (this.modalComponent) { // Wait until the view is initialized (you may have to click twice the first time but who cares)
-      this.modalComponent.openModal();
+    if (this.editModal) { // Wait until the view is initialized (you may have to click twice the first time but who cares)
+      this.editModal.openModal();
     }
   }
 
+  // Edit
   editCoreMember() {
     this.userEdited = '';
     this.errorUserEdited = '';
@@ -185,6 +179,36 @@ export class CoremembersComponent implements OnInit {
         },
         error: (error: HttpErrorResponse) => {
           this.errorUserEdited = this.helperService.parseError(error);
+        }
+      });
+    }
+  }
+
+  // Delete Popup
+  openDeleteModal(coreMember: CoreMember) {
+    this.userDeleted = '';
+    this.errorUserDeletion = '';
+  
+    this.selectedCoreMember = {...coreMember}; // {...} ensures a copy is made and not a reference
+
+    if (this.deleteModal) { // Wait until the view is initialized (you may have to click twice the first time)
+      this.deleteModal.openModal();  
+    }
+  }
+
+  // Delete
+  deleteCoreMember() {
+    this.userDeleted = '';
+    this.errorUserDeletion = '';
+
+    if (this.selectedCoreMember !== null && this.selectedCoreMember.id !== undefined) {
+      this.apiService.deleteCoreMember(this.selectedCoreMember.id).subscribe({
+        next: (result) => {
+          this.getCoreMembers();
+          this.userDeleted = 'Gebruiker verwijderd.';
+        },
+        error: (error) => {
+          this.errorUserDeletion = this.helperService.parseError(error);
         }
       });
     }

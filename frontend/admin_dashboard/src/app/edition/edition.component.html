@@ -1,99 +1,113 @@
 <div class="auth-container max-w-md mx-auto mt-10 p-6">
-    <!-- Register New Core Members Form -->
-    <div class="auth-form">
-      <h1 class="text-2xl font-semibold text-center mb-4">Nieuwe Editie Toevoegen</h1>
-      <form (submit)="createEdition()">
-        <!-- Year Field -->
-        <div class="mb-2">
-          <label for="year" class="block text-sm font-medium text-gray-700">Jaar</label>
-          <input
-            required
-            type="number"
-            id="year"
-            name="year"
-            [(ngModel)]="editionToCreate.year"
-            #address="ngModel"
-            class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          />
-          <p *ngIf="address.invalid && (address.dirty || address.touched)" class="text-red-500 text-xs mt-1">
-            Jaartal is verplicht.
-          </p>
-        </div>
+  <!-- Register New Core Members Form -->
+  <div class="auth-form">
+    <h1 class="text-2xl font-semibold text-center mb-4">Nieuwe Editie Toevoegen</h1>
+    <form (submit)="createEdition()">
+      <!-- Year Field -->
+      <div class="mb-2">
+        <label for="year" class="block text-sm font-medium text-gray-700">Jaar</label>
+        <input
+          required
+          type="number"
+          id="year"
+          name="year"
+          [(ngModel)]="editionToCreate.year"
+          #address="ngModel"
+          class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <p *ngIf="address.invalid && (address.dirty || address.touched)" class="text-red-500 text-xs mt-1">
+          Jaartal is verplicht.
+        </p>
+      </div>
 
-        <div class="mb-4">
-            <p *ngIf="editionCreated !==''" class="text-green-600 font-semibold mt-3">{{ editionCreated }}</p>
-            <p *ngIf="errorEditionCreation !==''" class="text-red-600 font-semibold mt-3">{{ errorEditionCreation }}</p>
-        </div>
-        <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          Editie Aanmaken
-        </button>
-      </form>
-    </div>
+      <div class="mb-4">
+          <p *ngIf="editionCreated !==''" class="text-green-600 font-semibold mt-3">{{ editionCreated }}</p>
+          <p *ngIf="errorEditionCreation !==''" class="text-red-600 font-semibold mt-3">{{ errorEditionCreation }}</p>
+      </div>
+      <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        Editie Aanmaken
+      </button>
+    </form>
+  </div>
 </div>
 
 <!-- edition table )-->
 <div class="mt-8 mx-10">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-semibold text-gray-700">Edities</h2>
-    </div>
-    <div class="overflow-x-auto rounded-md shadow overflow-y-auto">
-      <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-        <thead>
-          <tr class="bg-gray-50"> <th class="py-3 px-4 border-b text-center"></th>
-            <th class="py-3 px-4 border-b text-start">Jaar</th>
-            <th class="py-3 px-4 border-b text-start">Huidige Editie?</th>
-            <th class="py-3 px-4 border-b text-center">Acties</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let edition of editions" class="hover:bg-gray-100">
-            <td class="text-sm font-medium py-2 px-4 border-b border-gray-200"></td>
-            <td class="py-2 px-4 border-b text-start">
-              {{ edition.year }}
-            </td>
-            <td class="py-2 px-4 border-b text-start">
-                {{ edition.isCurrentEdition }}
-            </td>
-            <td class="py-2 px-4 border-b text-center">
-              <div class="flex justify-center gap-4">
-                <app-icon-button
-                    (click)="openModal(edition)"
-                    icon="edit"
-                >
-                </app-icon-button>
-                <app-icon-button
-                  (click)="openDeleteModal(edition)"
-                  icon="trash-2"
-                ></app-icon-button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-semibold text-gray-700">Edities</h2>
+  </div>
+
+  <div class="overflow-x-auto rounded-md shadow overflow-y-auto" *ngIf="!loading">
+    <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+      <thead>
+        <tr class="bg-gray-50"> <th class="py-3 px-4 border-b text-center"></th>
+          <th class="py-3 px-4 border-b text-start">Jaar</th>
+          <th class="py-3 px-4 border-b text-start">Huidige Editie?</th>
+          <th class="py-3 px-4 border-b text-center">Acties</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let edition of editions" class="hover:bg-gray-100">
+          <td class="text-sm font-medium py-2 px-4 border-b border-gray-200"></td>
+          <td class="py-2 px-4 border-b text-start">
+            {{ edition.year }}
+          </td>
+          <td class="py-2 px-4 border-b text-start">
+              {{ edition.isCurrentEdition }}
+          </td>
+          <td class="py-2 px-4 border-b text-center">
+            <div class="flex justify-center gap-4">
+              <app-icon-button
+                  (click)="openEditModal(edition)"
+                  icon="edit"
+              >
+              </app-icon-button>
+              <app-icon-button
+                (click)="openDeleteModal(edition)"
+                icon="trash-2"
+              ></app-icon-button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <app-loading *ngIf="loading" class="mt-10"></app-loading>
 </div>
 
-<!-- Delete Warning -->
+<!-- Delete Window -->
 <app-modal
-    #deleteModal
-    header = "Opgepast!"
-    [maxWidth]="500"
+  *ngIf="selectedEdition !== null"
+  #deleteModal
+  [header]="'Editie ' + selectedEdition.year.toString()"
+  [maxWidth]="500"
+  [minHeight]="150"
 >
-    <p class="mb-4">Als u een editie verwijdert wordt alle bijhorende data ontoegankelijk. Weet u zeker dat u wil doorgaan?</p>
-    <button (click)="deleteEdition()" type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        Bevestigen
-    </button>
+  <p class="mb-4">Bent u zeker dat u deze editie wil verwijderen?</p>
+
+  <div class="mb-4">
+    <p *ngIf="editionDeleted !==''" class="text-green-600 font-semibold mt-3">{{ editionDeleted }}</p>
+    <p *ngIf="errorEditionDeletion !==''" class="text-red-600 font-semibold mt-3">{{ errorEditionDeletion }}</p>
+  </div>
+
+  <button
+    *ngIf = "editionDeleted === ''"
+    (click)="deleteEdition()"
+    type="submit"
+    class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+  >
+    Bevestigen
+  </button>
 </app-modal>
 
 <!-- Edit Window -->
 <app-modal
   *ngIf="selectedEdition !== null"
-  #modalComponent
+  #editModal
   [header]="'Editie ' + selectedEdition.year.toString()"
   [maxWidth]="500"
 >
-  <!-- Here you can write the HTML to edit the selectedCoreMember -->
-
   <form (submit)="editEdition()" class="text-left">
     <!-- Year Field -->
     <div class="mb-4">
@@ -131,5 +145,4 @@
       Editie Aanpassen
     </button>
   </form>
-
 </app-modal>

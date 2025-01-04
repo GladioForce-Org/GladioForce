@@ -62,7 +62,8 @@
   <div class="flex justify-between items-center mb-4">
     <h2 class="text-2xl font-semibold text-gray-700">Kernleden</h2>
   </div>
-  <div class="overflow-x-auto rounded-md shadow overflow-y-auto">
+
+  <div class="overflow-x-auto rounded-md shadow overflow-y-auto" *ngIf="!loading">
     <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
       <thead>
         <tr class="bg-gray-50"> <th class="py-3 px-4 border-b text-center"></th>
@@ -87,13 +88,13 @@
           <td class="py-2 px-4 border-b text-center">
             <div class="flex justify-center gap-4">
               <app-icon-button
-                (click)="openModal(coreMember)"
+                (click)="openEditModal(coreMember)"
                 icon="edit"
               >
               </app-icon-button>
 
               <app-icon-button
-                (click)="deleteCoreMember(coreMember)"
+                (click)="openDeleteModal(coreMember)"
                 icon="trash-2"
               ></app-icon-button>
             </div>
@@ -102,17 +103,42 @@
       </tbody>
     </table>
   </div>
+
+  <app-loading *ngIf="loading" class="mt-10"></app-loading>
 </div>
+
+<!-- Delete Window -->
+<app-modal
+  *ngIf="selectedCoreMember !== null"
+  #deleteModal
+  [header]="selectedCoreMember.email"
+  [maxWidth]="500"
+  [minHeight]="150"
+>
+  <p class="mb-4">Bent u zeker dat u dit kernlid wil verwijderen?</p>
+
+  <div class="mb-4">
+    <p *ngIf="userDeleted !==''" class="text-green-600 font-semibold mt-3">{{ userDeleted }}</p>
+    <p *ngIf="errorUserDeletion !==''" class="text-red-600 font-semibold mt-3">{{ errorUserDeletion }}</p>
+  </div>
+
+  <button
+    *ngIf = "userDeleted === ''" 
+    (click)="deleteCoreMember()"
+    type="submit"
+    class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+  >
+    Bevestigen
+  </button>
+</app-modal>
 
 <!-- Edit Window -->
 <app-modal
   *ngIf="selectedCoreMember !== null"
-  #modalComponent
+  #editModal
   [header]="selectedCoreMember.email"
   [maxWidth]="500"
 >
-  <!-- Here you can write the HTML to edit the selectedCoreMember -->
-
   <form (submit)="editCoreMember()" class="text-left">
     <!-- Display Name Field -->
     <div class="mb-2">
@@ -148,5 +174,4 @@
       Kernlid Aanpassen
     </button>
   </form>
-
 </app-modal>
