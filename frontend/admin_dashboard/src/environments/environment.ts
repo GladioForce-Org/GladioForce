@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: "https://www.gladioforce.org/api",
+  apiUrl: "https://admin.gladioforce.org/api",
   firebaseConfig: {
       apiKey: "AIzaSyAR25aA7XOEdHqSarp22t2jJKSkjFYSOpA",
       authDomain: "gladioforceauth.firebaseapp.com",
