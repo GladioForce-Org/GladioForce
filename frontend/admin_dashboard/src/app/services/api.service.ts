@@ -5,6 +5,7 @@ import { CoreMember } from '../interfaces/core-member';
 import { environment } from '../../environments/environment';
 import { Edition } from '../interfaces/edition';
 import { AvailableTshirt } from '../interfaces/available-tshirt';
+import { Tshirt } from '../interfaces/tshirt';
 
 @Injectable({
   providedIn: 'root'
@@ -60,6 +61,11 @@ export class ApiService {
   }
 
   // calls for tshirts
+
+  //list all tshirts /tshirts/tshirts
+  getAllTshirts(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/tshirts/tshirts`);
+  }
 
   //list all available tshirts for the current edition /tshirts/available-tshirts/current/
   getAvailableTshirts(): Observable<any> {

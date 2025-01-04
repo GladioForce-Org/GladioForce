@@ -7,6 +7,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../components/modal/modal.component';
 
+
 @Component({
   selector: 'app-tshirts',
   standalone: true,
@@ -17,6 +18,7 @@ import { ModalComponent } from '../components/modal/modal.component';
 
 export class TshirtsComponent implements OnInit, AfterViewInit {
   availableTshirts: AvailableTshirt[] = [];
+  avaialbleModels:  AvailableTshirt[] = [];
   newTshirt: Omit<AvailableTshirt, 'edition_year'> = {
     id: 0,
     tshirt_id: 0,
@@ -40,6 +42,7 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.loadTshirts();
     this.loadSizes();
+    this.loadModels();
     
   }
 
@@ -87,6 +90,12 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
     this.apiService.getAvailableTshirts().subscribe((data: AvailableTshirt[]) => {
       this.availableTshirts = data;
 
+    });
+  }
+
+  loadModels(): void {
+    this.apiService.getAllTshirts().subscribe((data: AvailableTshirt[]) => {
+      this.avaialbleModels = data;
     });
   }
 

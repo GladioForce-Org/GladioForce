@@ -13,7 +13,7 @@
         class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
       >
         <option [value]="0">Nieuw Model</option>
-        <option *ngFor="let tshirt of availableTshirts" [value]="tshirt.id">{{ tshirt.model }}</option>
+        <option *ngFor="let tshirt of avaialbleModels" [value]="tshirt.id">{{ tshirt.model }}</option>
       </select>
       <input
         *ngIf="selectedModelId == 0"
