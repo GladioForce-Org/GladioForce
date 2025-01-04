@@ -102,14 +102,13 @@
 <!-- T-shirts table -->
 <div class="mt-8 mx-10">
   <div class="flex justify-between items-center mb-4">
-    <h2 class="text-2xl font-semibold text-gray-700">T-shirts</h2>
+    <h2 class="text-2xl font-semibold text-gray-700">T-shirts {{currentYear}}</h2>
   </div>
   <div class="overflow-x-auto rounded-md shadow overflow-y-auto">
     <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
       <thead>
         <tr class="bg-gray-50">
           <th class="py-3 px-4 border-b text-start">Model</th>
-          <th class="py-3 px-4 border-b text-start">Editie Jaar</th>
           <th class="py-3 px-4 border-b text-start">Maten</th>
           <th class="py-3 px-4 border-b text-start">Prijs</th>
           <th class="py-3 px-4 border-b text-center">Acties</th>
@@ -118,7 +117,6 @@
       <tbody>
         <tr *ngFor="let tshirt of availableTshirts" class="hover:bg-gray-100">
           <td class="py-2 px-4 border-b text-start">{{ tshirt.model }}</td>
-          <td class="py-2 px-4 border-b text-start">{{ tshirt.edition_year }}</td>
           <td class="py-2 px-4 border-b text-start">{{ tshirt.sizes.join(', ') }}</td>
           <td class="py-2 px-4 border-b text-start">{{ tshirt.price }}</td>
           <td class="py-2 px-4 border-b text-center">

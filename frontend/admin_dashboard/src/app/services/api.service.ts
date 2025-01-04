@@ -45,6 +45,10 @@ export class ApiService {
   }
 
   // editionApi
+  getCurrentEdition(): Observable<Edition> {
+    return this.http.get<Edition>(`${this.baseUrl}/editions/current`);
+  }
+  
   createEdition(edition: Edition): Observable<Edition> {
     return this.http.post<Edition>(`${this.baseUrl}/editions/`, edition);
   }

@@ -129,7 +129,25 @@ def create_available_tshirt(request, data: AvailableTshirtInSchema):
     current_edition = Edition.objects.filter(isCurrentEdition=True).first()
     if not current_edition:
         return JsonResponse({"error": "No current edition found"}, status=404)
-    available_tshirt = AvailableTshirt.objects.create(tshirt_id=data.tshirt_id, edition_id=current_edition.id, price=data.price)
+    
+    # Check if the tshirt exists
+    new_tshirt_id = data.tshirt_id
+
+    existing_tshirt = Tshirt.objects.filter(id=data.tshirt_id).first()
+    if not existing_tshirt:
+        new_tshirt = Tshirt.objects.create(model=data.model)
+
+        # transform data.sizes in a list of id
+        sizes = []
+        for size in data.sizes:
+            size_id = size.id
+            sizes.append(size_id)
+
+        new_tshirt.size.set(sizes)
+        new_tshirt_id = new_tshirt.id
+
+    available_tshirt = AvailableTshirt.objects.create(tshirt_id=new_tshirt_id, edition_id=current_edition.id, price=data.price)
+
     return {
         "id": available_tshirt.id,
         "tshirt_id": available_tshirt.tshirt.id,

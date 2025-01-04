@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../components/modal/modal.component';
 import { Tshirt } from '../interfaces/tshirt';
 import { IconButtonComponent } from '../components/icon-button/icon-button.component';
+import { Edition } from '../interfaces/edition';
 
 
 @Component({
@@ -21,6 +22,8 @@ import { IconButtonComponent } from '../components/icon-button/icon-button.compo
 export class TshirtsComponent implements OnInit, AfterViewInit {
   availableTshirts: AvailableTshirt[] = [];
   avaialbleModels:  AvailableTshirt[] = [];
+  currentYear: number | null = null;
+
   newTshirt: AvailableTshirt = {
     id: 0,
     tshirt_id: 0,
@@ -45,6 +48,7 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
+    this.loadCurrentEdition();
     this.loadTshirts();
     this.loadSizes();
     this.loadModels();
@@ -84,10 +88,15 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  loadCurrentEdition() {
+    this.apiService.getCurrentEdition().subscribe((data: Edition) => {
+      this.currentYear = data.year;
+    });
+  }
+
   loadTshirts(): void {
     this.apiService.getAvailableTshirts().subscribe((data: AvailableTshirt[]) => {
       this.availableTshirts = data;
-
     });
   }
 
@@ -182,7 +191,6 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
       );
     }
   }
-
 
   deleteSize(size: number): void {
     this.apiService.deleteSize(size).subscribe(() => {
