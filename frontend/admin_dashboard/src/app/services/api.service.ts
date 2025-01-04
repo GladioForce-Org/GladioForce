@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 import { Edition } from '../interfaces/edition';
 import { AvailableTshirt } from '../interfaces/available-tshirt';
 import { Tshirt } from '../interfaces/tshirt';
+import { Size } from '../interfaces/size';
 
 @Injectable({
   providedIn: 'root'
@@ -77,9 +78,14 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/tshirts/available_tshirts`, tshirt);
   }
 
+  //update available tshirt /tshirts/available_tshirts/:id
+  updateAvailableTshirt(tshirt: any, id: number): Observable<any> {
+    return this.http.patch<AvailableTshirt>(`${this.baseUrl}/tshirts/available_tshirts/${id}`, tshirt);
+  }
+
   //update tshirt /tshirts/available_tshirts/:id
   updateTshirt(tshirt: any, id: number): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/tshirts/available_tshirts/${id}`, tshirt);
+    return this.http.patch<Tshirt>(`${this.baseUrl}/tshirts/tshirts/${id}`, tshirt);
   }
 
   //delete tshirt /tshirts/available_tshirts/:id
@@ -88,8 +94,8 @@ export class ApiService {
   }
 
   //get sizes /api/tshirts/sizes
-  getSizes(): Observable<any> {
-    return this.http.get(`${this.baseUrl}/tshirts/sizes`);
+  getSizes(): Observable<Size[]> {
+    return this.http.get<Size[]>(`${this.baseUrl}/tshirts/sizes`);
   }
 
   //create size /api/tshirts/sizes
@@ -103,9 +109,7 @@ export class ApiService {
   }
 
   //get sizes by tshirt id /tshirt_sizes/{tshirt_id}/
-  getSizesByTshirtId(tshirtId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/tshirts/tshirt_sizes/${tshirtId}/`);
+  getSizesByTshirtId(tshirtId: number): Observable<Size[]> {
+    return this.http.get<Size[]>(`${this.baseUrl}/tshirts/tshirt_sizes/${tshirtId}/`);
   }
-
-
 }
