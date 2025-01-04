@@ -7,15 +7,18 @@ import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { HelpersService } from '../services/helpers.service';
 import { ModalComponent } from '../components/modal/modal.component';
+import { LoadingComponent } from "../components/loading/loading.component";
 
 @Component({
   selector: 'app-edition',
   standalone: true,
-  imports: [IconButtonComponent, CommonModule, FormsModule, ModalComponent],
+  imports: [IconButtonComponent, CommonModule, FormsModule, ModalComponent, LoadingComponent],
   templateUrl: './edition.component.html',
   styleUrl: './edition.component.scss'
 })
 export class EditionComponent implements OnInit {
+  public loading: boolean = false;
+
   editions: Edition[] = [];
   editionToCreate: Edition = { year: new Date().getFullYear(),  };
 
@@ -26,10 +29,13 @@ export class EditionComponent implements OnInit {
   editionEdited = '';
   errorEditionEdit = '';
 
+  editionDeleted = '';
+  errorEditionDeletion = '';
+
   selectedEdition: Edition | null = null;
 
   //Modal
-  @ViewChild('modalComponent') modalComponent!: ModalComponent;
+  @ViewChild('editModal') editModal!: ModalComponent;
   @ViewChild('deleteModal') deleteModal!: ModalComponent;
 
   constructor(
@@ -43,12 +49,16 @@ export class EditionComponent implements OnInit {
 
   // Get editions
   private getEditions() {
+    this.loading = true;
+
     this.apiService.getAllEditions().subscribe({
       next: (result) => {
         this.editions = result;
+        this.loading = false;
       },
       error: (error) => {
         console.log(error);
+        this.loading = false;
       }
     });
   }
@@ -60,9 +70,7 @@ export class EditionComponent implements OnInit {
     
     this.apiService.createEdition(this.editionToCreate).subscribe({
       next: (result) => {
-        console.log(result);
         this.editionCreated = 'Editie aangemaakt.';
-
         this.getEditions();
       },
       error: (error: HttpErrorResponse) => {
@@ -71,19 +79,15 @@ export class EditionComponent implements OnInit {
     });
   }
 
-  // Delete
-  deleteEdition() {
-    if (this.selectedEdition !== null && this.selectedEdition.id !== undefined) {
-      this.apiService.deleteEdition(this.selectedEdition.id).subscribe({
-        next: (result) => {
-          this.getEditions();
-        },
-        error: (error) => {
-          console.log(error);
-        }
-      });
-    } else {
-      console.log('Editie ID is niet gedefiniëerd.');
+  // Edit Popup
+  openEditModal(edition: Edition) {
+    this.editionEdited = '';
+    this.errorEditionEdit = '';  
+
+    this.selectedEdition = {...edition}; // {...} ensures a copy is made and not a reference
+
+    if (this.editModal) { // Wait until the view is initialized (you may have to click twice the first time)
+      this.editModal.openModal();  
     }
   }
 
@@ -95,7 +99,6 @@ export class EditionComponent implements OnInit {
     if (this.selectedEdition !== null && this.selectedEdition.id !== undefined) {
       this.apiService.editEdition(this.selectedEdition.id, this.selectedEdition).subscribe({
         next: (result) => {
-          console.log(result);
           this.editionEdited = 'Editie aangepast.';
           this.getEditions();
         },
@@ -107,23 +110,33 @@ export class EditionComponent implements OnInit {
     }
   }
 
-  // Edit (Modal for popup and Edit Function)
-  openModal(edition: Edition) {
-    this.editionEdited = '';
-    this.errorEditionEdit = '';  
+  // Delete Popup
+  openDeleteModal(edition: Edition) {
+    this.editionDeleted = '';
+    this.errorEditionDeletion = '';
+  
+    this.selectedEdition = {...edition}; // {...} ensures a copy is made and not a reference
 
-    this.selectedEdition = edition;
-
-    if (this.modalComponent) { // Wait until the view is initialized (you may have to click twice the first time but who cares)
-      this.modalComponent.openModal();  
+    if (this.deleteModal) { // Wait until the view is initialized (you may have to click twice the first time)
+      this.deleteModal.openModal();  
     }
   }
 
-  openDeleteModal(edition: Edition) {
-    this.selectedEdition = edition;
+  // Delete
+  deleteEdition() {
+    this.editionDeleted = '';
+    this.errorEditionDeletion = '';
 
-    if (this.deleteModal) { // Wait until the view is initialized (you may have to click twice the first time but who cares)
-      this.deleteModal.openModal();  
+    if (this.selectedEdition !== null && this.selectedEdition.id !== undefined) {
+      this.apiService.deleteEdition(this.selectedEdition.id).subscribe({
+        next: (result) => {
+          this.getEditions();
+          this.editionDeleted = 'Editie verwijderd.';
+        },
+        error: (error) => {
+          this.errorEditionDeletion = this.helperService.parseError(error);
+        }
+      });
     }
   }
 }
