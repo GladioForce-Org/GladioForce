@@ -20,7 +20,7 @@
         type="text"
         id="newModel"
         name="newModel"
-        [(ngModel)]="newTshirt.model"
+        [(ngModel)]="selectedTshirt.model"
         placeholder="Kies een model naam"
         class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
       />
@@ -35,23 +35,25 @@
           class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           (click)="toggleDropdown()"
         >
-          {{ newTshirt.sizes.length ? newTshirt.sizes.join(', ') : 'Kies Maten' }}
+          <ng-container *ngFor="let size of selectedTshirt.sizes">
+            {{ size.size }}<ng-container *ngIf="size !== selectedTshirt.sizes[selectedTshirt.sizes.length - 1]">, </ng-container>
+          </ng-container>
+          <ng-container *ngIf="!selectedTshirt.sizes.length">Kies Maten</ng-container>
         </button>
 
-        <!-- Dropdown Menu -->
         <div *ngIf="dropdownOpen" class="absolute w-full mt-2 bg-white border rounded-md shadow-lg z-10">
           <div *ngFor="let size of availableSizes" class="flex items-center justify-between px-4 py-2">
             <label class="inline-flex items-center">
               <input
                 type="checkbox"
                 [value]="size.size"
-                (change)="toggleSize(size.size)"
-                [checked]="newTshirt.sizes.includes(size.size)"
+                (change)="toggleSize(size)"
+                [checked]="selectedTshirtSizes.includes(size.id)"
                 class="form-checkbox"
               />
               <span class="ml-2">{{ size.size }}</span>
             </label>
-            <button (click)="deleteSize(size.id)" class="text-red-500 hover:text-red-700 ml-2">Verwijder</button>
+            <app-icon-button (click)="deleteSize(size.id)" icon="trash-2"></app-icon-button>
           </div>
 
           <!-- Add New Size -->
@@ -66,7 +68,7 @@
             <button
               type="button"
               (click)="CreateSize()"
-              class="mt-2 w-full bg-indigo-500 text-white px-4 py-1 rounded-md"
+              class="mt-2 w-full py-1 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               Voeg een maat toe
             </button>
@@ -82,7 +84,7 @@
         type="text"
         id="price"
         name="price"
-        [(ngModel)]="newTshirt.price"
+        [(ngModel)]="selectedTshirt.price"
         #price="ngModel"
         class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
       />
@@ -121,8 +123,8 @@
           <td class="py-2 px-4 border-b text-start">{{ tshirt.price }}</td>
           <td class="py-2 px-4 border-b text-center">
             <div class="flex justify-center gap-4">
-              <button (click)="openEditModal(tshirt)" class="text-blue-500 hover:text-blue-700">Aanpassen</button>
-              <button (click)="deleteTshirt(tshirt.id)" class="text-red-500 hover:text-red-700">Verwijderen</button>
+              <app-icon-button (click)="openEditModal(tshirt)" icon="edit"></app-icon-button>
+              <app-icon-button (click)="deleteTshirt(tshirt.id)" icon="trash-2"></app-icon-button>
             </div>
           </td>
         </tr>
