@@ -12,6 +12,12 @@ def get_editions(request):
     editions = Edition.objects.all()
     return list(editions.values())
 
+# get current edition
+@router.get("/current")
+def get_current_edition(request):
+    edition = Edition.objects.filter(isCurrentEdition=True).first()
+    return { "id": edition.id, "year": edition.year, "isCurrentEdition": True }
+
 # Create Edition
 @router.post("/")
 def create_edition(request, payload: EditionCreateSchema):
