@@ -150,9 +150,11 @@ export class CoremembersComponent implements OnInit {
 
     this.selectedCoreMember = {...coreMember}; // {...} ensures a copy is made and not a reference
 
-    if (this.editModal) { // Wait until the view is initialized (you may have to click twice the first time but who cares)
-      this.editModal.openModal();
-    }
+    setTimeout(() => { // Wait for the view to update
+      if (this.editModal) { // Wait until the view is initialized (you may have to click twice the first time but who cares)
+        this.editModal.openModal();
+      }
+    });
   }
 
   // Edit
@@ -191,9 +193,11 @@ export class CoremembersComponent implements OnInit {
   
     this.selectedCoreMember = {...coreMember}; // {...} ensures a copy is made and not a reference
 
-    if (this.deleteModal) { // Wait until the view is initialized (you may have to click twice the first time)
-      this.deleteModal.openModal();  
-    }
+    setTimeout(() => { // Wait for the view to update
+      if (this.deleteModal) { // Wait until the view is initialized (you may have to click twice the first time)
+        this.deleteModal.openModal();  
+      }
+    });
   }
 
   // Delete

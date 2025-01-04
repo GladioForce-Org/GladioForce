@@ -9,7 +9,7 @@ import { ModalComponent } from '../components/modal/modal.component';
 import { Tshirt } from '../interfaces/tshirt';
 import { IconButtonComponent } from '../components/icon-button/icon-button.component';
 import { Edition } from '../interfaces/edition';
-
+import { HelpersService } from '../services/helpers.service';
 
 @Component({
   selector: 'app-tshirts',
@@ -44,8 +44,7 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
   dropdownOpen = false;
   selectedModelId: number = 0;
   @ViewChild('editModal') editModal!: ModalComponent;
-
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private helperService: HelpersService) {}
 
   ngOnInit(): void {
     this.loadCurrentEdition();
@@ -205,7 +204,7 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
       this.tshirtCreated = 'T-shirt succesvol toegevoegd!';
       this.errorTshirtCreation = '';
     }, error => {
-      this.errorTshirtCreation = 'Er is een fout opgetreden bij het toevoegen van de T-shirt.';
+      this.errorTshirtCreation = this.helperService.parseError(error);
       this.tshirtCreated = '';
     });
   }
@@ -216,7 +215,7 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
       this.tshirtEdited = 'T-shirt succesvol aangepast!';
       this.errorTshirtEdit = '';
     }, error => {
-      this.errorTshirtEdit = 'Er is een fout opgetreden bij het aanpassen van de T-shirt.';
+      this.errorTshirtEdit = this.helperService.parseError(error);
       this.tshirtEdited = '';
     });
   }
