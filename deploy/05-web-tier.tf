@@ -185,16 +185,20 @@ sudo systemctl enable nginx
 
 # Obtain SSL certificates using Certbot
 # Replace with your domain name
-DOMAIN_NAME="www.${var.cloudflare_domain}"
+ADMIN_DOMAIN_NAME="admin.${var.cloudflare_domain}"
+DATA_DOMAIN_NAME="data.${var.cloudflare_domain}"
+DUMPSTER_DOMAIN_NAME="data.${var.cloudflare_domain}"
+WILDCARD_DOMAIN_NAME="*.${var.cloudflare_domain}"
+DOMAIN_NAME="${var.cloudflare_domain}"
 EMAIL="${var.cloudflare_email}"
 sudo touch ~/cloudflare-credentials
 echo 'dns_cloudflare_api_token = ${var.cloudflare_api_token}' | sudo tee ~/cloudflare-credentials > /dev/null
 
 # Certbot command to obtain and install certificates
 # Staging
-sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $DOMAIN_NAME --server https://acme-staging-v02.api.letsencrypt.org/directory --email $EMAIL
+sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $WILDCARD_DOMAIN_NAME -d $DOMAIN_NAME --server https://acme-staging-v02.api.letsencrypt.org/directory --email $EMAIL
 # production
-#sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $DOMAIN_NAME --server https://acme-v02.api.letsencrypt.org/directory --email $EMAIL 
+#sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $WILDCARD_DOMAIN_NAME -d $DOMAIN_NAME --server https://acme-v02.api.letsencrypt.org/directory --email $EMAIL 
 sleep 180
 
 
@@ -202,7 +206,7 @@ sleep 180
 cat <<EOT > /etc/nginx/sites-available/gladiolen
 server {
     listen 80;
-    server_name $DOMAIN_NAME;
+    server_name $ADMIN_DOMAIN_NAME;
 
     # Redirect HTTP to HTTPS
     return 301 https://\$host\$request_uri;
@@ -210,7 +214,7 @@ server {
 
 server {
     listen 443 ssl http2;
-    server_name $DOMAIN_NAME;
+    server_name $ADMIN_DOMAIN_NAME;
 
     # SSL configuration
     ssl_certificate /etc/letsencrypt/live/$DOMAIN_NAME/fullchain.pem;
@@ -224,17 +228,77 @@ server {
         try_files \$uri /index.html;
     }
 
-    # location /app2/ {
-    #     root /var/www/app2;
-    #     index index.html;
-    #     try_files \$uri /index.html;
-    # }
+    location /api/ {
+        # Use the container's private IP address dynamically
+        proxy_pass http://${data.local_file.private_ip.content}:8000/;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
 
-    # location /app3/ {
-    #     root /var/www/app3;
-    #     index index.html;
-    #     try_files \$uri /index.html;
-    # }
+    }
+
+
+}
+
+server {
+    listen 80;
+    server_name $DATA_DOMAIN_NAME;
+
+    # Redirect HTTP to HTTPS
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name $DATA_DOMAIN_NAME;
+
+    # SSL configuration
+    ssl_certificate /etc/letsencrypt/live/$DOMAIN_NAME/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN_NAME/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/$DOMAIN_NAME/chain.pem;
+
+    # Your static file and API configuration
+    location / {
+        root /var/www/data;
+        index index.html;
+        try_files \$uri /index.html;
+    }
+
+    location /api/ {
+        # Use the container's private IP address dynamically
+        proxy_pass http://${data.local_file.private_ip.content}:8000/;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+
+    }
+
+
+}
+
+server {
+    listen 80;
+    server_name $DUMPSTER_DOMAIN_NAME;
+
+    # Redirect HTTP to HTTPS
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name $DUMPSTER_DOMAIN_NAME;
+
+    # SSL configuration
+    ssl_certificate /etc/letsencrypt/live/$DOMAIN_NAME/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN_NAME/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/$DOMAIN_NAME/chain.pem;
+
+    # Your static file and API configuration
+    location / {
+        root /var/www/dumpster;
+        index index.html;
+        try_files \$uri /index.html;
+    }
 
     location /api/ {
         # Use the container's private IP address dynamically
@@ -290,6 +354,20 @@ resource "null_resource" "upload_app_files" {
   }
 
   # provisioner "file" {
+  #   source      = "../frontend/datacollectie/dist/datacollectie/browser/data.zip"
+  #   destination = "/home/ubuntu/data.zip"
+
+  #   connection {
+  #     type        = "ssh"
+  #     user        = "ec2-user"
+  #     private_key = file(var.private_key_path)
+  #     host        = aws_instance.nginx.public_ip
+  #   }
+  # }
+
+
+
+  # provisioner "file" {
   #   source      = "../frontend/another_app/dist/another_app/browser"
   #   destination = "/home/ec2-user/another.zip"
 
@@ -308,7 +386,7 @@ resource "null_resource" "upload_app_files" {
       "sudo mkdir -p /var/www/data",
       "sudo apt install unzip -y",
       "sudo unzip /home/ubuntu/admin.zip -d /var/www/admin",
-      # "sudo unzip /home/ec2-user/app2.zip -d /var/www/app2",
+      # "sudo unzip /home/ubuntu/data.zip -d /var/www/data",
       # "sudo unzip /home/ec2-user/app3.zip -d /var/www/app3",
       "sudo chown -R www-data:www-data /var/www",
       "sudo chmod -R 755 /var/www",
@@ -333,7 +411,25 @@ data "cloudflare_zone" "gladioforce" {
 
 resource "cloudflare_record" "a" {
   zone_id = data.cloudflare_zone.gladioforce.id
-  name    = "www"
+  name    = "admin"
+  content = aws_eip.nginx.public_ip
+  type    = "A"
+  proxied = false
+
+}
+
+resource "cloudflare_record" "a" {
+  zone_id = data.cloudflare_zone.gladioforce.id
+  name    = "data"
+  content = aws_eip.nginx.public_ip
+  type    = "A"
+  proxied = false
+
+}
+
+resource "cloudflare_record" "a" {
+  zone_id = data.cloudflare_zone.gladioforce.id
+  name    = "dumpster"
   content = aws_eip.nginx.public_ip
   type    = "A"
   proxied = false

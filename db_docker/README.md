@@ -90,8 +90,9 @@ This will show all the Docker images available on your system. Ensure that the n
 Remove Any Existing Containers or Images (Optional) If any containers or images remain from previous runs, remove them manually:
 
 ```plaintext
-sudo docker container prune -f
+sudo docker container prune -fs
 sudo docker image prune -a -f
+sudo docker rmi $(sudo docker images -q) -f
 ```
 
 This will remove all stopped containers and unused images.
