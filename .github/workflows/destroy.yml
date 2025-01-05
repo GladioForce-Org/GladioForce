@@ -1,7 +1,12 @@
 name: CI/CD Pipeline to destroy GladioForce Production Environment in AWS
 
 on:
-    workflow_dispatch:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Production
+        required: true
+        default: Production
 
 jobs:
 production-destroy:
