@@ -11,12 +11,12 @@ import { IconButtonComponent } from '../components/icon-button/icon-button.compo
 import { Edition } from '../interfaces/edition';
 import { HelpersService } from '../services/helpers.service';
 import { LoadingComponent } from "../components/loading/loading.component";
-import { timeout } from 'rxjs';
+import { CustomDropdownComponent } from "../components/custom-dropdown/custom-dropdown.component";
 
 @Component({
   selector: 'app-tshirts',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalComponent, IconButtonComponent, LoadingComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, IconButtonComponent, LoadingComponent, CustomDropdownComponent],
   templateUrl: './tshirts.component.html',
   styleUrl: './tshirts.component.scss'
 })
@@ -47,8 +47,6 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
 
   sizeToCreate: string = '';
   availableSizes: Size[] = [];
-  dropdownOpen = false;
-  editDropdownOpen = false;
   selectedModelId: number = 0;
 
   // Messages
@@ -250,15 +248,7 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
       this.tshirtCreated = '';
     });
   }
-
-  toggleDropdown(): void {
-    this.dropdownOpen = !this.dropdownOpen;
-  }
-
-  toggleEditDropdown(): void {
-    this.editDropdownOpen = !this.editDropdownOpen;
-  }
-  
+ 
   resetSizes(): void {
     this.loadSizes();
     this.newTshirt.sizes = []; // Clear selected sizes
@@ -276,8 +266,6 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
 
   // Edit Popup
   openEditModal(tshirt: AvailableTshirt): void {
-    this.editDropdownOpen = false;
-
     this.tshirtToEdit = {
       id: tshirt.id,
       tshirt_id: tshirt.tshirt_id,

@@ -30,50 +30,50 @@
     <div class="mb-4">
       <label for="sizes" class="block text-sm font-medium text-gray-700">Maten</label>
       <div class="relative" *ngIf="availableSizes.length && !loadingSizes">
-        <button
-          type="button"
-          class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          (click)="toggleDropdown()"
-        >
-          <ng-container *ngFor="let size of selectedTshirt.sizes">
-            {{ size.size }}<ng-container *ngIf="size !== selectedTshirt.sizes[selectedTshirt.sizes.length - 1]">, </ng-container>
+        <app-custom-dropdown class="mt-2">
+          <!-- Dropdown Header -->
+          <ng-container header>
+            <ng-container *ngFor="let size of selectedTshirt.sizes">
+              {{ size.size }}<ng-container *ngIf="size !== selectedTshirt.sizes[selectedTshirt.sizes.length - 1]">, </ng-container>
+            </ng-container>
+            <ng-container *ngIf="!selectedTshirt.sizes.length">Kies Maten</ng-container>
           </ng-container>
-          <ng-container *ngIf="!selectedTshirt.sizes.length">Kies Maten</ng-container>
-        </button>
 
-        <div *ngIf="dropdownOpen" class="absolute w-full mt-2 bg-white border rounded-md shadow-lg z-10">
-          <div *ngFor="let size of availableSizes" class="flex items-center justify-between px-4 py-2">
-            <label class="inline-flex items-center">
+          <!-- Dropdown Body -->
+          <ng-container body>
+            <div *ngFor="let size of availableSizes" class="flex items-center justify-between px-4 py-2">
+              <label class="inline-flex items-center">
+                <input
+                  type="checkbox"
+                  [value]="size.size"
+                  (change)="toggleSize(size)"
+                  [checked]="selectedTshirtSizes.includes(size.id)"
+                  class="form-checkbox"
+                />
+                <span class="ml-2">{{ size.size }}</span>
+              </label>
+              <app-icon-button (click)="deleteSize(size.id)" icon="trash-2"></app-icon-button>
+            </div>
+  
+            <!-- Add New Size -->
+            <div class="px-4 py-2 border-t">
               <input
-                type="checkbox"
-                [value]="size.size"
-                (change)="toggleSize(size)"
-                [checked]="selectedTshirtSizes.includes(size.id)"
-                class="form-checkbox"
+                type="text"
+                [(ngModel)]="sizeToCreate"
+                name="sizeToCreate"
+                placeholder="Add new size"
+                class="w-full px-2 py-1 border rounded-md"
               />
-              <span class="ml-2">{{ size.size }}</span>
-            </label>
-            <app-icon-button (click)="deleteSize(size.id)" icon="trash-2"></app-icon-button>
-          </div>
-
-          <!-- Add New Size -->
-          <div class="px-4 py-2 border-t">
-            <input
-              type="text"
-              [(ngModel)]="sizeToCreate"
-              name="sizeToCreate"
-              placeholder="Add new size"
-              class="w-full px-2 py-1 border rounded-md"
-            />
-            <button
-              type="button"
-              (click)="CreateSize()"
-              class="mt-2 w-full py-1 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              Voeg een maat toe
-            </button>
-          </div>
-        </div>
+              <button
+                type="button"
+                (click)="CreateSize()"
+                class="mt-2 w-full py-1 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                Voeg een maat toe
+              </button>
+            </div>
+          </ng-container>
+        </app-custom-dropdown>
       </div>
 
       <app-loading *ngIf="loadingSizes" [size]="50"></app-loading>
@@ -194,31 +194,31 @@
     <div class="mb-4">
       <label for="sizes" class="block text-sm font-medium text-gray-700">Maten</label>
       <div class="relative" *ngIf="availableSizes.length">
-        <button
-          type="button"
-          class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          (click)="toggleEditDropdown()"
-        >
-          <ng-container *ngFor="let size of tshirtToEdit.sizes">
-            {{ size.size }}<ng-container *ngIf="size !== tshirtToEdit.sizes[tshirtToEdit.sizes.length - 1]">, </ng-container>
+        <app-custom-dropdown>
+          <!-- Dropdown Header -->
+          <ng-container header>
+            <ng-container *ngFor="let size of tshirtToEdit.sizes">
+              {{ size.size }}<ng-container *ngIf="size !== tshirtToEdit.sizes[tshirtToEdit.sizes.length - 1]">, </ng-container>
+            </ng-container>
+            <ng-container *ngIf="!tshirtToEdit.sizes.length">Kies Maten</ng-container>
           </ng-container>
-          <ng-container *ngIf="!tshirtToEdit.sizes.length">Kies Maten</ng-container>
-        </button>
 
-        <div *ngIf="editDropdownOpen" class="absolute w-full mt-2 bg-white border rounded-md shadow-lg z-10">
-          <div *ngFor="let size of availableSizes" class="flex items-center justify-between px-4 py-2">
-            <label class="inline-flex items-center">
-              <input
-                type="checkbox"
-                [value]="size.size"
-                (change)="toggleEditSize(size)"
-                [checked]="tshirtToEditSizes.includes(size.id)"
-                class="form-checkbox"
-              />
-              <span class="ml-2">{{ size.size }}</span>
-            </label>
-          </div>
-        </div>
+          <!-- Dropdown Body -->
+          <ng-container body>
+            <div *ngFor="let size of availableSizes" class="flex items-center justify-between px-4 py-2">
+              <label class="inline-flex items-center">
+                <input
+                  type="checkbox"
+                  [value]="size.size"
+                  (change)="toggleEditSize(size)"
+                  [checked]="tshirtToEditSizes.includes(size.id)"
+                  class="form-checkbox"
+                />
+                <span class="ml-2">{{ size.size }}</span>
+              </label>
+            </div>
+          </ng-container>
+        </app-custom-dropdown>
       </div>
     </div>
 
