@@ -73,7 +73,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           IMAGE_REPO: ${{ secrets.ECR_REPO }}
         run: |
-          docker build --compress -t $IMAGE_REPO:$IMAGE_TAG backend/gladio_backend/.
+          docker build --compress -t $IMAGE_REPO:$IMAGE_TAG -f backend/gladio_backend/Dockerfile.prod backend/gladio_backend/.
           docker push $IMAGE_REPO:$IMAGE_TAG
           docker tag $IMAGE_REPO:$IMAGE_TAG $IMAGE_REPO:latest
           docker push $IMAGE_REPO:latest
