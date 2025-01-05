@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { ApiService } from '../services/api.service';
-import { AvailableTshirt } from '../interfaces/available-tshirt';
+import { AvailableTshirt, AvailableTshirtPatcher } from '../interfaces/available-tshirt';
 import { Size } from '../interfaces/size';
 import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
@@ -10,18 +10,23 @@ import { Tshirt } from '../interfaces/tshirt';
 import { IconButtonComponent } from '../components/icon-button/icon-button.component';
 import { Edition } from '../interfaces/edition';
 import { HelpersService } from '../services/helpers.service';
+import { LoadingComponent } from "../components/loading/loading.component";
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-tshirts',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalComponent, IconButtonComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, IconButtonComponent, LoadingComponent],
   templateUrl: './tshirts.component.html',
   styleUrl: './tshirts.component.scss'
 })
 
 export class TshirtsComponent implements OnInit, AfterViewInit {
+  loading: boolean = false;
+  loadingSizes: boolean = false;
+
   availableTshirts: AvailableTshirt[] = [];
-  avaialbleModels:  AvailableTshirt[] = [];
+  availableModels:  AvailableTshirt[] = [];
   currentYear: number | null = null;
 
   newTshirt: AvailableTshirt = {
@@ -35,15 +40,31 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
   selectedTshirt: AvailableTshirt = this.newTshirt;
   selectedTshirtSizes: number[] = [];
 
-  tshirtCreated: string = '';
-  errorTshirtCreation: string = '';
-  tshirtEdited: string = '';
-  errorTshirtEdit: string = '';
+  tshirtToDelete: AvailableTshirt | null = null;
+
+  tshirtToEdit: AvailableTshirtPatcher | null = null;
+  tshirtToEditSizes: number[] = [];
+
   sizeToCreate: string = '';
   availableSizes: Size[] = [];
   dropdownOpen = false;
+  editDropdownOpen = false;
   selectedModelId: number = 0;
+
+  // Messages
+  tshirtCreated: string = '';
+  errorTshirtCreation: string = '';
+
+  tshirtEdited: string = '';
+  errorTshirtEdit: string = '';
+
+  tshirtDeleted = '';
+  errorTshirtDeletion = '';
+
+  // Modal
   @ViewChild('editModal') editModal!: ModalComponent;
+  @ViewChild('deleteModal') deleteModal!: ModalComponent;
+
   constructor(private apiService: ApiService, private helperService: HelpersService) {}
 
   ngOnInit(): void {
@@ -94,14 +115,17 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
   }
 
   loadTshirts(): void {
+    this.loading = true;
+
     this.apiService.getAvailableTshirts().subscribe((data: AvailableTshirt[]) => {
       this.availableTshirts = data;
+      this.loading = false;
     });
   }
 
   loadModels(): void {
     this.apiService.getAllTshirts().subscribe((data: AvailableTshirt[]) => {
-      this.avaialbleModels = data;
+      this.availableModels = data;
     });
   }
 
@@ -139,13 +163,31 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  toggleEditSize(size: Size) {
+    if(this.tshirtToEdit !== null) {
+      const index = this.tshirtToEditSizes.indexOf(size.id);
+
+      if (index === -1) {
+        this.tshirtToEdit.sizes.push(size);
+      } else {
+        this.tshirtToEdit.sizes.splice(index, 1);
+      }
+
+      this.tshirtToEditSizes = this.tshirtToEdit.sizes.map((size: Size) => size.id);
+    }
+  }
+
   loadSizes(): void {
+    this.loadingSizes = true;
+
     this.apiService.getSizes().subscribe(
       (sizes) => {
         this.availableSizes = sizes; // Load all available sizes
+        this.loadingSizes = false;
         console.log('All sizes loaded:', this.availableSizes);
       },
       (error) => {
+        this.loadingSizes = false;
         console.error('Error loading all sizes:', error);
       }
     );
@@ -209,36 +251,14 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  updateTshirt(tshirt: AvailableTshirt): void {
-    this.apiService.updateTshirt(tshirt, tshirt.id).subscribe(() => {
-      this.loadTshirts();
-      this.tshirtEdited = 'T-shirt succesvol aangepast!';
-      this.errorTshirtEdit = '';
-    }, error => {
-      this.errorTshirtEdit = this.helperService.parseError(error);
-      this.tshirtEdited = '';
-    });
-  }
-
   toggleDropdown(): void {
     this.dropdownOpen = !this.dropdownOpen;
   }
 
-  deleteTshirt(id: number): void {
-    this.apiService.deleteTshirt(id).subscribe(() => {
-      this.loadTshirts();
-    });
+  toggleEditDropdown(): void {
+    this.editDropdownOpen = !this.editDropdownOpen;
   }
-
-  openEditModal(tshirt: AvailableTshirt): void {
-    this.selectedTshirt = { ...tshirt };
-    setTimeout(() => {
-      if (this.editModal) {
-        this.editModal.openModal();
-      }
-    });
-  }
-
+  
   resetSizes(): void {
     this.loadSizes();
     this.newTshirt.sizes = []; // Clear selected sizes
@@ -252,5 +272,79 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
       sizes: [],
       price: ''
     };
+  }
+
+  // Edit Popup
+  openEditModal(tshirt: AvailableTshirt): void {
+    this.editDropdownOpen = false;
+
+    this.tshirtToEdit = {
+      id: tshirt.id,
+      tshirt_id: tshirt.tshirt_id,
+      model: tshirt.model,
+      sizes: [...tshirt.sizes],
+      price: tshirt.price
+    }
+
+    this.tshirtToEditSizes = this.tshirtToEdit.sizes.map((size: Size) => size.id);
+
+    setTimeout(() => {
+      if (this.editModal) {
+        this.editModal.openModal();
+      }
+    });
+  }
+
+  // Edit
+  updateTshirt(tshirt: AvailableTshirtPatcher): void {
+    // remove ID from editObject to comply with the API
+    let editObject = {
+      tshirt_id: tshirt.tshirt_id,
+      model: tshirt.model,
+      sizes: tshirt.sizes,
+      price: tshirt.price
+    }
+
+    this.apiService.updateAvailableTshirt(editObject, tshirt.id).subscribe(() => {
+      this.loadTshirts();
+      this.loadModels();
+      this.tshirtEdited = 'T-shirt succesvol aangepast!';
+      this.errorTshirtEdit = '';
+    }, error => {
+      this.errorTshirtEdit = this.helperService.parseError(error);
+      this.tshirtEdited = '';
+    });
+  }
+
+  // Delete Popup
+  openDeleteModal(tshirt: AvailableTshirt) {
+    this.tshirtDeleted = '';
+    this.errorTshirtDeletion = '';
+  
+    this.tshirtToDelete = {...tshirt}; // {...} ensures a copy is made and not a reference
+
+    setTimeout(() => { // Wait for the view to update
+      if (this.deleteModal) { // Wait until the view is initialized (you may have to click twice the first time)
+        this.deleteModal.openModal();  
+      }
+    });
+  }
+
+  // Delete
+  deleteTshirt(): void {
+    this.tshirtDeleted = '';
+    this.errorTshirtDeletion = '';
+
+    if (this.tshirtToDelete !== null) {
+      this.apiService.deleteTshirt(this.tshirtToDelete.id).subscribe({
+        next: (result) => {
+          this.loadTshirts();
+          this.tshirtDeleted = 'T-shirt verwijderd.';
+        },
+        error: (error) => {
+          this.errorTshirtDeletion = this.helperService.parseError(error);
+        }
+      });
+    }
   }
 }
