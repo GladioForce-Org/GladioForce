@@ -1,5 +1,4 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FeatherIconComponent } from "../feather-icon/feather-icon.component";
 import { CommonModule, NgClass } from '@angular/common';
 import { IconButtonComponent } from "../icon-button/icon-button.component";
 import { ScreenSizeService } from '../../services/screen-size.service';
@@ -8,7 +7,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-modal',
   standalone: true,
-  imports: [FeatherIconComponent, NgClass, IconButtonComponent, CommonModule],
+  imports: [NgClass, IconButtonComponent, CommonModule],
   templateUrl: './modal.component.html',
   styleUrl: './modal.component.scss'
 })
