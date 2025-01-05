@@ -3,7 +3,7 @@ name: CI/CD Pipeline to deploy GladioForce Production Environment to AWS
 on:
   pull_request:
     branches:
-      - production
+      - Production
 
 jobs:
   validate-terraform:
@@ -103,14 +103,15 @@ jobs:
 
       - name: Create Admin ZIP Archive
         run: |
-          zip -r admin.zip dist/admin_dashboard/browser
-        working-directory: ./frontend/admin_dashboard
+          apt install zip -y
+          zip -r admin.zip ./*
+        working-directory: ./frontend/admin_dashboard/dist/browser
 
       - name: Upload Admin ZIP Artifact
         uses: actions/upload-artifact@v3
         with:
           name: angular-admin
-          path: ./frontend/admin_dashboard/dist/admin_dashboard/browser/admin.zip
+          path: ./frontend/admin_dashboard/dist/browser/admin.zip
   
   
   build-angular-data:
@@ -136,14 +137,15 @@ jobs:
 
       - name: Create Data ZIP Archive
         run: |
-          zip -r data.zip dist/data_collectie/browser
-        working-directory: ./frontend/data_collectie
+          apt install zip -y
+          zip -r data.zip ./*
+        working-directory: ./frontend/data_collectie/dist/browser
 
       - name: Upload Data ZIP Artifact
         uses: actions/upload-artifact@v3
         with:
           name: angular-data
-          path: ./frontend/data_collectie/dist/data_collectie/browser/data.zip
+          path: ./frontend/data_collectie/dist/browser/data.zip
 
   production-plan:
     name: Run Terraform Plan for Production
@@ -165,13 +167,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: angular-admin
-          path: ./frontend/admin_dashboard/dist/admin_dashboard/browser
+          path: ./frontend/admin_dashboard/
 
       - name: Download Angular data Artifact
           uses: actions/download-artifact@v3
           with:
             name: angular-data
-            path: ./frontend/data_collectie/dist/data_collectie/browser
+            path: ./frontend/data_collectie/
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
