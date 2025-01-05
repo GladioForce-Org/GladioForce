@@ -97,7 +97,7 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
           this.selectedTshirtSizes = sizes.map((size: Size) => size.id); // Pre-select sizes for the selected model
         },
         (error) => {
-          console.error('Error fetching sizes for model:', error);
+          console.error('Error bij het ophalen van de maten voor het model:', error);
         }
       );
     } else { // New t-shirt
@@ -145,7 +145,7 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
         sizes: this.selectedTshirtSizes
       };
       
-      console.log('patching tshirt:', this.selectedTshirt.model);
+      console.log('T-shirt patchen:', this.selectedTshirt.model);
 
       console.log('tshirt ID:', this.selectedTshirt.tshirt_id);
 
@@ -155,7 +155,7 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
           this.loadModels();    
         },
         error: (error) => {
-          console.error('Error updating tshirt:', error);
+          console.error('Error bij het updaten van de t-shirt:', error);
         }
       });
     }
@@ -182,36 +182,39 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
       (sizes) => {
         this.availableSizes = sizes; // Load all available sizes
         this.loadingSizes = false;
-        console.log('All sizes loaded:', this.availableSizes);
+        console.log('Alle maten opgehaald:', this.availableSizes);
       },
       (error) => {
         this.loadingSizes = false;
-        console.error('Error loading all sizes:', error);
+        console.error('Error bij het ophalen van de maten:', error);
       }
     );
   }
 
   createOrUpdateSize(): void {
     if (!this.sizeToCreate.trim()) {
-      console.warn('Size cannot be empty.');
+      console.warn('Maat mag niet leeg zijn.');
       return;
     }
 
     const requestBody = { size: this.sizeToCreate.trim() };
 
     if (this.selectedModelId == 0) {
-      console.log('Creating new size:', this.sizeToCreate);
+      console.log('Aanmaken van nieuwe maat:', this.sizeToCreate);
       // Create a new size
       this.apiService.createSize(requestBody).subscribe(
         () => {
-          console.log('Size created:', this.sizeToCreate);
+          console.log('Maat aangemaakt:', this.sizeToCreate);
           this.loadSizes();
           this.sizeToCreate = '';
         },
         (error) => {
-          console.error('Error creating size:', error);
+          console.error('Error bij het aanmaken van een maat:', error);
           if (error.status === 400) {
-            console.error("Bad Request: Perhaps the size already exists or is invalid.");
+            console.error("Bad Request: Misschien bestaat de maat al of is ze niet geldig.");
+          }
+          else {
+            console.error(this.helperService.parseError(error));
           }
         }
       );
@@ -225,7 +228,7 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
           this.sizeToCreate = '';
         },
         (error) => {
-          console.error('Error updating t-shirt with new size:', error);
+          console.error(this.helperService.parseError(error));
         }
       );
     }

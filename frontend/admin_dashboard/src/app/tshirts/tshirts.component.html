@@ -1,10 +1,10 @@
 <div class="max-w-md mx-auto mt-10 p-6">
-  <h1 class="text-2xl font-semibold text-center mb-4">Maak een nieuwe T-Shirt</h1>
+  <h1 class="text-2xl font-semibold text-center mb-4">Maak een Nieuwe T-Shirt</h1>
   <form (submit)="addTshirt()" class="text-left">
 
     <!-- Model Field -->
     <div class="mb-4">
-      <label for="model" class="block text-sm font-medium text-gray-700">Model</label>
+      <label for="model" class="block text-sm font-medium text-gray-700">T-shirt Model</label>
       <select
         id="model"
         name="model"
@@ -12,7 +12,7 @@
         (change)="onModelChange()"
         class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
       >
-        <option [value]="0">Nieuw Model</option>
+        <option [value]="0">Nieuw T-shirt Model</option>
         <option *ngFor="let tshirt of availableModels" [value]="tshirt.id">{{ tshirt.model }}</option>
       </select>
       <input
@@ -21,7 +21,7 @@
         id="newModel"
         name="newModel"
         [(ngModel)]="selectedTshirt.model"
-        placeholder="Kies een model naam"
+        placeholder="Kies een naam voor het model"
         class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
       />
     </div>
@@ -61,7 +61,7 @@
                 type="text"
                 [(ngModel)]="sizeToCreate"
                 name="sizeToCreate"
-                placeholder="Add new size"
+                placeholder="Voeg een nieuwe maat toe"
                 class="w-full px-2 py-1 border rounded-md"
               />
               <button
@@ -69,7 +69,7 @@
                 (click)="CreateSize()"
                 class="mt-2 w-full py-1 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                Voeg een maat toe
+                Maat Toevoegen
               </button>
             </div>
           </ng-container>
@@ -145,7 +145,7 @@
 <app-modal
   *ngIf="tshirtToDelete !== null"
   #deleteModal
-  [header]="'Delete T-shirt ' + tshirtToDelete.model"
+  [header]="'Verwijder T-shirt ' + tshirtToDelete.model"
   [maxWidth]="500"
   [minHeight]="150"
 >
@@ -170,7 +170,7 @@
 <app-modal
   *ngIf="tshirtToEdit !== null"
   #editModal
-  [header]="'Edit T-shirt ' + tshirtToEdit.model"
+  [header]="'T-shirt ' + tshirtToEdit.model + ' Aanpassen'"
   [maxWidth]="500"
 >
   <form (submit)="updateTshirt(tshirtToEdit)" class="text-left">
