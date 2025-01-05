@@ -1,9 +1,10 @@
 name: CI/CD Pipeline to deploy GladioForce Production Environment to AWS
 
+#on event push or main branch Production
 on:
-  pull_request:
+  push:
     branches:
-      - production
+      - Production
 
 jobs:
   validate-terraform:
@@ -65,7 +66,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
         with:
-          mask-password: 'false'
+          mask-password: "false"
 
       - name: Build and Push Image
         env:
@@ -91,7 +92,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: "16"
 
       - name: Install Dependencies
         run: npm install
@@ -103,16 +104,16 @@ jobs:
 
       - name: Create Admin ZIP Archive
         run: |
-          zip -r admin.zip dist/admin_dashboard/browser
-        working-directory: ./frontend/admin_dashboard
+          sudo apt install zip -y
+          zip -r admin.zip ./*
+        working-directory: ./frontend/admin_dashboard/dist/browser
 
       - name: Upload Admin ZIP Artifact
         uses: actions/upload-artifact@v3
         with:
           name: angular-admin
-          path: ./frontend/admin_dashboard/dist/admin_dashboard/browser/admin.zip
-  
-  
+          path: ./frontend/admin_dashboard/dist/browser/admin.zip
+
   build-angular-data:
     name: Build Angular Frontend
     runs-on: ubuntu-latest
@@ -124,7 +125,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: "16"
 
       - name: Install Dependencies
         run: npm install
@@ -136,19 +137,20 @@ jobs:
 
       - name: Create Data ZIP Archive
         run: |
-          zip -r data.zip dist/data_collectie/browser
-        working-directory: ./frontend/data_collectie
+          sudo apt install zip -y
+          zip -r data.zip ./*
+        working-directory: ./frontend/data_collectie/dist/browser
 
       - name: Upload Data ZIP Artifact
         uses: actions/upload-artifact@v3
         with:
           name: angular-data
-          path: ./frontend/data_collectie/dist/data_collectie/browser/data.zip
+          path: ./frontend/data_collectie/dist/browser/data.zip
 
-  production-plan:
-    name: Run Terraform Plan for Production
+  production-apply:
+    name: Run Terraform Apply for Production
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: build-angular-data
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -160,51 +162,11 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Download Angular admin Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: angular-admin
-          path: ./frontend/admin_dashboard/dist/admin_dashboard/browser
 
-      - name: Download Angular data Artifact
-          uses: actions/download-artifact@v3
-          with:
-            name: angular-data
-            path: ./frontend/data_collectie/dist/data_collectie/browser
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.7.5
-
-      - name: Initialize Terraform
-        run: terraform init
-        working-directory: ./deploy
-
-      - name: Run Terraform Plan
+      - name: Decode RSA Key
         run: |
-          export TF_VAR_ecr_image_api=${{ secrets.ECR_REPO }}:${{ github.sha }}
-          terraform plan -var-file="00-project.tfvars"
-        working-directory: ./deploy
-
-  production-apply:
-    name: Run Terraform Apply for Production
-    runs-on: ubuntu-latest
-    needs: production-plan
-    steps:
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-
-
-      - name: Checkout code
-        uses: actions/checkout@v3
+          echo "${{ secrets.NGINX }}" | base64 -d > nginx.pem
+          chmod 400 nginx.pem
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
@@ -231,13 +193,17 @@ jobs:
 
       - name: Test Application Reachability
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://admin.gladioforce.org)
-          if [ "$response" -eq 200 ]; then
-            echo "https://admin.gladioforce.org is reachable."
-          else
-            echo "https://admin.gladioforce.org is not reachable. Exiting..."
+          for i in {1..30}; do
+            response=$(curl -s -o /dev/null -w "%{http_code}" https://admin.gladioforce.org)
+            if [ "$response" -eq 200 ]; then
+              echo "https://admin.gladioforce.org is reachable."
+              break
+            fi
+            echo "Waiting for https://admin.gladioforce.org to become reachable..."
+            sleep 10
+          done
+          if [ "$response" -ne 200 ]; then
+            echo "https://admin.gladioforce.org is not reachable after retries. Exiting..."
             exit 1
           fi
         shell: bash
-
-

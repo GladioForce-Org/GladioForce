@@ -159,80 +159,86 @@ resource "aws_ecs_cluster_capacity_providers" "ecs_web_tier_fargate" {
 # The container definitions json encoded file will configure the environment variables needed for the database connection to the RDS database
 # We will be using the secrets module of AWS, otherwise the secrets are stored in clear.
 
+
+
 resource "aws_ecs_task_definition" "gladioforce_backend" {
-  family                = "${local.prefix}-gladioforce-backend"
-  container_definitions = <<TASK_DEFINITION
-  [
-  {
-    "portMappings": [
-      {
-        "hostPort": 8000,
-        "protocol": "tcp",
-        "containerPort": 8000
-      }
-    ],
-    "cpu": ${var.container_cpu},
-    "environment": [
-		{
-          "name": "DB_HOST",
-          "value": "${aws_db_instance.db_app.address}"
+  family = "${local.prefix}-gladioforce-backend"
+  container_definitions = jsonencode([
+    {
+      "portMappings" : [
+        {
+          "hostPort" : 8000,
+          "protocol" : "tcp",
+          "containerPort" : 8000
+        }
+      ],
+      "cpu" : "${var.container_cpu}",
+      "environment" : [
+        {
+          "name" : "DB_HOST",
+          "value" : "${aws_db_instance.db_app.address}"
         },
         {
-          "name": "ALB_DNS",
-          "value": "10.0.1.100"
+          "name" : "ALB_DNS",
+          "value" : "10.0.1.100"
         },
         {
-          "name": "DOMAIN_URL",
-          "value": "[\\"https://admin.gladioforce.org\\", \\"https://data.gladioforce.org\\", \\"https://dumpster.gladioforce.org\\"]"
+          "name" : "DOMAIN_URL",
+          "value" : "https://admin.gladioforce.org,https://data.gladioforce.org,https://dumpster.gladioforce.org"
         },
         {
-          "name": "DB_NAME",
-          "value": "gladio"
-        }],
-    "secrets": [
+          "name" : "DB_NAME",
+          "value" : "gladio"
+        }
+      ],
+      "secrets" : [
         {
           "name" : "DB_USERNAME",
-          "valueFrom": "${aws_secretsmanager_secret.database_username_secret.arn}:DB_USERNAME::"
+          "valueFrom" : "${aws_secretsmanager_secret.database_username_secret.arn}:DB_USERNAME::"
         },
         {
-          "name": "DB_PASSWORD",
-          "valueFrom": "${aws_secretsmanager_secret.database_password_secret.arn}:DB_PASSWORD::"
+          "name" : "DB_PASSWORD",
+          "valueFrom" : "${aws_secretsmanager_secret.database_password_secret.arn}:DB_PASSWORD::"
         },
         {
           "name" : "SECRET_KEY",
-          "valueFrom": "${aws_secretsmanager_secret.app_secret_key.arn}:SECRET_KEY::"
+          "valueFrom" : "${aws_secretsmanager_secret.app_secret_key.arn}:SECRET_KEY::"
         }
-
-    ],
-    "memory": ${var.container_memory},
-    "image": "${var.ecr_image}:latest",
-    "essential": true,
-    "name": "gladioforce-backend",
-    "logConfiguration": {
-      "logDriver": "awslogs",
-      "options": {
-        "awslogs-group": "/ecs/${local.prefix}-gladioforce-backend",
-        "awslogs-region": "${var.region}",
-        "awslogs-stream-prefix": "ecs"
+      ],
+      "memory" : var.container_memory,
+      "image" : "${var.ecr_image}:latest",
+      "essential" : true,
+      "name" : "gladioforce-backend",
+      "logConfiguration" : {
+        "logDriver" : "awslogs",
+        "options" : {
+          "awslogs-group" : "/ecs/${local.prefix}-gladioforce-backend",
+          "awslogs-region" : var.region,
+          "awslogs-stream-prefix" : "ecs"
+        }
       }
     }
-  }
-]
-TASK_DEFINITION
+  ])
 
   network_mode = "awsvpc"
   requires_compatibilities = [
-  "FARGATE"]
+    "FARGATE"
+  ]
   memory             = var.container_memory
   cpu                = var.container_cpu
-  execution_role_arn = data.aws_iam_role.labrole.arn #needs to be changed when going into production
-  task_role_arn      = data.aws_iam_role.labrole.arn #needs to be changed when going into production
+  execution_role_arn = data.aws_iam_role.labrole.arn # needs to be changed when going into production
+  task_role_arn      = data.aws_iam_role.labrole.arn # needs to be changed when going into production
 
   tags = merge(
     local.common_tags,
     tomap({ "Name" = "${local.prefix}-backend-container" })
   )
 }
+
+
+
+
+
 
 #ECS service that will run the task definition, FARGATE version 1.4 is needed to support secrets injection in the container as env variables
 
@@ -263,15 +269,6 @@ resource "aws_ecs_service" "gladioforce_backend" {
     assign_public_ip = false
   }
 
-  #### ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ####
-
-  # load_balancer {
-  #   target_group_arn = aws_lb_target_group.ecs.arn
-  #   container_name   = "gladioforce-backend"
-  #   container_port   = 8000
-
-  # }
-  #### ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ####
 
   tags = merge(
     local.common_tags,
@@ -413,7 +410,7 @@ resource "null_resource" "fetch_private_ip" {
   }
 
 
-  depends_on = [aws_db_instance.db_app]
+  depends_on = [aws_ecs_service.gladioforce_backend]
 
 }
 
@@ -431,96 +428,3 @@ output "container_private_ip" {
   value = data.local_file.private_ip.content
 }
 
-
-
-#### ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ####
-
-#We use a application load balancer to link our NGINX to the backend containers
-
-
-
-# resource "aws_lb" "alb" {
-#   name               = "${local.prefix}-if-alb"
-#   internal           = true
-#   load_balancer_type = "network"
-#   security_groups    = [aws_security_group.alb_sg.id]
-
-#   subnets = [aws_subnet.private_subnets[0].id]
-
-#   tags = merge(
-#     local.common_tags,
-#     tomap({ "Name" = "${local.prefix}-if-alb" })
-#   )
-
-# }
-
-
-
-
-
-# resource "aws_lb_target_group" "ecs" {
-#   name        = "${local.prefix}-if-alb-tg-ecs"
-#   port        = 8000
-#   protocol    = "TCP"
-#   vpc_id      = aws_vpc.vpc.id
-#   target_type = "ip"
-
-#   health_check {
-#     enabled             = true
-#     interval            = 30
-#     path                = "/"
-#     timeout             = 5
-#     matcher             = "200"
-#     healthy_threshold   = 2
-#     unhealthy_threshold = 2
-#   }
-
-
-#   tags = merge(
-#     local.common_tags,
-#     tomap({ "Name" = "${local.prefix}-if-alb-tg-ecs" })
-#   )
-
-# }
-
-
-# resource "aws_lb_listener" "https" {
-#   load_balancer_arn = aws_lb.alb.arn
-#   port              = "8000"
-#   protocol          = "TCP"
-
-
-#   default_action {
-#     type             = "forward"
-#     target_group_arn = aws_lb_target_group.ecs.arn
-#   }
-
-#   tags = merge(
-#     local.common_tags,
-#     tomap({ "Name" = "${local.prefix}-if-alb-ls-ecs" })
-#   )
-# }
-
-
-
-
-# resource "aws_service_discovery_private_dns_namespace" "ecs_namespace" {
-#   name        = "my-ecs-namespace"
-#   vpc         = aws_vpc.vpc.id
-#   description = "Private DNS namespace for ECS services"
-# }
-
-# resource "aws_service_discovery_service" "gladioforce_backend" {
-#   name         = "gladioforce-backend"
-#   namespace_id = aws_service_discovery_private_dns_namespace.ecs_namespace.id
-#   dns_config {
-#     namespace_id   = aws_service_discovery_private_dns_namespace.ecs_namespace.id
-#     routing_policy = "MULTIVALUE"
-#     dns_records {
-#       ttl  = 60
-#       type = "A"
-#     }
-#   }
-# }
-
-#### ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ######## ALB not used ####
