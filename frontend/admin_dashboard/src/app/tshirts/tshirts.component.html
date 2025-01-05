@@ -13,7 +13,7 @@
         class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
       >
         <option [value]="0">Nieuw Model</option>
-        <option *ngFor="let tshirt of avaialbleModels" [value]="tshirt.id">{{ tshirt.model }}</option>
+        <option *ngFor="let tshirt of availableModels" [value]="tshirt.id">{{ tshirt.model }}</option>
       </select>
       <input
         *ngIf="selectedModelId == 0"
@@ -29,7 +29,7 @@
     <!-- Sizes Field -->
     <div class="mb-4">
       <label for="sizes" class="block text-sm font-medium text-gray-700">Maten</label>
-      <div class="relative" *ngIf="availableSizes.length">
+      <div class="relative" *ngIf="availableSizes.length && !loadingSizes">
         <button
           type="button"
           class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -75,6 +75,8 @@
           </div>
         </div>
       </div>
+
+      <app-loading *ngIf="loadingSizes" [size]="50"></app-loading>
     </div>
 
     <!-- Price Field -->
@@ -93,7 +95,7 @@
       </p>
     </div>
 
-    <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+    <button type="submit" class="w-full mt-8 py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
       Voeg T-shirt toe
     </button>
   </form>
@@ -102,9 +104,11 @@
 <!-- T-shirts table -->
 <div class="mt-8 mx-10">
   <div class="flex justify-between items-center mb-4">
-    <h2 class="text-2xl font-semibold text-gray-700">T-shirts {{currentYear}}</h2>
+    <h2 class="text-2xl font-semibold text-gray-700">
+      T-shirts {{currentYear}}
+    </h2>
   </div>
-  <div class="overflow-x-auto rounded-md shadow overflow-y-auto">
+  <div class="overflow-x-auto rounded-md shadow overflow-y-auto" *ngIf="!loading">
     <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
       <thead>
         <tr class="bg-gray-50">
@@ -117,28 +121,59 @@
       <tbody>
         <tr *ngFor="let tshirt of availableTshirts" class="hover:bg-gray-100">
           <td class="py-2 px-4 border-b text-start">{{ tshirt.model }}</td>
-          <td class="py-2 px-4 border-b text-start">{{ tshirt.sizes.join(', ') }}</td>
-          <td class="py-2 px-4 border-b text-start">{{ tshirt.price }}</td>
+          <td class="py-2 px-4 border-b text-start">
+            <ng-container *ngFor="let size of tshirt.sizes">
+              {{ size.size }}<ng-container *ngIf="size !== tshirt.sizes[tshirt.sizes.length - 1]">, </ng-container>
+            </ng-container>
+          </td>
+          <td class="py-2 px-4 border-b text-start">€ {{ tshirt.price }}</td>
           <td class="py-2 px-4 border-b text-center">
             <div class="flex justify-center gap-4">
               <app-icon-button (click)="openEditModal(tshirt)" icon="edit"></app-icon-button>
-              <app-icon-button (click)="deleteTshirt(tshirt.id)" icon="trash-2"></app-icon-button>
+              <app-icon-button (click)="openDeleteModal(tshirt)" icon="trash-2"></app-icon-button>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
+
+  <app-loading *ngIf="loading" class="mt-10"></app-loading>
 </div>
+
+<!-- Delete Window -->
+<app-modal
+  *ngIf="tshirtToDelete !== null"
+  #deleteModal
+  [header]="'Delete T-shirt ' + tshirtToDelete.model"
+  [maxWidth]="500"
+  [minHeight]="150"
+>
+  <p class="mb-4">Bent u zeker dat u deze t-shirt wil verwijderen?</p>
+
+  <div class="mb-4">
+    <p *ngIf="tshirtDeleted !==''" class="text-green-600 font-semibold mt-3">{{ tshirtDeleted }}</p>
+    <p *ngIf="errorTshirtDeletion !==''" class="text-red-600 font-semibold mt-3">{{ errorTshirtDeletion }}</p>
+  </div>
+
+  <button
+    *ngIf = "tshirtDeleted === ''"
+    (click)="deleteTshirt()"
+    type="submit"
+    class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+  >
+    Bevestigen
+  </button>
+</app-modal>
 
 <!-- Edit T-shirt Modal -->
 <app-modal
-  *ngIf="selectedTshirt !== null"
+  *ngIf="tshirtToEdit !== null"
   #editModal
-  [header]="'Edit T-shirt ' + selectedTshirt.model"
+  [header]="'Edit T-shirt ' + tshirtToEdit.model"
   [maxWidth]="500"
 >
-  <form (submit)="updateTshirt(selectedTshirt)" class="text-left">
+  <form (submit)="updateTshirt(tshirtToEdit)" class="text-left">
     <!-- Model Field -->
     <div class="mb-4">
       <label for="editModel" class="block text-sm font-medium text-gray-700">Model</label>
@@ -146,7 +181,7 @@
         type="text"
         id="editModel"
         name="editModel"
-        [(ngModel)]="selectedTshirt.model"
+        [(ngModel)]="tshirtToEdit.model"
         #editModel="ngModel"
         class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
       />
@@ -157,18 +192,34 @@
 
     <!-- Sizes Field -->
     <div class="mb-4">
-      <label for="editSizes" class="block text-sm font-medium text-gray-700">Maten (comma separated)</label>
-      <input
-        type="text"
-        id="editSizes"
-        name="editSizes"
-        [(ngModel)]="selectedTshirt.sizes"
-        #editSizes="ngModel"
-        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-      />
-      <p *ngIf="editSizes.invalid && (editSizes.dirty || editSizes.touched)" class="text-red-500 text-xs mt-1">
-        Maten zijn verplicht.
-      </p>
+      <label for="sizes" class="block text-sm font-medium text-gray-700">Maten</label>
+      <div class="relative" *ngIf="availableSizes.length">
+        <button
+          type="button"
+          class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          (click)="toggleEditDropdown()"
+        >
+          <ng-container *ngFor="let size of tshirtToEdit.sizes">
+            {{ size.size }}<ng-container *ngIf="size !== tshirtToEdit.sizes[tshirtToEdit.sizes.length - 1]">, </ng-container>
+          </ng-container>
+          <ng-container *ngIf="!tshirtToEdit.sizes.length">Kies Maten</ng-container>
+        </button>
+
+        <div *ngIf="editDropdownOpen" class="absolute w-full mt-2 bg-white border rounded-md shadow-lg z-10">
+          <div *ngFor="let size of availableSizes" class="flex items-center justify-between px-4 py-2">
+            <label class="inline-flex items-center">
+              <input
+                type="checkbox"
+                [value]="size.size"
+                (change)="toggleEditSize(size)"
+                [checked]="tshirtToEditSizes.includes(size.id)"
+                class="form-checkbox"
+              />
+              <span class="ml-2">{{ size.size }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Price Field -->
@@ -178,7 +229,7 @@
         type="text"
         id="editPrice"
         name="editPrice"
-        [(ngModel)]="selectedTshirt.price"
+        [(ngModel)]="tshirtToEdit.price"
         #editPrice="ngModel"
         class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
       />

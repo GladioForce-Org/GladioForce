@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
-from .models import AvailableTshirt, Size, Edition;
+from data_collectie.schemas import AvailableTshirtInSchema
+from .models import AvailableTshirt, Size, Tshirt, Edition;
 from typing import List, Dict, Optional
 
 
@@ -56,18 +57,13 @@ def list_all_available_tshirts_by_edition(edition_id: int) -> List[Dict]:
         if not tshirt:
             continue
 
-        # Get size names
-        size_names = [size.size for size in tshirt.size.all()]  # Use 'size' as defined in the model
-        edition_year = available.edition.year
-
         # Build the entry
         result.append({
-        "id": available.id,
-        "tshirt_id": tshirt.id,
-        "edition_year": edition_year,  # Replace edition_id with edition_year
-        "model": tshirt.model,
-        "sizes": size_names,
-        "price": available.price,
+            "id": available.id,
+            "tshirt_id": tshirt.id,
+            "model": tshirt.model,
+            "sizes": list(tshirt.size.all().values("id", "size")),  # Use 'size' as defined in the model
+            "price": available.price,
         })
 
     return result
@@ -94,3 +90,31 @@ def get_available_tshirt_details(tshirt_id: int) -> Optional[Dict]:
         "sizes": size_names,
         "price": available_tshirt.price,
     }
+
+def patch_tshirt_then_patch_available_tshirt(available_tshirt_id: int, data: AvailableTshirtInSchema):
+    # Fetch the Tshirt instance
+    tshirt = Tshirt.objects.get(id=data.tshirt_id)
+    if tshirt:
+        tshirt.model = data.model
+
+        # transform data.sizes in a list of integers
+        tshirt.size.clear()
+
+        sizes = []
+        for size in data.sizes:
+            size_id = size.id
+            sizes.append(size_id)
+
+        tshirt.size.set(sizes)
+
+        tshirt.save()
+
+    # Update the AvailableTshirt instance
+    available_tshirt = AvailableTshirt.objects.get(id=available_tshirt_id)
+    
+    if available_tshirt:
+        available_tshirt.price = data.price
+        available_tshirt.save()
+
+    # Return the updated Tshirt instance
+    return available_tshirt
