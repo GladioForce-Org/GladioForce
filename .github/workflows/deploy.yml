@@ -165,8 +165,8 @@ jobs:
 
       - name: Decode RSA Key
         run: |
-          echo "${{ secrets.NGINX }}" | base64 -d > nginx.pem
-          chmod 400 nginx.pem
+          echo "${{ secrets.NGINX }}" | base64 -d > ./deploy/nginx.pem
+          chmod 400 ./deploy/nginx.pem
 
       # Download Angular Admin Artifact
       - name: Download Angular Admin Artifact
