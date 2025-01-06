@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { FeatherIconComponent } from '../../feather-icon/feather-icon.component';
+import { FeatherIconComponent } from '../../components/feather-icon/feather-icon.component';
 
 @Component({
   selector: 'app-dropdown-button',
@@ -13,4 +13,13 @@ export class DropdownButtonComponent {
   @Input() name: string = '';
   @Input() dropdownreference: string = '';
   @Input() icon: string = '';
+  public isDropdownOpen: boolean = false;
+
+  public toggleDropdown() {
+    if (this.isDropdownOpen) {
+      this.isDropdownOpen = false;
+    } else {
+      this.isDropdownOpen = true;
+    }
+  }
 }
