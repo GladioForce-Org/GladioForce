@@ -168,6 +168,20 @@ jobs:
           echo "${{ secrets.NGINX }}" | base64 -d > nginx.pem
           chmod 400 nginx.pem
 
+      # Download Angular Admin Artifact
+      - name: Download Angular Admin Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: angular-admin
+          path: ./frontend/admin_dashboard/admin.zip
+
+      # Download Angular Data Artifact
+      - name: Download Angular Data Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: angular-data
+          path: ./frontend/data_collectie/data.zip
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
@@ -199,7 +213,7 @@ jobs:
 
       - name: Test Application Reachability
         run: |
-          for i in {1..30}; do
+          for i in {1..60}; do
             response=$(curl -s -o /dev/null -w "%{http_code}" https://admin.gladioforce.org)
             if [ "$response" -eq 200 ]; then
               echo "https://admin.gladioforce.org is reachable."
