@@ -114,12 +114,40 @@ resource "aws_db_subnet_group" "db_subnet" {
 }
 
 
+# Create an Elastic IP for the NAT Gateway
+resource "aws_eip" "elastic_ip_nat" {
+  depends_on = [aws_internet_gateway.gateway]
+  domain     = "vpc"
+
+  tags = merge(
+    local.common_tags,
+    tomap({ "Name" = "${local.prefix}-elastic-ip-nat" })
+  )
+}
+
+
+# Create a NAT Gateway in one of the public subnets
+resource "aws_nat_gateway" "nat_gateway" {
+  allocation_id = aws_eip.elastic_ip_nat.id
+  subnet_id     = aws_subnet.public_subnets[0].id
+
+
+  tags = merge(
+    local.common_tags,
+    tomap({ "Name" = "${local.prefix}-nat-gw" })
+  )
+}
+
 
 # Update the route table of private subnets to route traffic through ECR-S3 gateway that is not destined for the local VPC CIDR
 
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.vpc.id
 
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.nat_gateway.id
+  }
 
   tags = merge(
     local.common_tags,

@@ -1,60 +1,58 @@
-<div class="auth-container max-w-md mx-auto mt-10 p-6">
+<div class="max-w-md mx-auto mt-10 p-6">
   <!-- Register New Core Members Form -->
-  <div class="auth-form">
-    <h1 class="text-2xl font-semibold text-center mb-4">Nieuw Kernlid Toevoegen</h1>
-    <form (submit)="signUp()">
-      <!-- Email Field -->
-      <div class="mb-2">
-        <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
-        <input
-          required
-          type="text"
-          id="email"
-          name="email"
-          [(ngModel)]="coreMemberToCreate.email"
-          #address="ngModel"
-          class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-        />
-        <p *ngIf="address.invalid && (address.dirty || address.touched)" class="text-red-500 text-xs mt-1">
-          E-mail is verplicht.
-        </p>
-      </div>
+  <h1 class="text-2xl font-semibold text-center mb-4">Nieuw Kernlid Toevoegen</h1>
+  <form (submit)="signUp()">
+    <!-- Email Field -->
+    <div class="mb-2">
+      <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
+      <input
+        required
+        type="text"
+        id="email"
+        name="email"
+        [(ngModel)]="coreMemberToCreate.email"
+        #address="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+      <p *ngIf="address.invalid && (address.dirty || address.touched)" class="text-red-500 text-xs mt-1">
+        E-mail is verplicht.
+      </p>
+    </div>
 
-      <!-- Display Name Field -->
-      <div class="mb-2">
-        <label for="displayname" class="block text-sm font-medium text-gray-700">Displaynaam</label>
-        <input
-          type="text"
-          id="displayname"
-          name="displayname"
-          [(ngModel)]="coreMemberToCreate.display_name"
-          #address="ngModel"
-          class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-        />
-      </div>
+    <!-- Display Name Field -->
+    <div class="mb-2">
+      <label for="displayname" class="block text-sm font-medium text-gray-700">Displaynaam</label>
+      <input
+        type="text"
+        id="displayname"
+        name="displayname"
+        [(ngModel)]="coreMemberToCreate.display_name"
+        #address="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </div>
 
-      <!-- Phone Number Field -->
-      <div class="mb-8">
-        <label for="phonenumber" class="block text-sm font-medium text-gray-700">Telefoon</label>
-        <input
-          type="text"
-          id="phonenumber"
-          name="phonenumber"
-          [(ngModel)]="coreMemberToCreate.phone_number"
-          #address="ngModel"
-          class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-        />
-      </div>
+    <!-- Phone Number Field -->
+    <div class="mb-8">
+      <label for="phonenumber" class="block text-sm font-medium text-gray-700">Telefoon</label>
+      <input
+        type="text"
+        id="phonenumber"
+        name="phonenumber"
+        [(ngModel)]="coreMemberToCreate.phone_number"
+        #address="ngModel"
+        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+      />
+    </div>
 
-      <div class="mb-4">
-        <p *ngIf="userCreated !==''" class="text-green-600 font-semibold mt-3">{{ userCreated }}</p>
-        <p *ngIf="errorUserCreation !==''" class="text-red-600 font-semibold mt-3">{{ errorUserCreation }}</p>
-      </div>
-      <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        Registreer Kernlid
-      </button>
-    </form>
-  </div>
+    <div class="mb-4">
+      <p *ngIf="userCreated !==''" class="text-green-600 font-semibold mt-3">{{ userCreated }}</p>
+      <p *ngIf="errorUserCreation !==''" class="text-red-600 font-semibold mt-3">{{ errorUserCreation }}</p>
+    </div>
+    <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      Registreer Kernlid
+    </button>
+  </form>
 </div>
 
 <!-- coremember table )-->
@@ -62,7 +60,8 @@
   <div class="flex justify-between items-center mb-4">
     <h2 class="text-2xl font-semibold text-gray-700">Kernleden</h2>
   </div>
-  <div class="overflow-x-auto rounded-md shadow overflow-y-auto">
+
+  <div class="overflow-x-auto rounded-md shadow overflow-y-auto" *ngIf="!loading">
     <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
       <thead>
         <tr class="bg-gray-50"> <th class="py-3 px-4 border-b text-center"></th>
@@ -87,13 +86,13 @@
           <td class="py-2 px-4 border-b text-center">
             <div class="flex justify-center gap-4">
               <app-icon-button
-                (click)="openModal(coreMember)"
+                (click)="openEditModal(coreMember)"
                 icon="edit"
               >
               </app-icon-button>
 
               <app-icon-button
-                (click)="deleteCoreMember(coreMember)"
+                (click)="openDeleteModal(coreMember)"
                 icon="trash-2"
               ></app-icon-button>
             </div>
@@ -102,17 +101,42 @@
       </tbody>
     </table>
   </div>
+
+  <app-loading *ngIf="loading" class="mt-10"></app-loading>
 </div>
+
+<!-- Delete Window -->
+<app-modal
+  *ngIf="selectedCoreMember !== null"
+  #deleteModal
+  [header]="selectedCoreMember.email"
+  [maxWidth]="500"
+  [minHeight]="150"
+>
+  <p class="mb-4">Bent u zeker dat u dit kernlid wil verwijderen?</p>
+
+  <div class="mb-4">
+    <p *ngIf="userDeleted !==''" class="text-green-600 font-semibold mt-3">{{ userDeleted }}</p>
+    <p *ngIf="errorUserDeletion !==''" class="text-red-600 font-semibold mt-3">{{ errorUserDeletion }}</p>
+  </div>
+
+  <button
+    *ngIf = "userDeleted === ''" 
+    (click)="deleteCoreMember()"
+    type="submit"
+    class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+  >
+    Bevestigen
+  </button>
+</app-modal>
 
 <!-- Edit Window -->
 <app-modal
   *ngIf="selectedCoreMember !== null"
-  #modalComponent
+  #editModal
   [header]="selectedCoreMember.email"
   [maxWidth]="500"
 >
-  <!-- Here you can write the HTML to edit the selectedCoreMember -->
-
   <form (submit)="editCoreMember()" class="text-left">
     <!-- Display Name Field -->
     <div class="mb-2">
@@ -148,5 +172,4 @@
       Kernlid Aanpassen
     </button>
   </form>
-
 </app-modal>

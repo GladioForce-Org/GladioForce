@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FeatherIconComponent } from '../../feather-icon/feather-icon.component';
+import { FeatherIconComponent } from '../feather-icon/feather-icon.component';
 
 @Component({
   selector: 'app-icon-button',

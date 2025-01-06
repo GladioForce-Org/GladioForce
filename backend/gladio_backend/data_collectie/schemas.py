@@ -113,8 +113,9 @@ class AvailableTshirtSchema(Schema):
 
 class AvailableTshirtInSchema(Schema):
     tshirt_id: int
-    price:Optional[float] = None
-
+    model: Optional[str]
+    sizes: Optional[List[SizeSchema]]
+    price: Optional[float] = None
 
 class AvailableTshirtsResponseSchema(Schema):
     id: int

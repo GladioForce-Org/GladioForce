@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FeatherIconComponent } from '../../feather-icon/feather-icon.component';
+import { FeatherIconComponent } from '../../components/feather-icon/feather-icon.component';
 
 @Component({
   selector: 'app-icon-button-link',
