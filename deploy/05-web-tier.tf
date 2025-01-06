@@ -21,6 +21,7 @@ resource "aws_instance" "nginx" {
 # Update and install necessary packages
 sudo apt-get update
 sudo apt-get install -y nginx python3-certbot-dns-cloudflare
+sleep 20
 
 # Enable nginx service
 sudo systemctl start nginx
@@ -213,8 +214,8 @@ resource "null_resource" "upload_app_files" {
 
 
   provisioner "remote-exec" {
+
     inline = [
-      "sudo apt update -y",
       "sudo mkdir -p /var/www/admin",
       "sudo mkdir -p /var/www/data",
       "sudo apt install unzip -y",
@@ -233,6 +234,7 @@ resource "null_resource" "upload_app_files" {
       host        = aws_eip.nginx.public_ip
     }
   }
+
 }
 
 
