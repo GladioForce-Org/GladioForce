@@ -208,9 +208,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: production-apply
     steps:
-      - name: Wait for Environment
-        run: sleep 180
-
       - name: Test Application Reachability
         run: |
           for i in {1..60}; do
