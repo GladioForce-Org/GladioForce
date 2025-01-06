@@ -243,9 +243,13 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
   addTshirt(): void {
     this.apiService.addTshirt(this.newTshirt).subscribe(() => {
       this.loadTshirts();
-      this.resetNewTshirt();
+      this.resetSizes();
+      this.loadModels(); // Reset the model dropdown
+      this.resetNewTshirt(); // Reset the new t-shirt form
       this.tshirtCreated = 'T-shirt succesvol toegevoegd!';
       this.errorTshirtCreation = '';
+      this.selectedTshirt = this.newTshirt; // Reset the selected t-shirt
+      this.selectedModelId = 0;
     }, error => {
       this.errorTshirtCreation = this.helperService.parseError(error);
       this.tshirtCreated = '';
