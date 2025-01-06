@@ -82,7 +82,7 @@ jobs:
         run: rm ./backend/gladio_backend/gladio_backend/ServiceKey.json
 
   build-angular-admin:
-    name: Build Angular Frontend
+    name: Build Admin Angular Frontend
     runs-on: ubuntu-latest
     needs: build-and-push
     steps:
@@ -115,7 +115,7 @@ jobs:
           path: ./frontend/admin_dashboard/dist/browser/admin.zip
 
   build-angular-data:
-    name: Build Angular Frontend
+    name: Build Data Angular Frontend
     runs-on: ubuntu-latest
     needs: build-angular-admin
     steps:
@@ -178,6 +178,12 @@ jobs:
         working-directory: ./deploy
 
       - name: Apply Terraform Plan
+        env:
+          TF_VAR_APP_SECRET_KEY: ${{ secrets.TF_VAR_APP_SECRET_KEY }}
+          TF_VAR_CLOUDFLARE_API_TOKEN: ${{ secrets.TF_VAR_CLOUDFLARE_API_TOKEN }}
+          TF_VAR_CLOUDFLARE_EMAIL: ${{ secrets.TF_VAR_CLOUDFLARE_EMAIL }}
+          TF_VAR_DB_PASSWORD: ${{ secrets.TF_VAR_DB_PASSWORD }}
+          TF_VAR_DB_USERNAME: ${{ secrets.TF_VAR_DB_USERNAME }}
         run: |
           export TF_VAR_ecr_image_api=${{ secrets.ECR_REPO }}:${{ github.sha }}
           terraform apply -var-file="00-project.tfvars" -auto-approve
