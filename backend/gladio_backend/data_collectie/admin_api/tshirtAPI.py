@@ -3,7 +3,7 @@ from typing import List
 from data_collectie.models import Tshirt, Size, AvailableTshirt, Edition
 from django.http import JsonResponse
 from data_collectie.schemas import TshirtSchema, SizeSchema, AvailableTshirtsResponseSchema, AvailableTshirtSchema, AvailableTshirtResponseSchema, AvailableTshirtInSchema, SizeCreateSchema, TshirtCreateSchema
-from data_collectie.services import list_all_available_tshirts, get_available_tshirt_details, list_all_available_tshirts_by_edition
+from data_collectie.services import list_all_available_tshirts, get_available_tshirt_details, list_all_available_tshirts_by_edition, patch_tshirt_then_patch_available_tshirt
 from django.shortcuts import get_object_or_404
 router = Router(tags=["Tshirt_admin"])
 
@@ -157,16 +157,10 @@ def create_available_tshirt(request, data: AvailableTshirtInSchema):
 
 # update Available T-shirt(set price)
 @router.patch("/available_tshirts/{available_tshirt_id}", response=AvailableTshirtSchema)
-def update_available_tshirt(request, available_tshirt_id: int, data: AvailableTshirtSchema):
-    available_tshirt = AvailableTshirt.objects.get(id=available_tshirt_id)
-    available_tshirt.price = data.price
-    available_tshirt.save()
-    return {
-        "id": available_tshirt.id,
-        "tshirt_id": available_tshirt.tshirt.id,
-        "edition_id": available_tshirt.edition.id,
-        "price": available_tshirt.price
-    }
+def update_available_tshirt(request, available_tshirt_id: int, data: AvailableTshirtInSchema):
+    patched_tshirt = patch_tshirt_then_patch_available_tshirt(available_tshirt_id, data)
+
+    return patched_tshirt
 
 # Delete Available T-shirt
 @router.delete("/available_tshirts/{available_tshirt_id}")

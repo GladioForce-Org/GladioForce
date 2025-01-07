@@ -1,22 +1,25 @@
 name: CI/CD Pipeline to destroy GladioForce Production Environment in AWS
 
 on:
-    workflow_dispatch:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to destroy"
+        required: true
+        default: "Production"
 
 jobs:
-production-destroy:
+  production-destroy:
     name: Destroy Production Environment
     runs-on: ubuntu-latest
     steps:
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -31,6 +34,13 @@ production-destroy:
         working-directory: ./deploy
 
       - name: Destroy Terraform Environment
+        env:
+        env:
+          TF_VAR_app_secret_key: ${{ secrets.TF_VAR_APP_SECRET_KEY }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.TF_VAR_CLOUDFLARE_API_TOKEN }}
+          TF_VAR_cloudflare_email: ${{ secrets.TF_VAR_CLOUDFLARE_EMAIL }}
+          TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
+          TF_VAR_db_username: ${{ secrets.TF_VAR_DB_USERNAME }}
         run: |
           export TF_VAR_ecr_image_api=${{ secrets.ECR_REPO }}:${{ github.sha }}
           terraform destroy -var-file="00-project.tfvars" -auto-approve

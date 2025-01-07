@@ -60,20 +60,29 @@ CORS_ALLOWED_ORIGINS = [
 
 ]
 
-domain_url = os.getenv('DOMAIN_URL')
-if domain_url:
-    CORS_ALLOWED_ORIGINS.append(domain_url)
+domain_urls = os.getenv('DOMAIN_URL')
+
+# If DOMAIN_URL is set and not empty
+if domain_urls:
+    # Split the comma-separated string into a list of domains
+    domain_urls_list = domain_urls.split(',')
+    allowed_hosts_list = [url.replace("https://", "") for url in domain_urls_list]
+    
+    # Add each domain from the list to the CORS_ALLOWED_ORIGINS list
+    CORS_ALLOWED_ORIGINS.extend(domain_urls_list)
+    ALLOWED_HOSTS.extend(allowed_hosts_list)
+    
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'gladio_backend.middleware.firebase_token_required',  # Placing it before AuthenticationMiddleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'gladio_backend.urls'

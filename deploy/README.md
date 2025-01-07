@@ -141,7 +141,7 @@ You need this information to adjust the <ECR-ID> in following commands
 2. Login to the ECR instance and acquire credentials
 
 ```bash
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 482617122788.dkr.ecr.us-east-1.amazonaws.com
+aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 482617122788.dkr.ecr.us-east-1.amazonaws.com
 ```
 
 3. Build container

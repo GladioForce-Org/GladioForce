@@ -65,7 +65,6 @@
 
         <ul id="dropdown-clubs" class="hidden space-y-2">
           <app-link linkName="Verenigingen" link="/clubs"></app-link>
-          <app-link linkName="Taken" link="/tasks"></app-link>
           <app-link linkName="Planning" link="/planning"></app-link>
         </ul>
       </li>
@@ -76,16 +75,6 @@
     <ul
       class="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700"
     >
-      <!-- <li>
-        <app-dropdown-button name="Authenticatie" dropdownreference="dropdown-authentication" icon="lock"></app-dropdown-button>
-
-        <ul id="dropdown-authentication" class="hidden space-y-2">
-          <app-link linkName="Log in" link="/auth"></app-link>
-          <app-link linkName="Log out" link="/auth"></app-link>
-          <app-link linkName="Paswoord vergeten" link="/auth"></app-link>
-        </ul>
-      </li> -->
-      <!-- <app-link linkName="Authenticatie" link="/auth" icon="lock"></app-link> -->
       <app-link linkName="Docs" [link]="apiUrl" icon="clipboard"></app-link>
       <app-link linkName="Help" link="/help" icon="help-circle"></app-link>
     </ul>
@@ -93,9 +82,9 @@
 
   <!--SIDEBAR FOOTER-->
   <div
-    class="hidden absolute bottom-0 left-0 justify-center p-4 space-x-4 w-full lg:flex bg-white dark:bg-gray-800 z-20 border-r border-gray-200 dark:border-gray-700"
+    class="absolute bottom-0 left-0 justify-center p-4 space-x-4 w-full bg-white dark:bg-gray-800 z-20 border-r border-gray-200 dark:border-gray-700 flex"
   >
-    <app-icon-button-link linkName="" link="#" icon="sliders"></app-icon-button-link>
+    <!-- <app-icon-button-link linkName="" link="#" icon="sliders"></app-icon-button-link>
     <app-icon-button-link
       linkName="Instellingen"
       tooltipReference="settings"
@@ -107,6 +96,29 @@
       tooltipReference="mail"
       link="/auth"
       icon="user"
-    ></app-icon-button-link>
+    ></app-icon-button-link> -->
+
+    <button
+      type="submit"
+      class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 flex justify-between items-center"
+      onclick="window.location.href='/auth'"
+      [title]="email"
+    >
+      <div class="flex-1 text-left">
+        {{ authenticatedMessage }}
+      </div>
+
+      <div class="absolute right-2 icon-margin icon-container"
+        [class.icon-green]="email.toLowerCase() !== 'niet aangemeld'"
+        [class.icon-red]="email.toLowerCase() === 'niet aangemeld'"
+      >
+        <app-feather-icon
+          icon="user"
+          [filled]="true"
+          [size]="20"
+        >
+        </app-feather-icon>
+      </div>
+    </button>
   </div>
 </aside>

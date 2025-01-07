@@ -1,0 +1,21 @@
+<button
+    #header
+    type="button"
+    class="w-full mt-2 px-4 py-2 border border-gray-500 rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 flex justify-between items-center"
+    (click)="toggleDropdown()"
+>
+    <div class="flex-1 text-left">
+        <ng-content select="[header]"></ng-content>
+    </div>
+    <div class="absolute right-2 icon-container">
+        <app-feather-icon
+            icon="chevron-down"
+            [size]="20"
+        >
+        </app-feather-icon>
+    </div>
+</button>
+
+<div #content *ngIf="dropdownOpen" class="absolute w-full bg-white border rounded-md shadow-lg z-10">
+    <ng-content select="[body]"></ng-content>
+</div>
