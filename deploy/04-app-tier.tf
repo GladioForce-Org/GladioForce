@@ -233,6 +233,13 @@ resource "aws_ecs_task_definition" "gladioforce_backend" {
     local.common_tags,
     tomap({ "Name" = "${local.prefix}-backend-container" })
   )
+
+  lifecycle {
+    # Trigger replacement on each apply using the current timestamp ensuring the latest image is used
+    replace_triggered_by = [timestamp()]
+
+  }
+
 }
 
 
@@ -276,7 +283,7 @@ resource "aws_ecs_service" "gladioforce_backend" {
     tomap({ "Name" = "${local.prefix}-ecs-service" })
   )
 
-  depends_on = [aws_db_instance.db_app]
+  depends_on = [aws_db_instance.db_app, aws_ecs_task_definition.gladioforce_backend]
 }
 
 #Autoscaling group for the ecs service;  the target tracking scaling type
