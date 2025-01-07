@@ -2,8 +2,9 @@ from ninja import Router
 from typing import List
 from data_collectie.models import Edition
 from data_collectie.schemas import EditionSchema, EditionCreateSchema
+from gladio_backend.auth.auth import AuthBearer
 
-router = Router(tags=["Edition_admin"], auth=None)
+router = Router(tags=["Edition_admin"], auth=AuthBearer())
 
 # List Editions
 @router.get("/")

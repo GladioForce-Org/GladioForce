@@ -2,9 +2,10 @@ from ninja import NinjaAPI, Router
 from data_collectie.models import Club, ParticipatingClub, Volunteer
 from data_collectie.schemas import ClubSchemaOut, ClubCreateSchema, VolunteerSchemaOut, ClubSchemaPatch
 from typing import List
+from gladio_backend.auth.auth import AuthBearer
 
 
-router = Router(tags=["Clubs_admin"])
+router = Router(tags=["Clubs_admin"], auth=AuthBearer())
 
 @router.get("/generate_link/{club_id}")
 def generate_link(request, club_id: int):

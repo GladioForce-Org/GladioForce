@@ -5,8 +5,9 @@ from data_collectie.services import get_tshirt_or_none, get_size_or_none
 from django.http import HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 import random
 from firebase_admin import auth
+from gladio_backend.auth.auth import AuthBearer
 
-router = Router(tags=["Coremember_admin"])
+router = Router(tags=["Coremember_admin"], auth=AuthBearer())
 
 @router.post("/")
 def create_core_member(request, payload: CoreMemberCreateSchema):
