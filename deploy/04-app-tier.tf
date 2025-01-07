@@ -160,7 +160,9 @@ resource "aws_ecs_cluster_capacity_providers" "ecs_web_tier_fargate" {
 # We will be using the secrets module of AWS, otherwise the secrets are stored in clear.
 resource "random_id" "ecs_task_definition_trigger" {
   byte_length = 8
-  id          = timestamp() # Always use a different timestamp on each apply
+  keepers = {
+    always_trigger = timestamp()
+  } # Always use a different timestamp on each apply
 }
 
 
@@ -239,7 +241,7 @@ resource "aws_ecs_task_definition" "gladioforce_backend" {
 
   lifecycle {
     # Trigger replacement on each apply using the current timestamp ensuring the latest image is used
-    replace_triggered_by = [random_id.ecs_task_definition_trigger.hex]
+    replace_triggered_by = [random_id.ecs_task_definition_trigger.id]
 
   }
 
@@ -268,7 +270,7 @@ resource "aws_ecs_service" "gladioforce_backend" {
   #### Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ####
   lifecycle {
 
-    replace_triggered_by = [random_id.ecs_task_definition_trigger.hex]
+    replace_triggered_by = [random_id.ecs_task_definition_trigger.id]
 
   }
 
