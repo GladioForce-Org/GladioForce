@@ -19,7 +19,6 @@ export const routes: Routes = [
     {path: 't-shirts', component: TshirtsComponent},
     {path: 'core-members', component: CoremembersComponent},
     {path: 'clubs', component: ClubsComponent},
-    {path: 'tasks', component: TasksComponent},
     {path: 'planning', component: PlanningComponent},
     {path: 'export', component: ExportComponent},
     {path: 'documents', component: DocumentsComponent},
