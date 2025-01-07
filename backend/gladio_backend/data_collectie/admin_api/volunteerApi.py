@@ -3,10 +3,10 @@ from data_collectie.models import Volunteer, Club, AvailableTshirt, Size
 from data_collectie.schemas import VolunteerSchemaOut, VolunteerCreateSchema, VolunteerSchemaPatch
 from typing import List
 from data_collectie.services import get_tshirt_or_none, get_size_or_none
-from gladio_backend.auth.auth import FirebaseAuth
 
 
-router = Router(tags=["Volunteers_admin"], auth=FirebaseAuth())
+
+router = Router(tags=["Volunteers_admin"])
 
 @router.get("/", response=List[VolunteerSchemaOut])
 def get_volunteers(request):

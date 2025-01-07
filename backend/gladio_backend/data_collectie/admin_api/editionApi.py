@@ -1,7 +1,6 @@
 from ninja import Router
 from typing import List
 from data_collectie.models import Edition
-from gladio_backend.auth.auth import FirebaseAuth
 from data_collectie.schemas import EditionSchema, EditionCreateSchema
 
 router = Router(tags=["Edition_admin"], auth=None)

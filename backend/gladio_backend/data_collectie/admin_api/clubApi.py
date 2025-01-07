@@ -3,10 +3,9 @@ from data_collectie.models import Club, ParticipatingClub, Volunteer
 from data_collectie.schemas import ClubSchemaOut, ClubCreateSchema, VolunteerSchemaOut, ClubSchemaPatch
 from typing import List
 from django.http import Http404
-from gladio_backend.auth.auth import FirebaseAuth
 
 
-router = Router(tags=["Clubs_admin"], auth=FirebaseAuth())
+router = Router(tags=["Clubs_admin"])
 
 @router.get("/generate_link/{club_id}")
 def generate_link(request, club_id: int):
