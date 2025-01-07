@@ -35,7 +35,6 @@ jobs:
 
       - name: Destroy Terraform Environment
         env:
-        env:
           TF_VAR_app_secret_key: ${{ secrets.TF_VAR_APP_SECRET_KEY }}
           TF_VAR_cloudflare_api_token: ${{ secrets.TF_VAR_CLOUDFLARE_API_TOKEN }}
           TF_VAR_cloudflare_email: ${{ secrets.TF_VAR_CLOUDFLARE_EMAIL }}
