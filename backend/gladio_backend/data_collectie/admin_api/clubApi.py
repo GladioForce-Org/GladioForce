@@ -41,3 +41,21 @@ def delete_club(request, club_id: int):
     Club.objects.get(id=club_id).delete()
     return {"status": "ok"}
 
+#patch club trough participating club
+@router.patch("/update/{participating_club_id}")
+def update_club(request, participating_club_id: int, payload: ClubSchemaPatch):
+    try:
+        # Retrieve the participating club by ID
+        participating_club = ParticipatingClub.objects.get(id=participating_club_id)
+        # Update the basic fields
+        for field in payload.dict().keys():
+            if field in ["name", "email", "contact", "phone", "bank_account", "address", "btw_number", "postal_code", "city"]:
+                setattr(participating_club.club, field, payload.dict()[field])
+
+        # Save the updated club to the database
+        participating_club.club.save()
+
+        return {"status": "ok", "message": "Club updated successfully"}
+    except ParticipatingClub.DoesNotExist:
+        return {"status": "error", "message": f"Club with ID {participating_club_id} does not exist"}
+
