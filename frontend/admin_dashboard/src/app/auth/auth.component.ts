@@ -89,6 +89,9 @@ export class AuthComponent implements OnInit {
           case "auth/wrong-password":
             this.errorAuthentication = "Onjuist wachtwoord.";
             break;
+          case "auth/invalid-credential":
+            this.errorAuthentication = "Ongeldige inloggegevens.";
+            break;
           default:
             this.errorAuthentication = `Error: ${errorMessage} (Code: ${errorCode})`;
         }
