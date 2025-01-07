@@ -264,8 +264,9 @@ resource "aws_ecs_service" "gladioforce_backend" {
   # }
   #### Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ####
   lifecycle {
-    ignore_changes = [
-    desired_count]
+
+    replace_triggered_by = [timestamp()]
+
   }
 
   network_configuration {
