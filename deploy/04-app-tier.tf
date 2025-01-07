@@ -158,12 +158,6 @@ resource "aws_ecs_cluster_capacity_providers" "ecs_web_tier_fargate" {
 # Task definition that will deploy the container.
 # The container definitions json encoded file will configure the environment variables needed for the database connection to the RDS database
 # We will be using the secrets module of AWS, otherwise the secrets are stored in clear.
-resource "random_id" "ecs_task_definition_trigger" {
-  byte_length = 8
-  keepers = {
-    always_trigger = timestamp()
-  } # Always use a different timestamp on each apply
-}
 
 
 resource "aws_ecs_task_definition" "gladioforce_backend" {
@@ -239,12 +233,6 @@ resource "aws_ecs_task_definition" "gladioforce_backend" {
     tomap({ "Name" = "${local.prefix}-backend-container" })
   )
 
-  lifecycle {
-    # Trigger replacement on each apply using the current timestamp ensuring the latest image is used
-    replace_triggered_by = [random_id.ecs_task_definition_trigger.id]
-
-  }
-
 }
 
 
@@ -262,18 +250,12 @@ resource "aws_ecs_service" "gladioforce_backend" {
   launch_type      = "FARGATE"
   platform_version = "1.4.0"
 
-  force_new_deployment = true
   #### Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ####
   # service_registries {
   #   registry_arn = aws_service_discovery_service.gladioforce_backend.arn
   # }
   #### Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ####
-  lifecycle {
-
-    replace_triggered_by = [random_id.ecs_task_definition_trigger.id]
-
-  }
-
+  force_new_deployment = true
   network_configuration {
     subnets = [
       aws_subnet.private_subnets[0].id,
@@ -289,7 +271,7 @@ resource "aws_ecs_service" "gladioforce_backend" {
     tomap({ "Name" = "${local.prefix}-ecs-service" })
   )
 
-  depends_on = [aws_db_instance.db_app, aws_ecs_task_definition.gladioforce_backend]
+  depends_on = [aws_db_instance.db_app]
 }
 
 #Autoscaling group for the ecs service;  the target tracking scaling type
