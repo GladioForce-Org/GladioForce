@@ -2,9 +2,7 @@ from ninja import Schema, Router
 from data_collectie.schemas import CoreMemberCreateSchema, CoreMemberSchema
 from typing import List
 from data_collectie.services import get_tshirt_or_none, get_size_or_none
-from firebase_admin import auth
 from django.http import HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
-from firebase_admin import auth
 import random
 
 router = Router(tags=["Coremember_admin"])
