@@ -276,6 +276,10 @@ resource "aws_ecs_service" "gladioforce_backend" {
   triggers = {
     redeployment = plantimestamp()
   }
+
+  lifecycle {
+    create_before_destroy = false
+  }
 }
 
 #Autoscaling group for the ecs service;  the target tracking scaling type
@@ -344,6 +348,7 @@ resource "null_resource" "fetch_private_ip" {
       TASK_ARN=""
 
       echo "Waiting for a task to start in the ECS cluster..."
+      sleep 300
 
       while [ -z "$TASK_ARN" ] || [ "$TASK_ARN" = "None" ]; do
         TASK_ARN=$(aws ecs list-tasks --cluster gladiolen-ecs-cluster --query 'taskArns[0]' --output text 2>/dev/null)
