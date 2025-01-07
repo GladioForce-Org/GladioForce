@@ -250,6 +250,7 @@ resource "aws_ecs_service" "gladioforce_backend" {
   launch_type      = "FARGATE"
   platform_version = "1.4.0"
 
+  force_new_deployment = true
   #### Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ####
   # service_registries {
   #   registry_arn = aws_service_discovery_service.gladioforce_backend.arn
