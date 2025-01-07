@@ -4,6 +4,7 @@ from typing import List
 from data_collectie.services import get_tshirt_or_none, get_size_or_none
 from django.http import HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 import random
+from firebase_admin import auth
 
 router = Router(tags=["Coremember_admin"])
 
