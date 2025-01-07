@@ -206,30 +206,15 @@ jobs:
   production-test:
     name: Test Production Application
     runs-on: ubuntu-latest
-    needs: production-apply
     steps:
-      - name: Test Application Reachability
-        run: |
-          sudo apt install curl -y
-          # Maximum retries and delay
-          MAX_RETRIES=60
-          DELAY=10
-          echo "Polling https://admin.gladioforce.org for readiness..."
-          for i in $(seq 1 $MAX_RETRIES); do
-            response=$(curl -s -o /dev/null -w "%{http_code}" https://admin.gladioforce.org)
-            echo "Attempt $i: HTTP Response Code - $response"
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-            if [ "$response" -eq 200 ]; then
-              echo "https://admin.gladioforce.org is reachable. Server is ready!"
-              exit 0
-            else
-              echo "Server is not ready yet. Retrying in $DELAY seconds..."
-              sleep $DELAY
-            fi
-          done
-          # Final check to exit with proper status
-          if [ "$response" -ne 200 ]; then
-            echo "https://admin.gladioforce.org is not reachable after $((MAX_RETRIES * DELAY)) seconds. Exiting with error."
-            exit 1
-          fi
+      - name: Install Dependencies
+        run: sudo apt update -y && sudo apt install curl -y
+
+      - name: Run Polling Script
+        run: |
+          chmod +x ./deploy/poll_server.sh
+          ./deploy/poll_server.sh
         shell: bash
