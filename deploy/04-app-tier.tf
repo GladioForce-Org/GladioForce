@@ -277,9 +277,7 @@ resource "aws_ecs_service" "gladioforce_backend" {
     redeployment = plantimestamp()
   }
 
-  lifecycle {
-    create_before_destroy = false
-  }
+
 }
 
 #Autoscaling group for the ecs service;  the target tracking scaling type
