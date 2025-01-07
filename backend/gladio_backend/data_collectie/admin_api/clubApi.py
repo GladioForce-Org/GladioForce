@@ -2,7 +2,6 @@ from ninja import NinjaAPI, Router
 from data_collectie.models import Club, ParticipatingClub, Volunteer
 from data_collectie.schemas import ClubSchemaOut, ClubCreateSchema, VolunteerSchemaOut, ClubSchemaPatch
 from typing import List
-from django.http import Http404
 
 
 router = Router(tags=["Clubs_admin"])

@@ -3,7 +3,7 @@ from typing import List
 from data_collectie.models import Tshirt, Size, AvailableTshirt, Edition
 from django.http import JsonResponse
 from data_collectie.schemas import TshirtSchema, SizeSchema, AvailableTshirtsResponseSchema, AvailableTshirtSchema, AvailableTshirtResponseSchema, AvailableTshirtInSchema, SizeCreateSchema, TshirtCreateSchema
-from data_collectie.services import list_all_available_tshirts, get_available_tshirt_details, list_all_available_tshirts_by_edition, patch_tshirt_then_patch_available_tshirt
+from data_collectie.services import get_available_tshirt_details, list_all_available_tshirts_by_edition, patch_tshirt_then_patch_available_tshirt
 from django.shortcuts import get_object_or_404
 router = Router(tags=["Tshirt_admin"])
 
