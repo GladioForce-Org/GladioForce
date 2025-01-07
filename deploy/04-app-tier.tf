@@ -272,6 +272,10 @@ resource "aws_ecs_service" "gladioforce_backend" {
   )
 
   depends_on = [aws_db_instance.db_app]
+
+  triggers = {
+    redeployment = plantimestamp()
+  }
 }
 
 #Autoscaling group for the ecs service;  the target tracking scaling type
