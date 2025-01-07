@@ -2,11 +2,10 @@ from ninja import NinjaAPI, Router
 from data_collectie.models import Club, ParticipatingClub, Volunteer
 from data_collectie.schemas import ClubSchemaOut, ClubCreateSchema, VolunteerSchemaOut, ClubSchemaPatch
 from typing import List
-from django.http import Http404
-from gladio_backend.auth.auth import FirebaseAuth
+from gladio_backend.auth.auth import AuthBearer
 
 
-router = Router(tags=["Clubs_admin"], auth=FirebaseAuth())
+router = Router(tags=["Clubs_admin"], auth=AuthBearer())
 
 @router.get("/generate_link/{club_id}")
 def generate_link(request, club_id: int):

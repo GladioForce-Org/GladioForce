@@ -4,17 +4,22 @@ import { DropdownButtonComponent } from "./dropdown-button/dropdown-button.compo
 import { IconButtonLinkComponent } from "./icon-button-link/icon-button-link.component";
 import { AuthService } from '../services/auth.service';
 import { environment } from '../../environments/environment';
+import { FeatherIconComponent } from '../components/feather-icon/feather-icon.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [LinkComponent, DropdownButtonComponent, IconButtonLinkComponent],
+  imports: [LinkComponent, DropdownButtonComponent, FeatherIconComponent, CommonModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
 })
 export class SidebarComponent implements OnInit {
-  email: string = 'Niet Aangemeld'; //provided by Authservice
+  email: string = localStorage.getItem('email') ?? 'Niet Aangemeld'; //provided by Authservice
+  authenticatedMessage: string = localStorage.getItem('email') ? 'Aangemeld' : 'Niet Aangemeld'; //provided by Authservice
+
   apiUrl: string = environment.apiUrl + '/docs';
+  public isEnvironmentProduction: boolean = environment.production;
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
@@ -24,7 +29,11 @@ export class SidebarComponent implements OnInit {
   ngOnInit() {
     // Subscribe to the email changes from the AuthService
     this.authService.email$.subscribe((email) => {
-      this.email = email ?? 'Niet Aangemeld';
+      if (email) {
+        localStorage.setItem('email', email);
+      } else {
+        localStorage.removeItem('email');
+      }
       this.changeDetectorRef.detectChanges();
       this.apiUrl = environment.apiUrl + '/docs';
     });
