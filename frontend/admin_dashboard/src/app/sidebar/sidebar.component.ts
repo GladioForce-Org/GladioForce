@@ -5,11 +5,12 @@ import { IconButtonLinkComponent } from "./icon-button-link/icon-button-link.com
 import { AuthService } from '../services/auth.service';
 import { environment } from '../../environments/environment';
 import { FeatherIconComponent } from '../components/feather-icon/feather-icon.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [LinkComponent, DropdownButtonComponent, FeatherIconComponent],
+  imports: [LinkComponent, DropdownButtonComponent, FeatherIconComponent, CommonModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
 })
@@ -18,6 +19,7 @@ export class SidebarComponent implements OnInit {
   authenticatedMessage: string = localStorage.getItem('email') ? 'Aangemeld' : 'Niet Aangemeld'; //provided by Authservice
 
   apiUrl: string = environment.apiUrl + '/docs';
+  public isEnvironmentProduction: boolean = environment.production;
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
