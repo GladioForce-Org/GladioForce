@@ -6,7 +6,7 @@ DELAY=10
 
 echo "Polling https://admin.gladioforce.org for readiness..."
 for i in $(seq 1 $MAX_RETRIES); do
-  response=$(curl -s -o /dev/null -w "%{http_code}" https://admin.gladioforce.org)
+  response=$(curl -s -o -k /dev/null -w "%{http_code}" https://admin.gladioforce.org)
   echo "Attempt $i: HTTP Response Code - $response"
 
   if [ "$response" -eq 200 ]; then
