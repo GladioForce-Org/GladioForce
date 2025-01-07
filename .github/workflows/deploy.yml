@@ -173,14 +173,14 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: angular-admin
-          path: ./frontend/admin_dashboard/admin.zip
+          path: ./frontend/admin_dashboard/
 
       # Download Angular Data Artifact
       - name: Download Angular Data Artifact
         uses: actions/download-artifact@v3
         with:
           name: angular-data
-          path: ./frontend/data_collectie/data.zip
+          path: ./frontend/data_collectie/
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
@@ -210,7 +210,7 @@ jobs:
     steps:
       - name: Test Application Reachability
         run: |
-          apt install curl -y
+          sudo apt install curl -y
           for i in {1..60}; do
             response=$(curl -s -o /dev/null -w "%{http_code}" https://admin.gladioforce.org)
             if [ "$response" -eq 200 ]; then
