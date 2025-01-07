@@ -206,6 +206,7 @@ jobs:
   production-test:
     name: Test Production Application
     runs-on: ubuntu-latest
+    needs: production-apply
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
