@@ -25,6 +25,12 @@ def get_participating_clubs(request, edition_id: int):
     participating_clubs = ParticipatingClub.objects.filter(edition_id=edition_id).select_related('club')
     return list(participating_clubs.values())
 
+#get participating clubs for current edition
+@router.get("/participating/current")
+def get_participating_clubs_current(request):
+    participating_clubs = ParticipatingClub.objects.filter(edition__isCurrentEdition=True).select_related('club')
+    return list(participating_clubs.values())
+
 @router.post("/")
 def create_club(request, payload: ClubCreateSchema):
     club = Club.objects.create(**payload.dict())
