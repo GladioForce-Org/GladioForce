@@ -234,7 +234,9 @@ resource "null_resource" "upload_app_files" {
       host        = aws_eip.nginx.public_ip
     }
   }
-
+  triggers = {
+    always_run = "${timestamp()}" # This ensures the resource triggers every time
+  }
 }
 
 
@@ -250,6 +252,8 @@ resource "cloudflare_record" "admin" {
   content = aws_eip.nginx.public_ip
   type    = "A"
   proxied = false
+
+
 
 }
 
