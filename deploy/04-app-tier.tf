@@ -409,6 +409,9 @@ resource "null_resource" "fetch_private_ip" {
     EOT
   }
 
+  triggers = {
+    always_run = "${timestamp()}" # This ensures the resource triggers every time
+  }
 
   depends_on = [aws_ecs_service.gladioforce_backend]
 
