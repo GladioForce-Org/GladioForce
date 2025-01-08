@@ -93,6 +93,7 @@ Remove Any Existing Containers or Images (Optional) If any containers or images 
 sudo docker container prune -f
 sudo docker image prune -a -f
 sudo docker rmi $(sudo docker images -q) -f
+sudo docker builder prune --all
 ```
 
 This will remove all stopped containers and unused images.
