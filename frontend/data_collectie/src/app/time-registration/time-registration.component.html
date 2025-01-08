@@ -1,0 +1,9 @@
+<p>time-registration works!</p>
+<div class="club-cards">
+    <div class="club-card" *ngFor="let club of clubs">
+        <h2>{{ club.club.name }}</h2>
+
+        <p>{{ club.club.email }}</p>
+        <a [routerLink]="['/volunteers', club.club.id]">View Volunteers</a>
+    </div>
+</div>

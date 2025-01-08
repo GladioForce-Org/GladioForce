@@ -52,7 +52,7 @@ def create_test_data(apps, schema_editor):
         works_day1=True,
         tshirt=available_tshirt,
         club=club,
-        size=size
+        size=size,
     )
     Volunteer.objects.create(
         first_name="John",
@@ -62,6 +62,14 @@ def create_test_data(apps, schema_editor):
         tshirt=available_tshirt2,
         club=club,
         size=size2
+    )
+    Volunteer.objects.create(
+        first_name="Jane",
+        last_name="Smith",
+        national_registry_number="123456789",
+        thsirt=available_tshirt4,
+        club=club,
+        size=size3
     )
     ParticipatingClub.objects.create(
         club=club,

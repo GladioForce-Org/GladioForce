@@ -61,7 +61,7 @@ class Volunteer(models.Model):
     needs_parking_day1 = models.BooleanField(default=False)
     needs_parking_day2 = models.BooleanField(default=False)
     tshirt = models.ForeignKey(AvailableTshirt, on_delete=models.CASCADE, null=True)
-    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, related_name="volunteers")
     size = models.ForeignKey(Size, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -95,8 +95,8 @@ class Task(models.Model):
 
 
 class TimeRegistration(models.Model):
-    start_time = models.TimeField()
-    end_time = models.TimeField()
+    start_time = models.TimeField(null=True)
+    end_time = models.TimeField(null=True)
     day = models.IntegerField(choices=[(1, "Day 1"), (2, "Day 2")])
     edition = models.ForeignKey(Edition, on_delete=models.CASCADE)
     volunteer = models.ForeignKey(Volunteer, on_delete=models.CASCADE)
