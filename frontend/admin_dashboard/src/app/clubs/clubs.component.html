@@ -240,8 +240,9 @@
     [minHeight]="150"
 >
     <!-- Unique Link -->
-    <p class="text--600" *ngIf="link !==''">    
-        <strong>link: </strong><a [href]="link" class="text-blue-500 underline hover:text-blue-700">{{ link }}</a>
+    <p class="text--600" *ngIf="link !==''">
+        <!-- Link is opened in a new browser tab -->   
+        <strong>link: </strong><a [href]="link" target="_blank" class="text-blue-500 underline hover:text-blue-700">{{ link }}</a>
     </p>
 
     <p class="text--600" *ngIf="link ===''">    
