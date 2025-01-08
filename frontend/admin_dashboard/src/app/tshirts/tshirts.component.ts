@@ -1,9 +1,8 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { AvailableTshirt, AvailableTshirtPatcher } from '../interfaces/available-tshirt';
 import { Size } from '../interfaces/size';
 import { CommonModule } from '@angular/common';
-import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../components/modal/modal.component';
 import { Tshirt } from '../interfaces/tshirt';
@@ -21,7 +20,7 @@ import { CustomDropdownComponent } from "../components/custom-dropdown/custom-dr
   styleUrl: './tshirts.component.scss'
 })
 
-export class TshirtsComponent implements OnInit, AfterViewInit {
+export class TshirtsComponent implements OnInit {
   loading: boolean = false;
   loadingSizes: boolean = false;
 
@@ -72,12 +71,6 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
     this.loadModels();
   }
 
-  ngAfterViewInit(): void {
-    // Ensure the modal is properly initialized
-    if (this.editModal) {
-      this.editModal.closeModal();
-    }
-  }
 
   CreateSize(): void {
     this.apiService.createSize({ size: this.sizeToCreate }).subscribe(() => {
