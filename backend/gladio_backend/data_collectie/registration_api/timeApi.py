@@ -50,9 +50,22 @@ def create_time_registration(data: TimeRegistrationSchemaCreate):
             end_time=data.end_time,
             edition=current_edition
         )
-        return time_registration
+        return TimeRegistrationSchemaOut.from_model(time_registration)
     except Volunteer.DoesNotExist:
         raise Http404("Volunteer does not exist")
     except Exception as e:
         raise Http404(str(e))
 
+
+# get all time registrations for a volunteer for current edition
+@router.get("/time_registrations/{volunteer_id}", response=List[TimeRegistrationSchemaOut])
+def get_time_registrations(request, volunteer_id: int):
+    try:
+        current_edition = Edition.objects.get(isCurrentEdition=True)
+        volunteer = Volunteer.objects.get(id=volunteer_id)
+        time_registrations = TimeRegistration.objects.filter(volunteer=volunteer, edition=current_edition)
+        return [TimeRegistrationSchemaOut.from_model(tr) for tr in time_registrations]
+    except Volunteer.DoesNotExist:
+        raise Http404("Volunteer does not exist")
+    except Exception as e:
+        raise Http404(str(e))

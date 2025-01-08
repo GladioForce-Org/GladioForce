@@ -17,6 +17,10 @@ export class TimeRegistrationComponent {
   loading: boolean = false;
   clubs: any[] = [];
 
+  ngOnInit(): void {
+    this.loadClubs();
+  }
+  
   loadClubs(): void {
     this.loading = true;
     this.timeService.getAvailableClubs().subscribe({
@@ -31,7 +35,5 @@ export class TimeRegistrationComponent {
     });
   }
 
-  ngOnInit(): void {
-    this.loadClubs();
-  }
+
 }

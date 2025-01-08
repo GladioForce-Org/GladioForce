@@ -31,3 +31,19 @@ class TimeRegistrationSchemaOut(Schema):
     day: str
     start_time: Optional[str]
     end_time: Optional[str]
+
+    @staticmethod
+    def from_model(instance):
+        return TimeRegistrationSchemaOut(
+            id=instance.id,
+            volunteer=VolunteerSchemaOut(
+                id=instance.volunteer.id,
+                first_name=instance.volunteer.first_name,
+                last_name=instance.volunteer.last_name,
+                works_day1=instance.volunteer.works_day1,
+                works_day2=instance.volunteer.works_day2,
+            ),
+            day=str(instance.day),
+            start_time=instance.start_time.strftime("%H:%M:%S") if instance.start_time else None,
+            end_time=instance.end_time.strftime("%H:%M:%S") if instance.end_time else None,
+        )
