@@ -161,7 +161,8 @@
 
         <div *ngIf="!isClubParticipating()" class="mt-2 max-w-md mx-auto">
             <button type="submit" class="w-full mt-2 py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            Voeg Vereniging Toe
+                Voeg Vereniging Toe <ng-container *ngIf="selectedClubId != 0"> Aan {{ editionYear }}</ng-container>
+                <!-- Show edition when club already exists so it's clear to the user they're adding it to the current edition -->
             </button>
         </div>
     </form>
@@ -240,8 +241,9 @@
     [minHeight]="150"
 >
     <!-- Unique Link -->
-    <p class="text--600" *ngIf="link !==''">    
-        <strong>link: </strong><a [href]="link" class="text-blue-500 underline hover:text-blue-700">{{ link }}</a>
+    <p class="text--600" *ngIf="link !==''">
+        <!-- Link is opened in a new browser tab -->   
+        <strong>link: </strong><a [href]="link" target="_blank" class="text-blue-500 underline hover:text-blue-700">{{ link }}</a>
     </p>
 
     <p class="text--600" *ngIf="link ===''">    
@@ -288,7 +290,7 @@
     [maxWidth]="500"
     [minHeight]="150"
 >
-    <p class="mb-4">Bent u zeker dat u deze vereniging wil verwijderen?</p>
+    <p class="mb-4">Bent u zeker dat u deze vereniging wil verwijderen voor alle edities?</p>
 
     <div class="mb-4">
         <p *ngIf="clubDeleted !==''" class="text-green-600 font-semibold mt-3">{{ clubDeleted }}</p>
@@ -313,7 +315,7 @@
     [maxWidth]="500"
     [minHeight]="150"
 >
-    <p class="mb-4">Bent u zeker dat u deze vereniging wil verwijderen uit editie {{ editionYear }}?</p>
+    <p class="mb-4">Bent u zeker dat u deze vereniging wil verwijderen uit Editie {{ editionYear }}?</p>
 
     <div class="mb-4">
         <p *ngIf="participatingClubDeleted !==''" class="text-green-600 font-semibold mt-3">{{ participatingClubDeleted }}</p>
