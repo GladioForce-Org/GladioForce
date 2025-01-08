@@ -7,6 +7,9 @@ import { Edition } from '../interfaces/edition';
 import { AvailableTshirt } from '../interfaces/available-tshirt';
 import { Tshirt } from '../interfaces/tshirt';
 import { Size } from '../interfaces/size';
+import { Club, ClubCreate } from '../interfaces/club';
+import { Volunteer } from '../interfaces/volunteer';
+import { ParticipatingClub } from '../interfaces/participating-club';
 
 @Injectable({
   providedIn: 'root'
@@ -115,5 +118,37 @@ export class ApiService {
   //get sizes by tshirt id /tshirt_sizes/{tshirt_id}/
   getSizesByTshirtId(tshirtId: number): Observable<Size[]> {
     return this.http.get<Size[]>(`${this.baseUrl}/tshirts/tshirt_sizes/${tshirtId}/`);
+  }
+
+  // Calls for clubs
+  //list all clubs /clubs/
+  getAllClubs(): Observable<Club[]> {
+    return this.http.get<Club[]>(`${this.baseUrl}/clubs/`);
+  }
+
+  //list all available tshirts for the current edition /tshirts/available-tshirts/current/
+  getParticipatingClubs(): Observable<ParticipatingClub[]> {
+    return this.http.get<ParticipatingClub[]>(`${this.baseUrl}/clubs/participating/current/`);
+  }
+
+  //get sizes by tshirt id /tshirt_sizes/{tshirt_id}/
+  getVolunteersByClubId(clubId: number): Observable<Volunteer[]> {
+    return this.http.get<Volunteer[]>(`${this.baseUrl}/clubs/volunteers/${clubId}/`);
+  }
+
+  generateLink(clubId: number): Observable<{ link: string }> {
+    return this.http.get<{ link: string }>(`${this.baseUrl}/clubs/generate_link/${clubId}/`);
+  }
+
+  addClub(club: ClubCreate): Observable<ParticipatingClub> {
+    return this.http.post<ParticipatingClub>(`${this.baseUrl}/clubs/participating`, club);
+  }
+
+  deleteClub(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/clubs/${id}`);
+  }
+
+  deleteParticipatingClub(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/clubs/participating/${id}/`);
   }
 }
