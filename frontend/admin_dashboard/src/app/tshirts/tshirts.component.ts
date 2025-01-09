@@ -25,6 +25,7 @@ export class TshirtsComponent implements OnInit {
   loadingSizes: boolean = false;
 
   availableTshirts: AvailableTshirt[] = [];
+  availableTshirtDictionary: { [key: number]: AvailableTshirt } = {}; //Dictionary of all available t-shirts
   availableModels:  AvailableTshirt[] = [];
   currentYear: number | null = null;
 
@@ -85,6 +86,7 @@ export class TshirtsComponent implements OnInit {
       this.apiService.getSizesByTshirtId(this.selectedModelId).subscribe(
         (sizes) => { // Update sizes for the selected model
           this.selectedTshirt.sizes = sizes;
+          this.selectedTshirt.price = this.availableTshirtDictionary[this.selectedModelId].price;
 
           this.selectedTshirtSizes = sizes.map((size: Size) => size.id); // Pre-select sizes for the selected model
         },
@@ -108,6 +110,10 @@ export class TshirtsComponent implements OnInit {
 
     this.apiService.getAvailableTshirts().subscribe((data: AvailableTshirt[]) => {
       this.availableTshirts = data;
+      this.availableTshirts.forEach((tshirt: AvailableTshirt) => {
+        this.availableTshirtDictionary[tshirt.tshirt_id] = tshirt;
+      });
+
       this.loading = false;
     });
   }
