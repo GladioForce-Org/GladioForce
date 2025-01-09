@@ -10,11 +10,12 @@ import { LoadingComponent } from "../components/loading/loading.component";
 import { Club, ClubCreate } from '../interfaces/club';
 import { ParticipatingClub, ParticipatingClubPatcher } from '../interfaces/participating-club';
 import { environment } from '../../environments/environment';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-clubs',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalComponent, IconButtonComponent, LoadingComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ModalComponent, IconButtonComponent, LoadingComponent],
   templateUrl: './clubs.component.html',
   styleUrl: './clubs.component.scss'
 })
