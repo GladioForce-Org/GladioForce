@@ -134,7 +134,11 @@
               {{ size.size }}<ng-container *ngIf="size !== tshirt.sizes[tshirt.sizes.length - 1]">, </ng-container>
             </ng-container>
           </td>
-          <td class="py-2 px-4 border-b text-start">{{ getPriceStringForTable(tshirt.price) }}</td>
+          <td class="py-2 px-4 border-b text-start">
+            <ng-container *ngIf="tshirt.price !== undefined && tshirt.price !== null">
+              {{ getPriceStringForTable(tshirt.price) }}
+            </ng-container>
+          </td>
           <td class="py-2 px-4 border-b text-center">
             <div class="flex justify-center gap-4">
               <app-icon-button (click)="openEditModal(tshirt)" icon="edit"></app-icon-button>
