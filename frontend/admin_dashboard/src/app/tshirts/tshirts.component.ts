@@ -86,6 +86,7 @@ export class TshirtsComponent implements OnInit {
       this.apiService.getSizesByTshirtId(this.selectedModelId).subscribe(
         (sizes) => { // Update sizes for the selected model
           this.selectedTshirt.sizes = sizes;
+          this.selectedTshirtSizes = sizes.map((size: Size) => size.id); // Pre-select sizes for the selected model
           
           // Get available t-shirt if it already exists for this edition
           const availableTshirt = this.availableTshirtDictionary[Number(this.selectedModelId)];
@@ -95,8 +96,6 @@ export class TshirtsComponent implements OnInit {
           } else {
             this.selectedTshirt.price = 0;
           }
-
-          this.selectedTshirtSizes = sizes.map((size: Size) => size.id); // Pre-select sizes for the selected model
         },
         (error) => {
           console.error('Error bij het ophalen van de maten voor het model:', error);
@@ -118,6 +117,8 @@ export class TshirtsComponent implements OnInit {
 
     this.apiService.getAvailableTshirts().subscribe((data: AvailableTshirt[]) => {
       this.availableTshirts = data;
+
+      this.availableTshirtDictionary = {}; // Clear dictionary
       this.availableTshirts.forEach((tshirt: AvailableTshirt) => {
         this.availableTshirtDictionary[Number(tshirt.tshirt_id)] = tshirt;
       });
@@ -338,6 +339,7 @@ export class TshirtsComponent implements OnInit {
     if (this.tshirtToDelete !== null) {
       this.apiService.deleteTshirt(this.tshirtToDelete.id).subscribe({
         next: (result) => {
+          this.resetSelectedTshirt();
           this.loadTshirts();
           this.tshirtDeleted = 'T-shirt verwijderd.';
         },
