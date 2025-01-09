@@ -41,10 +41,10 @@ echo 'dns_cloudflare_api_token = ${var.cloudflare_api_token}' | sudo tee ~/cloud
 
 # Certbot command to obtain and install certificates
 # Staging
-sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $WILDCARD_DOMAIN_NAME -d $DOMAIN_NAME --server https://acme-staging-v02.api.letsencrypt.org/directory --email $EMAIL
+#sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $WILDCARD_DOMAIN_NAME -d $DOMAIN_NAME --server https://acme-staging-v02.api.letsencrypt.org/directory --email $EMAIL
 # production
-#sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $WILDCARD_DOMAIN_NAME -d $DOMAIN_NAME --server https://acme-v02.api.letsencrypt.org/directory --email $EMAIL 
-sleep 180
+sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $WILDCARD_DOMAIN_NAME -d $DOMAIN_NAME --server https://acme-v02.api.letsencrypt.org/directory --email $EMAIL 
+sleep 80
 
 
 #Set up NGINX server block
@@ -165,9 +165,9 @@ sudo systemctl reload nginx
 
 # Set up a cron job to renew certificates automatically
 # staging
-echo "0 0 1 * * certbot renew --non-interactive --no-self-upgrade --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos --server https://acme-staging-v02.api.letsencrypt.org/directory  --email $EMAIL && systemctl reload nginx" | sudo tee /etc/cron.d/certbot-renew > /dev/null
+#echo "0 0 1 * * certbot renew --non-interactive --no-self-upgrade --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos --server https://acme-staging-v02.api.letsencrypt.org/directory  --email $EMAIL && systemctl reload nginx" | sudo tee /etc/cron.d/certbot-renew > /dev/null
 # production
-#echo "0 0 1 * * certbot renew --non-interactive --no-self-upgrade --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos --server https://acme-v02.api.letsencrypt.org/directory  --email $EMAIL && systemctl reload nginx" | sudo tee /etc/cron.d/certbot-renew > /dev/null
+echo "0 0 1 * * certbot renew --non-interactive --no-self-upgrade --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos --server https://acme-v02.api.letsencrypt.org/directory  --email $EMAIL && systemctl reload nginx" | sudo tee /etc/cron.d/certbot-renew > /dev/null
 
 
 EOF
