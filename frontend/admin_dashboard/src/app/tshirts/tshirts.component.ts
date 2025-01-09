@@ -86,7 +86,15 @@ export class TshirtsComponent implements OnInit {
       this.apiService.getSizesByTshirtId(this.selectedModelId).subscribe(
         (sizes) => { // Update sizes for the selected model
           this.selectedTshirt.sizes = sizes;
-          this.selectedTshirt.price = this.availableTshirtDictionary[this.selectedModelId].price;
+          
+          // Get available t-shirt if it already exists for this edition
+          const availableTshirt = this.availableTshirtDictionary[Number(this.selectedModelId)];
+
+          if (availableTshirt !== undefined) {
+            this.selectedTshirt.price = availableTshirt.price;
+          } else {
+            this.selectedTshirt.price = 0;
+          }
 
           this.selectedTshirtSizes = sizes.map((size: Size) => size.id); // Pre-select sizes for the selected model
         },
@@ -111,7 +119,7 @@ export class TshirtsComponent implements OnInit {
     this.apiService.getAvailableTshirts().subscribe((data: AvailableTshirt[]) => {
       this.availableTshirts = data;
       this.availableTshirts.forEach((tshirt: AvailableTshirt) => {
-        this.availableTshirtDictionary[tshirt.tshirt_id] = tshirt;
+        this.availableTshirtDictionary[Number(tshirt.tshirt_id)] = tshirt;
       });
 
       this.loading = false;
@@ -140,10 +148,6 @@ export class TshirtsComponent implements OnInit {
         sizes: this.selectedTshirtSizes
       };
       
-      console.log('T-shirt patchen:', this.selectedTshirt.model);
-
-      console.log('tshirt ID:', this.selectedTshirt.tshirt_id);
-
       this.apiService.updateTshirt(patchModel, this.selectedTshirt.tshirt_id).subscribe({
         next: (result) => {
           this.loadTshirts();
@@ -194,11 +198,9 @@ export class TshirtsComponent implements OnInit {
     const requestBody = { size: this.sizeToCreate.trim() };
 
     if (this.selectedModelId == 0) {
-      console.log('Aanmaken van nieuwe maat:', this.sizeToCreate);
       // Create a new size
       this.apiService.createSize(requestBody).subscribe(
         () => {
-          console.log('Maat aangemaakt:', this.sizeToCreate);
           this.loadSizes();
           this.sizeToCreate = '';
         },
@@ -217,7 +219,6 @@ export class TshirtsComponent implements OnInit {
       const updatedTshirt = { ...this.selectedTshirt, sizes: [...this.selectedTshirt.sizes, this.sizeToCreate.trim()] };
       this.apiService.updateTshirt(updatedTshirt, this.selectedModelId).subscribe(
         () => {
-          console.log('T-shirt updated with new size:', this.sizeToCreate);
           this.loadTshirts();
           this.sizeToCreate = '';
         },
@@ -246,6 +247,7 @@ export class TshirtsComponent implements OnInit {
     }
 
     this.apiService.addTshirt(this.selectedTshirt).subscribe(() => {
+      this.loadModels();
       this.loadTshirts();
       this.resetSelectedTshirt();
       this.tshirtCreated = 'T-shirt succesvol toegevoegd!';
@@ -270,6 +272,7 @@ export class TshirtsComponent implements OnInit {
       price: 0
     };
 
+    this.selectedTshirtSizes = [];
     this.selectedModelId = 0;
   }
 
