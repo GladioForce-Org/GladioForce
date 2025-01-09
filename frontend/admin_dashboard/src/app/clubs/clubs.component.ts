@@ -103,7 +103,7 @@ export class ClubsComponent {
 
   onModelChange(): void {
     if (Number(this.selectedClubId) !== 0 && this.selectedClub !== undefined) { // Existing club
-      let foundClub: Club = this.clubDictionary[this.selectedClubId];
+      let foundClub: Club = this.clubDictionary[Number(this.selectedClubId)];
   
       if (foundClub !== undefined) {
         this.selectedClub = foundClub; // Assign the found club
@@ -144,8 +144,9 @@ export class ClubsComponent {
     this.apiService.getAllClubs().subscribe((data: Club[]) => {
       this.allClubs = data;
 
+      this.clubDictionary = {}; // Clear the dictionary
       for (let club of this.allClubs) {
-        this.clubDictionary[club.id] = club;
+        this.clubDictionary[Number(club.id)] = club;
       }
 
       this.loadingClubs = false;
@@ -272,7 +273,7 @@ export class ClubsComponent {
 
     this.participatingClubToEditId = Number(club.id);
 
-    let clubToEdit: Club = this.clubDictionary[club.club_id];
+    let clubToEdit: Club = this.clubDictionary[Number(club.club_id)];
     this.participatingClubToEdit = {
       club_id: Number(club.club_id),
       name: clubToEdit.name,
