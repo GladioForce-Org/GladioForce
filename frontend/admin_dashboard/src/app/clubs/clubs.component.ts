@@ -22,7 +22,6 @@ import { RouterModule } from '@angular/router';
 export class ClubsComponent {
   loadingClubs: boolean = false;
   loadingParticipatingClubs: boolean = false;
-  loadingVolunteers: boolean = false;
 
   //Data Collection URL
   dataCollectionUrl: string = "";

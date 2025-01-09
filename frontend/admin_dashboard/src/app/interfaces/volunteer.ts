@@ -1,4 +1,5 @@
 export interface Volunteer {
+    id?: number;         // Optional field
     first_name: string;
     last_name: string;
     works_day1: boolean;
