@@ -33,7 +33,7 @@ export class TshirtsComponent implements OnInit {
     tshirt_id: 0,
     model: '',
     sizes: [],
-    price: ''
+    price: 0
   };
 
   selectedTshirtSizes: number[] = [];
@@ -261,7 +261,7 @@ export class TshirtsComponent implements OnInit {
       tshirt_id: 0,
       model: '',
       sizes: [],
-      price: ''
+      price: 0
     };
 
     this.selectedModelId = 0;
@@ -337,5 +337,12 @@ export class TshirtsComponent implements OnInit {
         }
       });
     }
+  }
+
+  public getPriceStringForTable(price: number): string {
+    // Format the price to a string
+    let priceString = '€ ' + price.toString().replace('.', ',');
+
+    return priceString;
   }
 }
