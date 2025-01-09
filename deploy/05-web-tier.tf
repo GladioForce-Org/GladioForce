@@ -224,7 +224,7 @@ resource "null_resource" "upload_app_files" {
       # "sudo unzip /home/ec2-user/app3.zip -d /var/www/app3",
       "sudo chown -R www-data:www-data /var/www",
       "sudo chmod -R 755 /var/www",
-      "service restart nginx || true" #suppress error, reload happens but terraform fails
+      "sudo systemctl restart nginx.service || true" #suppress error, reload happens but terraform fails
     ]
 
     connection {
