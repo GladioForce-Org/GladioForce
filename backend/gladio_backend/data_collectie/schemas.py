@@ -92,6 +92,7 @@ class VolunteerCreateSchema(Schema):
 class VolunteerSchemaPatch(Schema):
     first_name: str
     last_name: str
+    national_registry_number: Optional[str] = None
     works_day1: bool
     works_day2: bool
     needs_parking_day1: bool
@@ -103,6 +104,19 @@ class VolunteerSchemaOut(Schema):
     id: int
     first_name: str
     last_name: str
+    works_day1: bool
+    works_day2: bool
+    needs_parking_day1: bool
+    needs_parking_day2: bool
+    tshirt_id: Optional[int] = None
+    club_id: int
+    size_id: Optional[int] = None
+
+class VolunteerAdminSchemaOut(Schema):
+    id: int
+    first_name: str
+    last_name: str
+    national_registry_number: Optional[str] = None
     works_day1: bool
     works_day2: bool
     needs_parking_day1: bool

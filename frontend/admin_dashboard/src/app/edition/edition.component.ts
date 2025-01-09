@@ -37,6 +37,7 @@ export class EditionComponent implements OnInit {
   //Modal
   @ViewChild('editModal') editModal!: ModalComponent;
   @ViewChild('deleteModal') deleteModal!: ModalComponent;
+  @ViewChild('createModal') createModal!: ModalComponent;
 
   constructor(
     private apiService: ApiService,
@@ -64,19 +65,42 @@ export class EditionComponent implements OnInit {
   }
 
   // Create
+  openCreateModal() {
+    this.editionCreated = '';
+    this.errorEditionCreation = '';
+
+    this.selectedEdition = {...this.editionToCreate}; // {...} ensures a copy is made and not a reference
+  
+    setTimeout(() => { // Wait for the view to update
+      if (this.createModal) { // Wait until the view is initialized (you may have to click twice the first time)
+        this.createModal.openModal();  
+      }
+    });
+  }
+
   createEdition() {
     this.editionCreated = '';
     this.errorEditionCreation = '';
     
-    this.apiService.createEdition(this.editionToCreate).subscribe({
-      next: (result) => {
-        this.editionCreated = 'Editie aangemaakt.';
-        this.getEditions();
-      },
-      error: (error: HttpErrorResponse) => {
-        this.errorEditionCreation = this.helperService.parseError(error);
+    console.log('selectedEdition: ', this.selectedEdition);
+
+    if (this.selectedEdition !== null) {
+      let existingYears: Number[] = this.editions.map((edition) => edition.year);
+
+      if (existingYears.includes(Number(this.selectedEdition.year))) {
+        this.errorEditionCreation = 'Er bestaat al een editie voor dit jaar.';;
+      } else {
+        this.apiService.createEdition(this.selectedEdition).subscribe({
+          next: (result) => {
+            this.editionCreated = 'Editie aangemaakt.';
+            this.getEditions();
+          },
+          error: (error: HttpErrorResponse) => {
+            this.errorEditionCreation = this.helperService.parseError(error);
+          }
+        });  
       }
-    });
+    }
   }
 
   // Edit Popup

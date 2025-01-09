@@ -163,6 +163,10 @@ export class ApiService {
   }
 
   deleteVolunteer(volunteerId: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/volunteers/${volunteerId}`);
+    return this.http.delete(`${this.baseUrl}/volunteers/${volunteerId}/`);
+  }
+
+  updateVolunteer(volunteerId: number, volunteer: Volunteer): Observable<Volunteer> {
+    return this.http.patch<Volunteer>(`${this.baseUrl}/volunteers/update/${volunteerId}/`, volunteer);
   }
 }

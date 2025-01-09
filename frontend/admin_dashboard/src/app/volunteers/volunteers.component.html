@@ -122,7 +122,7 @@
         
         <!-- T-shirt Model -->
         <div class="mb-2 mt-6">
-            <label for="tshirt_model" class="block text-sm font-medium text-gray-700">Selecter Model T-shirt {{ currentYear }}&ensp;(optioneel)</label>
+            <label for="tshirt_model" class="block text-sm font-medium text-gray-700">Selecteer Model T-shirt&ensp;(optioneel)</label>
             <select
                 id="tshirt_model"
                 name="tshirt_model"
@@ -137,7 +137,7 @@
 
         <!-- T-shirt Size -->
         <div *ngIf="volunteerToCreate.tshirt_id !== undefined && volunteerToCreate.tshirt_id !== null" class="mb-2 mt-6">
-            <label for="tshirt_size" class="block text-sm font-medium text-gray-700">Selecteer Maat T-shirt {{ currentYear }}&ensp;(optioneel)</label>
+            <label for="tshirt_size" class="block text-sm font-medium text-gray-700">Selecteer Maat T-shirt&ensp;</label>
             <select
                 id="tshirt_size"
                 name="tshirt_size"
@@ -170,6 +170,7 @@
           <thead>
             <tr class="bg-gray-50"> <th class="py-3 px-4 border-b text-center"></th>
               <th class="py-3 px-4 border-b text-start">Naam</th>
+              <th class="py-3 px-4 border-b text-start">Rijksregisternummer</th>
               <th class="py-3 px-4 border-b text-start">Werkt Dag 1</th>
               <th class="py-3 px-4 border-b text-start">Werkt Dag 2</th>
               <th class="py-3 px-4 border-b text-start">Parking Dag 1</th>
@@ -184,6 +185,9 @@
                 <td class="text-sm font-medium py-2 px-4 border-b border-gray-200"></td>
                 <td class="py-2 px-4 border-b text-start">
                     {{ volunteer.first_name }} {{ volunteer.last_name }}
+                </td>
+                <td class="py-2 px-4 border-b text-start">
+                    {{ volunteer.national_registry_number }}
                 </td>
                 <td class="py-2 px-4 border-b text-start" [ngClass]="volunteer.works_day1 ? 'text-green-600' : 'text-red-600'">
                     <app-feather-icon
@@ -206,12 +210,12 @@
                     ></app-feather-icon>
                 </td>
                 <td class="py-2 px-4 border-b text-start">
-                    <ng-container *ngIf="volunteer.tshirt_id">
+                    <ng-container *ngIf="volunteer.tshirt_id && availableTshirtDictionary[volunteer.tshirt_id]">
                         {{ availableTshirtDictionary[volunteer.tshirt_id].model }}
                     </ng-container>
                 </td>
                 <td class="py-2 px-4 border-b text-start">
-                    <ng-container *ngIf="volunteer.size_id">
+                    <ng-container *ngIf="volunteer.size_id && sizeDictionary[volunteer.size_id]">
                         {{ sizeDictionary[volunteer.size_id].size }}
                     </ng-container>
                 </td>
@@ -235,3 +239,178 @@
 
     <app-loading *ngIf="loading" class="mt-10"></app-loading>
 </div>
+
+<!-- Delete Window -->
+<app-modal
+  *ngIf="selectedVolunteer !== null"
+  #deleteModal
+  [header]="selectedVolunteer.first_name + ' ' + selectedVolunteer.last_name + ' Verwijderen'"
+  [maxWidth]="500"
+  [minHeight]="150"
+>
+  <p class="mb-4">Bent u zeker dat u deze vrijwilliger wil verwijderen?</p>
+
+  <div class="mb-4">
+    <p *ngIf="volunteerDeleted !==''" class="text-green-600 font-semibold mt-3">{{ volunteerDeleted }}</p>
+    <p *ngIf="errorVolunteerDeletion !==''" class="text-red-600 font-semibold mt-3">{{ errorVolunteerDeletion }}</p>
+  </div>
+
+  <button
+    *ngIf = "volunteerDeleted === ''"
+    (click)="deleteVolunteer()"
+    type="submit"
+    class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+  >
+    Bevestigen
+  </button>
+</app-modal>
+
+<!-- Edit Window -->
+<app-modal
+  *ngIf="selectedVolunteer !== null"
+  #editModal
+  [header]="selectedVolunteer.first_name + ' ' + selectedVolunteer.last_name"
+  [maxWidth]="500"
+>
+    <form (submit)="editVolunteer()">
+        <!-- First Name Field -->
+        <div class="mb-2">
+        <label for="first_name" class="block text-sm font-medium text-gray-700">Voornaam</label>
+        <input
+            required
+            type="text"
+            id="first_name"
+            name="first_name"
+            [(ngModel)]="selectedVolunteer.first_name"
+            #firstName="ngModel"
+            class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        />
+        <p *ngIf="firstName.invalid && (firstName.dirty || firstName.touched)" class="text-red-500 text-xs mt-1">
+            Voornaam is verplicht.
+        </p>
+        </div>
+
+        <!-- Last Name Field -->
+        <div class="mb-2">
+            <label for="last_name" class="block text-sm font-medium text-gray-700">Familienaam</label>
+            <input
+            required
+            type="text"
+            id="last_name"
+            name="last_name"
+            [(ngModel)]="selectedVolunteer.last_name"
+            #lastName="ngModel"
+            class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+            <p *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)" class="text-red-500 text-xs mt-1">
+                Familienaam is verplicht.
+            </p>
+        </div>
+
+        <!-- national_registry_number field -->
+        <div class="mb-2">
+            <label for="national_registry_number" class="block text-sm font-medium text-gray-700">Rijksregisternummer</label>
+            <input
+                type="text"
+                id="national_registry_number"
+                name="national_registry_number"
+                [(ngModel)]="selectedVolunteer.national_registry_number"
+                #nationalRegistryNumber="ngModel"
+                class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+            <!-- <p *ngIf="nationalRegistryNumber.invalid && (nationalRegistryNumber.dirty || nationalRegistryNumber.touched)" class="text-red-500 text-xs mt-1">
+                Rijksregisternummer is verplicht.
+            </p> -->
+        </div>
+
+        <!-- Works Day 1 and Day 2 Fields -->
+        <div class="mb-2 mt-6 grid grid-cols-2 gap-4">
+            <div class="flex items-center">
+                <input
+                    type="checkbox"
+                    id="works_day1"
+                    name="works_day1"
+                    [(ngModel)]="selectedVolunteer.works_day1"
+                    (change)="setParkingToFalseIfNeeded(selectedVolunteer)"
+                    #worksDay1="ngModel"
+                />
+                <label for="works_day1" class="ml-2 block text-sm font-medium text-gray-700">Werkt op Dag 1</label>
+            </div>
+
+            <div class="flex items-center">
+                <input
+                    type="checkbox"
+                    id="works_day2"
+                    name="works_day2"
+                    [(ngModel)]="selectedVolunteer.works_day2"
+                    (change)="setParkingToFalseIfNeeded(selectedVolunteer)"
+                    #worksDay2="ngModel"
+                />
+                <label for="works_day2" class="ml-2 block text-sm font-medium text-gray-700">Werkt op Dag 2</label>
+            </div>
+        </div>
+
+        <!-- Needs Parking Day 1 and Day 2 Fields -->
+        <div class="mb-2 mt-6 grid grid-cols-2 gap-4">
+            <div class="flex items-center">
+                <input
+                    type="checkbox"
+                    id="needs_parking_day1"
+                    name="needs_parking_day1"
+                    [(ngModel)]="selectedVolunteer.needs_parking_day1"
+                    #needsParkingDay1="ngModel"
+                />
+                <label for="needs_parking_day1" class="ml-2 block text-sm font-medium text-gray-700">Parking Nodig Dag 1</label>
+            </div>
+
+            <div class="flex items-center">
+                <input
+                    type="checkbox"
+                    id="needs_parking_day2"
+                    name="needs_parking_day2"
+                    [(ngModel)]="selectedVolunteer.needs_parking_day2"
+                    #needsParkingDay2="ngModel"
+                />
+                <label for="needs_parking_day2" class="ml-2 block text-sm font-medium text-gray-700">Parking Nodig Dag 2</label>
+            </div>
+        </div>
+        
+        <!-- T-shirt Model -->
+        <div class="mb-2 mt-6">
+            <label for="tshirt_model" class="block text-sm font-medium text-gray-700">Selecteer Model T-shirt&ensp;(optioneel)</label>
+            <select
+                id="tshirt_model"
+                name="tshirt_model"
+                [(ngModel)]="selectedVolunteer.tshirt_id"
+                (change)="determineListOfSizesForCRUDs(selectedVolunteer)"
+                #tshirtModel="ngModel"
+                class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+                <option *ngFor="let tshirt of availableTshirts" [value]="tshirt.tshirt_id">{{ tshirt.model }}</option>
+            </select>
+        </div>
+
+        <!-- T-shirt Size -->
+        <div *ngIf="selectedVolunteer.tshirt_id !== undefined && selectedVolunteer.tshirt_id !== null" class="mb-2 mt-6">
+            <label for="tshirt_size" class="block text-sm font-medium text-gray-700">Selecteer Maat T-shirt&ensp;</label>
+            <select
+                id="tshirt_size"
+                name="tshirt_size"
+                [(ngModel)]="selectedVolunteer.size_id"
+                #tshirtSize="ngModel"
+                class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+                <option *ngFor="let size of availableSizes" [value]="size.id">{{ size.size }}</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <p *ngIf="volunteerEdited !==''" class="text-green-600 font-semibold mt-3">{{ volunteerEdited }}</p>
+            <p *ngIf="errorVolunteerEdit !==''" class="text-red-600 font-semibold mt-3">{{ errorVolunteerEdit }}</p>
+        </div>
+        <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            Vrijwilliger Aanpassen
+        </button>
+    </form>
+</app-modal>
+

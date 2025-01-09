@@ -37,6 +37,9 @@ def create_edition(request, payload: EditionCreateSchema):
     # Set works_day1 and works_day2 to False for all volunteers
     Volunteer.objects.update(works_day1=False, works_day2=False)
 
+    # Set needs_parking_day1 and needs_parking_day2 to False for all volunteers
+    Volunteer.objects.update(needs_parking_day1=False, needs_parking_day2=False)
+
     return { "id": edition.id, "year": edition.year, "isCurrentEdition": True }
 
 # Edit Edition
