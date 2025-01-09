@@ -121,6 +121,10 @@ export class ApiService {
   }
 
   // Calls for clubs
+  getClub(id: number): Observable<Club> {
+    return this.http.get<Club>(`${this.baseUrl}/clubs/${id}/`);
+  }
+
   getAllClubs(): Observable<Club[]> {
     return this.http.get<Club[]>(`${this.baseUrl}/clubs/`);
   }

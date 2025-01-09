@@ -26,6 +26,15 @@ def get_clubs(request):
     clubs = Club.objects.all()
     return list(clubs.values())
 
+# Get a club by ID
+@router.get("/{club_id}/", response=ClubSchemaOut)
+def get_club(request, club_id: int):
+    club = Club.objects.filter(id=club_id).first()
+    if not club:
+        return JsonResponse({"error": "No club found for this ID."}, status=404)
+
+    return club
+
 # Get volunteers of a club
 @router.get("/volunteers/{club_id}/", response=List[VolunteerSchemaOut])
 def get_volunteers(request, club_id: int):
