@@ -133,10 +133,6 @@ export class ApiService {
     return this.http.get<ParticipatingClub[]>(`${this.baseUrl}/clubs/participating/current/`);
   }
 
-  getVolunteersByClubId(clubId: number): Observable<Volunteer[]> {
-    return this.http.get<Volunteer[]>(`${this.baseUrl}/clubs/volunteers/${clubId}/`);
-  }
-
   generateLink(clubId: number): Observable<{ link: string }> {
     return this.http.get<{ link: string }>(`${this.baseUrl}/clubs/generate_link/${clubId}/`);
   }
@@ -155,5 +151,14 @@ export class ApiService {
 
   deleteParticipatingClub(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/clubs/participating/${id}/`);
+  }
+
+  // Calls for volunteers
+  getVolunteersByClubId(clubId: number): Observable<Volunteer[]> {
+    return this.http.get<Volunteer[]>(`${this.baseUrl}/clubs/volunteers/${clubId}/`);
+  }
+
+  addVolunteer(clubId: number, volunteer: Volunteer): Observable<Volunteer> {
+    return this.http.post<Volunteer>(`${this.baseUrl}/clubs/volunteers/${clubId}`, volunteer);
   }
 }
