@@ -42,6 +42,7 @@ export class VolunteersComponent implements OnInit {
     last_name: '',
     works_day1: false,
     works_day2: false,
+    national_registry_number: '',
     needs_parking_day1: false,
     needs_parking_day2: false
   };

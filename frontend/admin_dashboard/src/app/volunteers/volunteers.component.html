@@ -52,6 +52,22 @@
             </p>
         </div>
 
+        <!-- national_registry_number field -->
+        <div class="mb-2">
+            <label for="national_registry_number" class="block text-sm font-medium text-gray-700">Rijksregisternummer</label>
+            <input
+                type="text"
+                id="national_registry_number"
+                name="national_registry_number"
+                [(ngModel)]="volunteerToCreate.national_registry_number"
+                #nationalRegistryNumber="ngModel"
+                class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+            <!-- <p *ngIf="nationalRegistryNumber.invalid && (nationalRegistryNumber.dirty || nationalRegistryNumber.touched)" class="text-red-500 text-xs mt-1">
+                Rijksregisternummer is verplicht.
+            </p> -->
+        </div>
+
         <!-- Works Day 1 and Day 2 Fields -->
         <div class="mb-2 mt-6 grid grid-cols-2 gap-4">
             <div class="flex items-center">
