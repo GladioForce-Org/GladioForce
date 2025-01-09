@@ -1,14 +1,21 @@
-    <!-- Volunteers -->
-    <div class="mt-2 max-w-md mx-auto">
-        <button
-            [routerLink]="['/clubs/']"
-            class="w-full mt-2 py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        >
-            <div class="flex items-center justify-center relative">
-                <app-feather-icon icon="arrow-left" [size]="18" class="absolute left-2"></app-feather-icon>
-                <span class="mx-auto">Terug naar Verenigingen</span>
-            </div>
-        </button>
-    </div>
+<div class="mx-auto mt-10 p-6 flex items-center justify-center">
+    <div class="max-w-md flex flex-row">
+        <div class="flex items-center">
+            <app-icon-button-link
+                linkName=""
+                tooltipReference="clubs"
+                link="/clubs"
+                icon="arrow-left"
+                class="mr-3"
+            ></app-icon-button-link>
 
-    <p>Club ID: {{ club_id }}</p>
+            <h1 class="text-2xl font-semibold text-center">
+                Vrijwilligers van <ng-container *ngIf="club">{{ club.name }}</ng-container>
+            </h1>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-md mx-auto p-6">
+    <p class="text-center">content volgt</p>
+</div>
