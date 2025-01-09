@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { TimeService } from '../services/time.service';
 import { CommonModule } from '@angular/common';
+import { TimeService } from '../data/services/time.service';
 
 @Component({
   selector: 'app-volunteers',
