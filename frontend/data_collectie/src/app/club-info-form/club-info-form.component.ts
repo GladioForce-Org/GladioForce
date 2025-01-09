@@ -76,6 +76,7 @@ export class ClubInfoFormComponent implements OnInit {
   }
 
   protected onSubmit(form: NgForm): void {
+    console.log('submitting form', form);
     if (form.invalid) return;
 
     const bankAccountControl = form.form.get('bank_account');

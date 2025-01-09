@@ -104,7 +104,7 @@ def available_tshirts_list_view(request, edition_id: int):
     return available_tshirts
 
 #list all available tshirts for current edition
-@router.get("/available-tshirts/current/")
+@router.get("/available-tshirts/current/", auth=None)
 def available_tshirts_current_edition_view(request):
     current_edition = Edition.objects.filter(isCurrentEdition=True).first()
     if not current_edition:
