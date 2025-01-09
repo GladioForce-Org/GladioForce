@@ -83,11 +83,12 @@
     <div class="mb-4">
       <label for="price" class="block text-sm font-medium text-gray-700">Prijs</label>
       <input
-        type="text"
+        type="number"
         id="price"
         name="price"
         [(ngModel)]="selectedTshirt.price"
         #price="ngModel"
+        step="0.01"
         class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
       />
       <p *ngIf="price.invalid && (price.dirty || price.touched)" class="text-red-500 text-xs mt-1">
@@ -95,9 +96,16 @@
       </p>
     </div>
 
-    <button type="submit" class="w-full mt-8 py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-      Voeg T-shirt toe
-    </button>
+    <div class="mt-8">
+      <div class="mb-4">
+        <p *ngIf="tshirtCreated !==''" class="text-green-600 font-semibold mt-3">{{ tshirtCreated }}</p>
+        <p *ngIf="errorTshirtCreation !==''" class="text-red-600 font-semibold mt-3">{{ errorTshirtCreation }}</p>
+      </div>
+  
+      <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        Voeg T-shirt Toe
+      </button>
+    </div>
   </form>
 </div>
 
@@ -126,7 +134,7 @@
               {{ size.size }}<ng-container *ngIf="size !== tshirt.sizes[tshirt.sizes.length - 1]">, </ng-container>
             </ng-container>
           </td>
-          <td class="py-2 px-4 border-b text-start">€ {{ tshirt.price }}</td>
+          <td class="py-2 px-4 border-b text-start">{{ getPriceStringForTable(tshirt.price) }}</td>
           <td class="py-2 px-4 border-b text-center">
             <div class="flex justify-center gap-4">
               <app-icon-button (click)="openEditModal(tshirt)" icon="edit"></app-icon-button>
@@ -221,16 +229,16 @@
         </app-custom-dropdown>
       </div>
     </div>
-
     <!-- Price Field -->
     <div class="mb-4">
       <label for="editPrice" class="block text-sm font-medium text-gray-700">Prijs</label>
       <input
-        type="text"
+        type="number"
         id="editPrice"
         name="editPrice"
         [(ngModel)]="tshirtToEdit.price"
         #editPrice="ngModel"
+        step="0.01"
         class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
       />
       <p *ngIf="editPrice.invalid && (editPrice.dirty || editPrice.touched)" class="text-red-500 text-xs mt-1">

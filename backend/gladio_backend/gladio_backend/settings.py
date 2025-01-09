@@ -71,18 +71,18 @@ if domain_urls:
     # Add each domain from the list to the CORS_ALLOWED_ORIGINS list
     CORS_ALLOWED_ORIGINS.extend(domain_urls_list)
     ALLOWED_HOSTS.extend(allowed_hosts_list)
+    DEBUG = False
     
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'gladio_backend.urls'

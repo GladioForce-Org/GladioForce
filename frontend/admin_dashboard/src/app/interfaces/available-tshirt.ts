@@ -6,7 +6,7 @@ export interface AvailableTshirt {
     edition_year?: number;
     model: string;
     sizes: Size[];
-    price: string;
+    price: number;
 }
 
 export interface AvailableTshirtPatcher {
@@ -14,5 +14,5 @@ export interface AvailableTshirtPatcher {
     tshirt_id: number;
     model: string;
     sizes: Size[];
-    price: string;
+    price: number;
 }

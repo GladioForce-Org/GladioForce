@@ -7,6 +7,9 @@ import { Edition } from '../interfaces/edition';
 import { AvailableTshirt } from '../interfaces/available-tshirt';
 import { Tshirt } from '../interfaces/tshirt';
 import { Size } from '../interfaces/size';
+import { Club, ClubCreate } from '../interfaces/club';
+import { Volunteer } from '../interfaces/volunteer';
+import { ParticipatingClub, ParticipatingClubPatcher } from '../interfaces/participating-club';
 
 @Injectable({
   providedIn: 'root'
@@ -115,5 +118,55 @@ export class ApiService {
   //get sizes by tshirt id /tshirt_sizes/{tshirt_id}/
   getSizesByTshirtId(tshirtId: number): Observable<Size[]> {
     return this.http.get<Size[]>(`${this.baseUrl}/tshirts/tshirt_sizes/${tshirtId}/`);
+  }
+
+  // Calls for clubs
+  getClub(id: number): Observable<Club> {
+    return this.http.get<Club>(`${this.baseUrl}/clubs/${id}/`);
+  }
+
+  getAllClubs(): Observable<Club[]> {
+    return this.http.get<Club[]>(`${this.baseUrl}/clubs/`);
+  }
+
+  getParticipatingClubs(): Observable<ParticipatingClub[]> {
+    return this.http.get<ParticipatingClub[]>(`${this.baseUrl}/clubs/participating/current/`);
+  }
+
+  generateLink(clubId: number): Observable<{ link: string }> {
+    return this.http.get<{ link: string }>(`${this.baseUrl}/clubs/generate_link/${clubId}/`);
+  }
+
+  addClub(club: ClubCreate): Observable<ParticipatingClub> {
+    return this.http.post<ParticipatingClub>(`${this.baseUrl}/clubs/participating`, club);
+  }
+
+  updateParticipatingClub(club: ParticipatingClubPatcher, id: number): Observable<ParticipatingClub> {
+    return this.http.patch<ParticipatingClub>(`${this.baseUrl}/clubs/participating/${id}/`, club);
+  }
+
+  deleteClub(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/clubs/${id}`);
+  }
+
+  deleteParticipatingClub(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/clubs/participating/${id}/`);
+  }
+
+  // Calls for volunteers
+  getVolunteersByClubId(clubId: number): Observable<Volunteer[]> {
+    return this.http.get<Volunteer[]>(`${this.baseUrl}/clubs/volunteers/${clubId}/`);
+  }
+
+  addVolunteer(clubId: number, volunteer: Volunteer): Observable<Volunteer> {
+    return this.http.post<Volunteer>(`${this.baseUrl}/volunteers/${clubId}`, volunteer);
+  }
+
+  deleteVolunteer(volunteerId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/volunteers/${volunteerId}/`);
+  }
+
+  updateVolunteer(volunteerId: number, volunteer: Volunteer): Observable<Volunteer> {
+    return this.http.patch<Volunteer>(`${this.baseUrl}/volunteers/update/${volunteerId}/`, volunteer);
   }
 }

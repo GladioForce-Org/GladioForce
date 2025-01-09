@@ -1,9 +1,8 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../services/api.service';
 import { AvailableTshirt, AvailableTshirtPatcher } from '../interfaces/available-tshirt';
 import { Size } from '../interfaces/size';
 import { CommonModule } from '@angular/common';
-import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../components/modal/modal.component';
 import { Tshirt } from '../interfaces/tshirt';
@@ -21,23 +20,23 @@ import { CustomDropdownComponent } from "../components/custom-dropdown/custom-dr
   styleUrl: './tshirts.component.scss'
 })
 
-export class TshirtsComponent implements OnInit, AfterViewInit {
+export class TshirtsComponent implements OnInit {
   loading: boolean = false;
   loadingSizes: boolean = false;
 
   availableTshirts: AvailableTshirt[] = [];
+  availableTshirtDictionary: { [key: number]: AvailableTshirt } = {}; //Dictionary of all available t-shirts
   availableModels:  AvailableTshirt[] = [];
   currentYear: number | null = null;
 
-  newTshirt: AvailableTshirt = {
+  selectedTshirt: AvailableTshirt = {
     id: 0,
     tshirt_id: 0,
     model: '',
     sizes: [],
-    price: ''
+    price: 0
   };
 
-  selectedTshirt: AvailableTshirt = this.newTshirt;
   selectedTshirtSizes: number[] = [];
 
   tshirtToDelete: AvailableTshirt | null = null;
@@ -72,12 +71,6 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
     this.loadModels();
   }
 
-  ngAfterViewInit(): void {
-    // Ensure the modal is properly initialized
-    if (this.editModal) {
-      this.editModal.closeModal();
-    }
-  }
 
   CreateSize(): void {
     this.apiService.createSize({ size: this.sizeToCreate }).subscribe(() => {
@@ -87,22 +80,29 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
 
   onModelChange(): void {
     if (this.selectedModelId != 0) { // Existing t-shirt
-      this.selectedTshirt.tshirt_id = this.selectedModelId;
+      this.selectedTshirt.tshirt_id = Number(this.selectedModelId);
 
       // Fetch sizes for the selected model
       this.apiService.getSizesByTshirtId(this.selectedModelId).subscribe(
         (sizes) => { // Update sizes for the selected model
           this.selectedTshirt.sizes = sizes;
-
           this.selectedTshirtSizes = sizes.map((size: Size) => size.id); // Pre-select sizes for the selected model
+          
+          // Get available t-shirt if it already exists for this edition
+          const availableTshirt = this.availableTshirtDictionary[Number(this.selectedModelId)];
+
+          if (availableTshirt !== undefined) {
+            this.selectedTshirt.price = availableTshirt.price;
+          } else {
+            this.selectedTshirt.price = 0;
+          }
         },
         (error) => {
           console.error('Error bij het ophalen van de maten voor het model:', error);
         }
       );
     } else { // New t-shirt
-      this.resetNewTshirt();
-      this.selectedTshirt = this.newTshirt;
+      this.resetSelectedTshirt();
     }
   }
 
@@ -117,6 +117,12 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
 
     this.apiService.getAvailableTshirts().subscribe((data: AvailableTshirt[]) => {
       this.availableTshirts = data;
+
+      this.availableTshirtDictionary = {}; // Clear dictionary
+      this.availableTshirts.forEach((tshirt: AvailableTshirt) => {
+        this.availableTshirtDictionary[Number(tshirt.tshirt_id)] = tshirt;
+      });
+
       this.loading = false;
     });
   }
@@ -138,17 +144,11 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
 
     this.selectedTshirtSizes = this.selectedTshirt.sizes.map((size: Size) => size.id);
 
-    console.log(this.selectedTshirtSizes);
-
     if (this.selectedTshirt.tshirt_id != 0) {
       let patchModel: Tshirt = {
         sizes: this.selectedTshirtSizes
       };
       
-      console.log('T-shirt patchen:', this.selectedTshirt.model);
-
-      console.log('tshirt ID:', this.selectedTshirt.tshirt_id);
-
       this.apiService.updateTshirt(patchModel, this.selectedTshirt.tshirt_id).subscribe({
         next: (result) => {
           this.loadTshirts();
@@ -182,7 +182,6 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
       (sizes) => {
         this.availableSizes = sizes; // Load all available sizes
         this.loadingSizes = false;
-        console.log('Alle maten opgehaald:', this.availableSizes);
       },
       (error) => {
         this.loadingSizes = false;
@@ -200,11 +199,9 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
     const requestBody = { size: this.sizeToCreate.trim() };
 
     if (this.selectedModelId == 0) {
-      console.log('Aanmaken van nieuwe maat:', this.sizeToCreate);
       // Create a new size
       this.apiService.createSize(requestBody).subscribe(
         () => {
-          console.log('Maat aangemaakt:', this.sizeToCreate);
           this.loadSizes();
           this.sizeToCreate = '';
         },
@@ -220,10 +217,9 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
       );
     } else {
       // Patch the t-shirt with the updated sizes
-      const updatedTshirt = { ...this.selectedTshirt, sizes: [...this.newTshirt.sizes, this.sizeToCreate.trim()] };
+      const updatedTshirt = { ...this.selectedTshirt, sizes: [...this.selectedTshirt.sizes, this.sizeToCreate.trim()] };
       this.apiService.updateTshirt(updatedTshirt, this.selectedModelId).subscribe(
         () => {
-          console.log('T-shirt updated with new size:', this.sizeToCreate);
           this.loadTshirts();
           this.sizeToCreate = '';
         },
@@ -241,9 +237,20 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
   }
 
   addTshirt(): void {
-    this.apiService.addTshirt(this.newTshirt).subscribe(() => {
+    this.tshirtCreated = '';
+    this.errorTshirtCreation = '';
+
+    let availableTshirtIds: number[] = this.availableTshirts.map((tshirt: AvailableTshirt) => tshirt.tshirt_id);
+
+    if (availableTshirtIds.includes(Number(this.selectedTshirt.tshirt_id))) {
+      this.errorTshirtCreation = 'Dit T-shirt bestaat al voor Editie ' + this.currentYear + '.';
+      return;
+    }
+
+    this.apiService.addTshirt(this.selectedTshirt).subscribe(() => {
+      this.loadModels();
       this.loadTshirts();
-      this.resetNewTshirt();
+      this.resetSelectedTshirt();
       this.tshirtCreated = 'T-shirt succesvol toegevoegd!';
       this.errorTshirtCreation = '';
     }, error => {
@@ -254,17 +261,20 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
  
   resetSizes(): void {
     this.loadSizes();
-    this.newTshirt.sizes = []; // Clear selected sizes
+    this.selectedTshirt.sizes = []; // Clear selected sizes
   }
 
-  resetNewTshirt(): void {
-    this.newTshirt = {
+  resetSelectedTshirt(): void {
+    this.selectedTshirt = {
       id: 0,
       tshirt_id: 0,
       model: '',
       sizes: [],
-      price: ''
+      price: 0
     };
+
+    this.selectedTshirtSizes = [];
+    this.selectedModelId = 0;
   }
 
   // Edit Popup
@@ -329,6 +339,7 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
     if (this.tshirtToDelete !== null) {
       this.apiService.deleteTshirt(this.tshirtToDelete.id).subscribe({
         next: (result) => {
+          this.resetSelectedTshirt();
           this.loadTshirts();
           this.tshirtDeleted = 'T-shirt verwijderd.';
         },
@@ -337,5 +348,12 @@ export class TshirtsComponent implements OnInit, AfterViewInit {
         }
       });
     }
+  }
+
+  public getPriceStringForTable(price: number): string {
+    // Format the price to a string
+    let priceString = '€ ' + price.toString().replace('.', ',');
+
+    return priceString;
   }
 }

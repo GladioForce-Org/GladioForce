@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
-from data_collectie.schemas import AvailableTshirtInSchema
-from .models import AvailableTshirt, Size, Tshirt, Edition;
+from data_collectie.schemas import AvailableTshirtInSchema, ParticipatingClubSchemaPatch
+from .models import AvailableTshirt, Club, ParticipatingClub, Size, Tshirt, Edition;
 from typing import List, Dict, Optional
 
 
@@ -118,3 +118,31 @@ def patch_tshirt_then_patch_available_tshirt(available_tshirt_id: int, data: Ava
 
     # Return the updated Tshirt instance
     return available_tshirt
+
+def patch_club_then_patch_participating_club(participating_club_id: int, data: ParticipatingClubSchemaPatch):
+    # Fetch the Club instance
+    club = Club.objects.get(id=data.club_id)
+    if club:
+        club.address = data.address
+        club.bank_account = data.bank_account
+        club.btw_number = data.btw_number
+        club.city = data.city
+        club.contact = data.contact
+        club.email = data.email
+        club.name = data.name
+        club.phone = data.phone
+        club.postal_code = data.postal_code
+        club.save()
+
+    # Update the Participating Club instance
+    participating_club = ParticipatingClub.objects.get(id=participating_club_id)
+    
+    if participating_club:
+        participating_club.person_in_charge_day1 = data.person_in_charge_day1
+        participating_club.person1_in_charge_day1 = data.person1_in_charge_day1
+        participating_club.person_in_charge_day2 = data.person_in_charge_day2
+        participating_club.person1_in_charge_day2 = data.person1_in_charge_day2
+        participating_club.save()
+
+    # Return the updated Participating Club instance
+    return participating_club

@@ -160,7 +160,6 @@ resource "aws_ecs_cluster_capacity_providers" "ecs_web_tier_fargate" {
 # We will be using the secrets module of AWS, otherwise the secrets are stored in clear.
 
 
-
 resource "aws_ecs_task_definition" "gladioforce_backend" {
   family = "${local.prefix}-gladioforce-backend"
   container_definitions = jsonencode([
@@ -233,6 +232,7 @@ resource "aws_ecs_task_definition" "gladioforce_backend" {
     local.common_tags,
     tomap({ "Name" = "${local.prefix}-backend-container" })
   )
+
 }
 
 
@@ -255,11 +255,7 @@ resource "aws_ecs_service" "gladioforce_backend" {
   #   registry_arn = aws_service_discovery_service.gladioforce_backend.arn
   # }
   #### Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ######## Service registry not used in lab ####
-  lifecycle {
-    ignore_changes = [
-    desired_count]
-  }
-
+  force_new_deployment = true
   network_configuration {
     subnets = [
       aws_subnet.private_subnets[0].id,
@@ -276,6 +272,12 @@ resource "aws_ecs_service" "gladioforce_backend" {
   )
 
   depends_on = [aws_db_instance.db_app]
+
+  triggers = {
+    redeployment = plantimestamp()
+  }
+
+
 }
 
 #Autoscaling group for the ecs service;  the target tracking scaling type
@@ -344,6 +346,7 @@ resource "null_resource" "fetch_private_ip" {
       TASK_ARN=""
 
       echo "Waiting for a task to start in the ECS cluster..."
+      sleep 240
 
       while [ -z "$TASK_ARN" ] || [ "$TASK_ARN" = "None" ]; do
         TASK_ARN=$(aws ecs list-tasks --cluster gladiolen-ecs-cluster --query 'taskArns[0]' --output text 2>/dev/null)
@@ -409,6 +412,9 @@ resource "null_resource" "fetch_private_ip" {
     EOT
   }
 
+  triggers = {
+    always_run = "${timestamp()}" # This ensures the resource triggers every time
+  }
 
   depends_on = [aws_ecs_service.gladioforce_backend]
 

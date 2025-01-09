@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -13,8 +14,10 @@ export class HomeComponent implements OnInit {
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
-    this.apiService.testAuth().subscribe((response) => {
-      console.log(response);
-    }, (error) => { console.error(error); });
+    if (!environment.production) {
+      this.apiService.testAuth().subscribe((response) => {
+        console.log(response);
+      }, (error) => { console.error(error); });  
+    }
   }
 }

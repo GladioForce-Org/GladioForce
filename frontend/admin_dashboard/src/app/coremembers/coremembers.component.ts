@@ -18,7 +18,7 @@ import { LoadingComponent } from "../components/loading/loading.component";
 @Component({
   selector: 'app-coremembers',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconButtonComponent, ModalComponent, FeatherIconComponent, LoadingComponent],
+  imports: [CommonModule, FormsModule, IconButtonComponent, ModalComponent, LoadingComponent],
   templateUrl: './coremembers.component.html',
   styleUrl: './coremembers.component.scss'
 })

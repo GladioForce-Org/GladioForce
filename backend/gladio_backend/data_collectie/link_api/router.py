@@ -5,7 +5,7 @@ from ..schemas import ClubSchemaOut, VolunteerSchemaOut, ClubSchemaPatch, Volunt
 from ..services import get_tshirt_or_none, get_size_or_none
 from typing import List
 
-router = Router(tags=["Clubs Data Collection"])
+router = Router(tags=["Clubs Data Collection"], auth=None)
 
 #get club with link
 @router.get("/{club_link}", response=ClubSchemaOut)

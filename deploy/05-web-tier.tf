@@ -41,10 +41,10 @@ echo 'dns_cloudflare_api_token = ${var.cloudflare_api_token}' | sudo tee ~/cloud
 
 # Certbot command to obtain and install certificates
 # Staging
-sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $WILDCARD_DOMAIN_NAME -d $DOMAIN_NAME --server https://acme-staging-v02.api.letsencrypt.org/directory --email $EMAIL
+#sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $WILDCARD_DOMAIN_NAME -d $DOMAIN_NAME --server https://acme-staging-v02.api.letsencrypt.org/directory --email $EMAIL
 # production
-#sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $WILDCARD_DOMAIN_NAME -d $DOMAIN_NAME --server https://acme-v02.api.letsencrypt.org/directory --email $EMAIL 
-sleep 180
+sudo certbot certonly --non-interactive --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos -d $WILDCARD_DOMAIN_NAME -d $DOMAIN_NAME --server https://acme-v02.api.letsencrypt.org/directory --email $EMAIL 
+sleep 80
 
 
 #Set up NGINX server block
@@ -165,9 +165,9 @@ sudo systemctl reload nginx
 
 # Set up a cron job to renew certificates automatically
 # staging
-echo "0 0 1 * * certbot renew --non-interactive --no-self-upgrade --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos --server https://acme-staging-v02.api.letsencrypt.org/directory  --email $EMAIL && systemctl reload nginx" | sudo tee /etc/cron.d/certbot-renew > /dev/null
+#echo "0 0 1 * * certbot renew --non-interactive --no-self-upgrade --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos --server https://acme-staging-v02.api.letsencrypt.org/directory  --email $EMAIL && systemctl reload nginx" | sudo tee /etc/cron.d/certbot-renew > /dev/null
 # production
-#echo "0 0 1 * * certbot renew --non-interactive --no-self-upgrade --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos --server https://acme-v02.api.letsencrypt.org/directory  --email $EMAIL && systemctl reload nginx" | sudo tee /etc/cron.d/certbot-renew > /dev/null
+echo "0 0 1 * * certbot renew --non-interactive --no-self-upgrade --dns-cloudflare --dns-cloudflare-credentials ~/cloudflare-credentials --agree-tos --server https://acme-v02.api.letsencrypt.org/directory  --email $EMAIL && systemctl reload nginx" | sudo tee /etc/cron.d/certbot-renew > /dev/null
 
 
 EOF
@@ -224,7 +224,7 @@ resource "null_resource" "upload_app_files" {
       # "sudo unzip /home/ec2-user/app3.zip -d /var/www/app3",
       "sudo chown -R www-data:www-data /var/www",
       "sudo chmod -R 755 /var/www",
-      "service restart nginx || true" #suppress error, reload happens but terraform fails
+      "sudo systemctl restart nginx.service || true" #suppress error, reload happens but terraform fails
     ]
 
     connection {
@@ -234,7 +234,9 @@ resource "null_resource" "upload_app_files" {
       host        = aws_eip.nginx.public_ip
     }
   }
-
+  triggers = {
+    always_run = "${timestamp()}" # This ensures the resource triggers every time
+  }
 }
 
 
@@ -250,6 +252,8 @@ resource "cloudflare_record" "admin" {
   content = aws_eip.nginx.public_ip
   type    = "A"
   proxied = false
+
+
 
 }
 

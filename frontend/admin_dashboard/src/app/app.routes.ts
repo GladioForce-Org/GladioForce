@@ -12,20 +12,21 @@ import { HelpComponent } from './info/info.component';
 import { SettingsComponent } from './settings/settings.component';
 import { AuthComponent } from './auth/auth.component';
 import { EditionComponent } from './edition/edition.component';
+import { VolunteersComponent } from './volunteers/volunteers.component';
 
 export const routes: Routes = [
-    {path: 'home', component: HomeComponent},
-    {path: 'containers', component: ContainersComponent},
-    {path: 't-shirts', component: TshirtsComponent},
-    {path: 'core-members', component: CoremembersComponent},
-    {path: 'clubs', component: ClubsComponent},
-    {path: 'tasks', component: TasksComponent},
-    {path: 'planning', component: PlanningComponent},
-    {path: 'export', component: ExportComponent},
-    {path: 'documents', component: DocumentsComponent},
-    {path: 'help', component: HelpComponent},
-    {path: 'settings', component: SettingsComponent},
-    {path: 'auth', component: AuthComponent},
-    {path: 'editions', component: EditionComponent},
+    { path: 'home', component: HomeComponent },
+    { path: 'containers', component: ContainersComponent },
+    { path: 't-shirts', component: TshirtsComponent },
+    { path: 'core-members', component: CoremembersComponent },
+    { path: 'clubs', component: ClubsComponent },
+    { path: 'planning', component: PlanningComponent },
+    { path: 'export', component: ExportComponent },
+    { path: 'documents', component: DocumentsComponent },
+    { path: 'help', component: HelpComponent },
+    { path: 'settings', component: SettingsComponent },
+    { path: 'auth', component: AuthComponent },
+    { path: 'editions', component: EditionComponent },
+    { path: 'volunteers/:id', component: VolunteersComponent },
     { path: '', redirectTo: '/home', pathMatch: 'full' }, // Default route
 ];

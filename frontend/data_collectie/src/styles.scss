@@ -10,3 +10,33 @@
 .test-tailwind {
   @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
 }
+
+.gladiolen-text {
+  font-family: "Poetsen One", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.gladiolen-pink {
+  background-color: #FFC0CB;
+}
+
+.gladiolen-purple-text {
+  background-color: #950E66;
+}
+
+.gladiolen-green {
+  background-color: #1C5E48;
+}
+
+.gladiolen-light-blue {
+  background-color: #B0E2FF;
+}
+
+.gladiolen-light-blue-text {
+  color: #B0E2FF;
+}
+
+.gladiolen-white {
+  background-color: #f3f2f1;
+}

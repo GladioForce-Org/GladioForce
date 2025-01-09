@@ -37,10 +37,51 @@ class ClubSchemaOut(Schema):
     postal_code: str
     city: str
 
+class ParticipatingClubSchema(Schema):
+    id: int
+    club_id: int
+    person_in_charge_day1: Optional[str]
+    person1_in_charge_day1: Optional[str]
+    person_in_charge_day2: Optional[str]
+    person1_in_charge_day2: Optional[str]
+
+class ParticipatingClubInSchema(Schema):
+    club_id: int
+    name: str
+    email: str
+    contact: str
+    phone: str
+    link: str
+    bank_account: str
+    address: str
+    btw_number: str
+    postal_code: str
+    city: str
+    person_in_charge_day1: Optional[str]
+    person1_in_charge_day1: Optional[str]
+    person_in_charge_day2: Optional[str]
+    person1_in_charge_day2: Optional[str]
+
+class ParticipatingClubSchemaPatch(Schema):
+    club_id: int
+    name: str
+    email: str
+    contact: str
+    phone: str
+    bank_account: str
+    address: str
+    btw_number: str
+    postal_code: str
+    city: str
+    person_in_charge_day1: Optional[str]
+    person1_in_charge_day1: Optional[str]
+    person_in_charge_day2: Optional[str]
+    person1_in_charge_day2: Optional[str]
+
 class VolunteerCreateSchema(Schema):
     first_name: str
     last_name: str
-    national_registry_number: str
+    national_registry_number: Optional[str] = None
     works_day1: bool
     works_day2: bool
     needs_parking_day1: bool
@@ -51,6 +92,7 @@ class VolunteerCreateSchema(Schema):
 class VolunteerSchemaPatch(Schema):
     first_name: str
     last_name: str
+    national_registry_number: Optional[str] = None
     works_day1: bool
     works_day2: bool
     needs_parking_day1: bool
@@ -62,6 +104,19 @@ class VolunteerSchemaOut(Schema):
     id: int
     first_name: str
     last_name: str
+    works_day1: bool
+    works_day2: bool
+    needs_parking_day1: bool
+    needs_parking_day2: bool
+    tshirt_id: Optional[int] = None
+    club_id: int
+    size_id: Optional[int] = None
+
+class VolunteerAdminSchemaOut(Schema):
+    id: int
+    first_name: str
+    last_name: str
+    national_registry_number: Optional[str] = None
     works_day1: bool
     works_day2: bool
     needs_parking_day1: bool

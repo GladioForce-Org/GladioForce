@@ -1,1 +1,541 @@
-<p>clubs works!</p>
+<div class="mt-10 py-6 mx-10">
+    <h1 class="text-2xl font-semibold text-center mb-4">Verenigingen</h1>
+    <form (submit)="addClub()" class="text-left">
+        <!-- Club Field -->
+        <div class="mb-2 max-w-md mx-auto">
+            <label for="club" class="block text-sm font-medium text-gray-700">Vereniging</label>
+            <select
+                id="club"
+                name="club"
+                [(ngModel)]="selectedClubId"
+                (change)="onModelChange()"
+                class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+                <option [value]="0">Nieuwe Vereniging</option>
+                <option *ngFor="let club of allClubs" [value]="club.id">{{ club.name }}</option>
+            </select>
+        </div>
+
+        <!-- Fields to Create a new Club -->
+        <div *ngIf="selectedClubId == 0" class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 col-span-2">
+            <!-- Name Field -->
+            <div class="">
+                <label for="name" class="block text-sm font-medium text-gray-700">Naam Vereniging</label>
+                <input
+                    required
+                    type="text"
+                    id="name"
+                    name="name"
+                    [(ngModel)]="selectedClub.name"
+                    #name="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Email Field -->
+            <div class="">
+                <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
+                <input
+                    required
+                    type="text"
+                    id="email"
+                    name="email"
+                    [(ngModel)]="selectedClub.email"
+                    #email="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Contact Field -->
+            <div class="">
+                <label for="contact" class="block text-sm font-medium text-gray-700">Contact</label>
+                <input
+                    required
+                    type="text"
+                    id="contact"
+                    name="contact"
+                    [(ngModel)]="selectedClub.contact"
+                    #contact="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Phone Field -->
+            <div class="">
+                <label for="phonenumber" class="block text-sm font-medium text-gray-700">Telefoon</label>
+                <input
+                    required
+                    type="text"
+                    id="phonenumber"
+                    name="phonenumber"
+                    [(ngModel)]="selectedClub.phone"
+                    #phonenumber="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Bank Account Field -->
+            <div class="">
+                <label for="bankaccount" class="block text-sm font-medium text-gray-700">Banknummer</label>
+                <input
+                    required
+                    type="text"
+                    id="bankaccount"
+                    name="bankaccount"
+                    [(ngModel)]="selectedClub.bank_account"
+                    #bankaccount="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- BTW Number Field -->
+            <div class="">
+                <label for="btwnumber" class="block text-sm font-medium text-gray-700">BTW-nummer</label>
+                <input
+                    required
+                    type="text"
+                    id="btwnumber"
+                    name="btwnumber"
+                    [(ngModel)]="selectedClub.btw_number"
+                    #btwnumber="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Address Field -->
+            <div class="">
+                <label for="address" class="block text-sm font-medium text-gray-700">Adres</label>
+                <input
+                    required
+                    type="text"
+                    id="address"
+                    name="address"
+                    [(ngModel)]="selectedClub.address"
+                    #address="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Postal Code Field -->
+            <div class="">
+                <label for="postalcode" class="block text-sm font-medium text-gray-700">Postcode</label>
+                <input
+                    required
+                    type="text"
+                    id="postalcode"
+                    name="postalcode"
+                    [(ngModel)]="selectedClub.postal_code"
+                    #postalcode="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- City Field -->
+            <div class="">
+                <label for="city" class="block text-sm font-medium text-gray-700">Gemeente</label>
+                <input
+                    required
+                    type="text"
+                    id="city"
+                    name="city"
+                    [(ngModel)]="selectedClub.city"
+                    #city="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+        </div>
+
+        <!-- Volunteers -->
+        <div *ngIf="selectedClubId != 0" class="mt-2 max-w-md mx-auto">
+            <button
+                [routerLink]="['/volunteers/', selectedClubId]"
+                type="button"
+                class="w-full mt-2 py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+            Beheer Vrijwilligers
+            </button>
+        </div>
+
+        <div *ngIf="selectedClubId != 0" class="mt-2 max-w-md mx-auto">
+            <button (click)="openDeleteModal(selectedClub)" type="button" class="w-full mt-2 py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            Verwijder Vereniging
+            </button>
+        </div>
+
+        <div *ngIf="!isClubParticipating()" class="mt-2 max-w-md mx-auto">
+            <button type="submit" class="w-full mt-2 py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                Voeg Vereniging Toe <ng-container *ngIf="selectedClubId != 0"> Aan {{ editionYear }}</ng-container>
+                <!-- Show edition when club already exists so it's clear to the user they're adding it to the current edition -->
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Participating Club Table -->
+<div class="mt-8 mx-10">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-semibold text-gray-700">
+            Verenigingen {{editionYear}}
+        </h2>
+    </div>
+    <div class="overflow-x-auto rounded-md shadow overflow-y-auto" *ngIf="!loadingClubs && !loadingParticipatingClubs">
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+        <thead>
+            <tr class="bg-gray-50">
+            <th class="py-3 px-4 border-b text-start">Vereniging</th>
+            <th class="py-3 px-4 border-b text-start">E-mail</th>
+            <th class="py-3 px-4 border-b text-start">Contact</th>
+            <th class="py-3 px-4 border-b text-start">Telefoon</th>
+            <th class="py-3 px-4 border-b text-start">Link</th>
+            <th class="py-3 px-4 border-b text-start">Banknummer</th>
+            <th class="py-3 px-4 border-b text-start">BTW-nummer</th>
+            <th class="py-3 px-4 border-b text-start">Adres</th>
+            <th class="py-3 px-4 border-b text-start">Postcode</th>
+            <th class="py-3 px-4 border-b text-start">Gemeente</th>
+            <th class="py-3 px-4 border-b text-start">Supervisors Dag 1</th>
+            <th class="py-3 px-4 border-b text-start">Supervisors Dag 2</th>
+            <th class="py-3 px-4 border-b text-center">Acties</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let club of participatingClubs" class="hover:bg-gray-100">
+            <td class="py-2 px-4 border-b text-start">{{ clubDictionary[club.club_id].name }}</td>
+            <td class="py-2 px-4 border-b text-start">{{ clubDictionary[club.club_id].email }}</td>
+            <td class="py-2 px-4 border-b text-start">{{ clubDictionary[club.club_id].contact }}</td>
+            <td class="py-2 px-4 border-b text-start">{{ clubDictionary[club.club_id].phone }}</td>
+            <td class="py-2 px-4 border-b text-start">
+                <app-icon-button (click)="openLinkModal(clubDictionary[club.club_id])" icon="external-link"></app-icon-button>
+            </td>
+            <td class="py-2 px-4 border-b text-start">{{ clubDictionary[club.club_id].bank_account }}</td>
+            <td class="py-2 px-4 border-b text-start">{{ clubDictionary[club.club_id].btw_number }}</td>
+            <td class="py-2 px-4 border-b text-start">{{ clubDictionary[club.club_id].address }}</td>
+            <td class="py-2 px-4 border-b text-start">{{ clubDictionary[club.club_id].postal_code }}</td>
+            <td class="py-2 px-4 border-b text-start">{{ clubDictionary[club.club_id].city }}</td>
+            <td class="py-2 px-4 border-b text-start">
+                {{ club.person_in_charge_day1 }}<ng-container *ngIf="club.person_in_charge_day1 !== null && club.person1_in_charge_day1">, </ng-container>
+                {{ club.person1_in_charge_day1 }}
+            </td>
+            <td class="py-2 px-4 border-b text-start">
+                {{ club.person_in_charge_day2 }}<ng-container *ngIf="club.person_in_charge_day2 !== null && club.person1_in_charge_day2">, </ng-container>
+                {{ club.person1_in_charge_day2 }}
+            </td>
+            <td class="py-2 px-4 border-b text-center">
+                <div class="flex justify-center gap-4">
+                    <app-icon-button (click)="openEditModal(club)" icon="edit"></app-icon-button>
+                    <app-icon-button (click)="openDeleteParticipatingModal(club)" icon="trash-2"></app-icon-button>
+                </div>
+            </td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+
+    <app-loading *ngIf="loadingClubs || loadingParticipatingClubs" class="mt-10"></app-loading>
+</div>
+
+<!-- Unique Link Window -->
+<app-modal
+    *ngIf="clubToManageLinkFor !== undefined && clubToManageLinkFor !== null"
+    #linkModal
+    [header]="clubToManageLinkFor.name + ': Link Dataverzameling'"
+    [maxWidth]="900"
+    [minHeight]="150"
+>
+    <!-- Unique Link -->
+    <p class="text--600" *ngIf="link !==''">
+        <!-- Link is opened in a new browser tab -->   
+        <strong>link: </strong><a [href]="link" target="_blank" class="text-blue-500 underline hover:text-blue-700">{{ link }}</a>
+    </p>
+
+    <p class="text--600" *ngIf="link ===''">    
+        <strong>link: </strong>Er werd nog geen link voor deze club gegenereerd.
+    </p>
+
+    <!-- Messages -->
+    <div class="mb-4">
+        <p *ngIf="linkSent !==''" class="text-green-600 font-semibold mt-3">{{ linkSent }}</p>
+        <p *ngIf="errorLinkSending !==''" class="text-red-600 font-semibold mt-3">{{ errorLinkSending }}</p>
+    </div>
+
+    <div class="mb-4">
+        <p *ngIf="linkGenerated !==''" class="text-green-600 font-semibold mt-3">{{ linkGenerated }}</p>
+        <p *ngIf="errorLinkGeneration !==''" class="text-red-600 font-semibold mt-3">{{ errorLinkGeneration }}</p>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex space-x-2">
+        <button
+            (click)="generateLink()"
+            type="button"
+            class="flex-1 py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+            Nieuwe Link Genereren
+        </button>
+
+        <button
+            (click)="sendLink()"
+            [disabled]="link ===''"
+            type="button"
+            class="flex-1 py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+            Verstuur Link naar Club
+        </button>
+    </div>
+</app-modal>
+
+<!-- Delete Window -->
+<app-modal
+    *ngIf="clubToDelete !== null"
+    #deleteModal
+    [header]="'Verwijder ' + clubDictionary[clubToDelete.id].name"
+    [maxWidth]="500"
+    [minHeight]="150"
+>
+    <p class="mb-4">Bent u zeker dat u deze vereniging wil verwijderen voor alle edities?</p>
+
+    <div class="mb-4">
+        <p *ngIf="clubDeleted !==''" class="text-green-600 font-semibold mt-3">{{ clubDeleted }}</p>
+        <p *ngIf="errorClubDeletion !==''" class="text-red-600 font-semibold mt-3">{{ errorClubDeletion }}</p>
+    </div>
+
+    <button
+        *ngIf = "clubDeleted === ''"
+        (click)="deleteClub()"
+        type="submit"
+        class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    >
+        Bevestigen
+    </button>
+</app-modal>
+  
+<!-- Delete Participating Window -->
+<app-modal
+    *ngIf="participatingClubToDelete !== null"
+    #deleteParticipatingModal
+    [header]="'Verwijder ' + clubDictionary[participatingClubToDelete.club_id].name + ' uit ' + editionYear"
+    [maxWidth]="500"
+    [minHeight]="150"
+>
+    <p class="mb-4">Bent u zeker dat u deze vereniging wil verwijderen uit Editie {{ editionYear }}?</p>
+
+    <div class="mb-4">
+        <p *ngIf="participatingClubDeleted !==''" class="text-green-600 font-semibold mt-3">{{ participatingClubDeleted }}</p>
+        <p *ngIf="errorParticipatingClubDeletion !==''" class="text-red-600 font-semibold mt-3">{{ errorParticipatingClubDeletion }}</p>
+    </div>
+
+    <button
+        *ngIf = "participatingClubDeleted === ''"
+        (click)="deleteParticipatingClub()"
+        type="submit"
+        class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    >
+        Bevestigen
+    </button>
+</app-modal>
+  
+<!-- Edit Window -->
+<app-modal
+    *ngIf="participatingClubToEdit !== null"
+    #editModal
+    [header]="participatingClubToEdit.name + ' Aanpassen'"
+    [maxWidth]="750"
+>
+    <form (submit)="updateClub()" class="text-left">
+        <div class="mb-3 grid grid-cols-1 md:grid-cols-2 gap-4 col-span-2">
+            <!-- Confirm Button -->
+            <div class="w-full edit-button">
+                <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    Vereniging Aanpassen
+                </button>    
+            </div>
+
+            <!-- Name Field -->
+            <div class="">
+                <label for="name" class="block text-sm font-medium text-gray-700">Naam Vereniging</label>
+                <input
+                    required
+                    type="text"
+                    id="name"
+                    name="name"
+                    [(ngModel)]="participatingClubToEdit.name"
+                    #name="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Email Field -->
+            <div class="">
+                <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
+                <input
+                    required
+                    type="text"
+                    id="email"
+                    name="email"
+                    [(ngModel)]="participatingClubToEdit.email"
+                    #email="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Contact Field -->
+            <div class="">
+                <label for="contact" class="block text-sm font-medium text-gray-700">Contact</label>
+                <input
+                    required
+                    type="text"
+                    id="contact"
+                    name="contact"
+                    [(ngModel)]="participatingClubToEdit.contact"
+                    #contact="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Phone Field -->
+            <div class="">
+                <label for="phonenumber" class="block text-sm font-medium text-gray-700">Telefoon</label>
+                <input
+                    required
+                    type="text"
+                    id="phonenumber"
+                    name="phonenumber"
+                    [(ngModel)]="participatingClubToEdit.phone"
+                    #phonenumber="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Bank Account Field -->
+            <div class="">
+                <label for="bankaccount" class="block text-sm font-medium text-gray-700">Banknummer</label>
+                <input
+                    required
+                    type="text"
+                    id="bankaccount"
+                    name="bankaccount"
+                    [(ngModel)]="participatingClubToEdit.bank_account"
+                    #bankaccount="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- BTW Number Field -->
+            <div class="">
+                <label for="btwnumber" class="block text-sm font-medium text-gray-700">BTW-nummer</label>
+                <input
+                    required
+                    type="text"
+                    id="btwnumber"
+                    name="btwnumber"
+                    [(ngModel)]="participatingClubToEdit.btw_number"
+                    #btwnumber="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Address Field -->
+            <div class="">
+                <label for="address" class="block text-sm font-medium text-gray-700">Adres</label>
+                <input
+                    required
+                    type="text"
+                    id="address"
+                    name="address"
+                    [(ngModel)]="participatingClubToEdit.address"
+                    #address="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Postal Code Field -->
+            <div class="">
+                <label for="postalcode" class="block text-sm font-medium text-gray-700">Postcode</label>
+                <input
+                    required
+                    type="text"
+                    id="postalcode"
+                    name="postalcode"
+                    [(ngModel)]="participatingClubToEdit.postal_code"
+                    #postalcode="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- City Field -->
+            <div class="">
+                <label for="city" class="block text-sm font-medium text-gray-700">Gemeente</label>
+                <input
+                    required
+                    type="text"
+                    id="city"
+                    name="city"
+                    [(ngModel)]="participatingClubToEdit.city"
+                    #city="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Person 1 in Charge Day 1 Field -->
+            <div class="">
+                <label for="personInChargeDay1" class="block text-sm font-medium text-gray-700">Supervisor 1 voor Dag 1</label>
+                <input
+                    required
+                    type="text"
+                    id="personInChargeDay1"
+                    name="personInChargeDay1"
+                    [(ngModel)]="participatingClubToEdit.person_in_charge_day1"
+                    #personInChargeDay1="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Person 2 in Charge Day 1 Field -->
+            <div class="">
+                <label for="person1InChargeDay1" class="block text-sm font-medium text-gray-700">Supervisor 2 voor Dag 1</label>
+                <input
+                    required
+                    type="text"
+                    id="person1InChargeDay1"
+                    name="person1InChargeDay1"
+                    [(ngModel)]="participatingClubToEdit.person1_in_charge_day1"
+                    #person1InChargeDay1="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Person 1 in Charge Day 2 Field -->
+            <div class="">
+                <label for="personInChargeDay2" class="block text-sm font-medium text-gray-700">Supervisor 1 voor Dag 2</label>
+                <input
+                    required
+                    type="text"
+                    id="personInChargeDay2"
+                    name="personInChargeDay2"
+                    [(ngModel)]="participatingClubToEdit.person_in_charge_day2"
+                    #personInChargeDay2="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Person 2 in Charge Day 2 Field -->
+            <div class="">
+                <label for="person1InChargeDay2" class="block text-sm font-medium text-gray-700">Supervisor 2 voor Dag 2</label>
+                <input
+                    required
+                    type="text"
+                    id="person1InChargeDay2"
+                    name="person1InChargeDay2"
+                    [(ngModel)]="participatingClubToEdit.person1_in_charge_day2"
+                    #person1InChargeDay2="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div>
+            <p *ngIf="clubEdited !==''" class="text-green-600 font-semibold">{{ clubEdited }}</p>
+            <p *ngIf="errorClubEdit !==''" class="text-red-600 font-semibold">{{ errorClubEdit }}</p>
+        </div>
+    </form>
+</app-modal>
