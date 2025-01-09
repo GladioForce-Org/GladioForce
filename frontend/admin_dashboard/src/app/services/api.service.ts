@@ -161,4 +161,8 @@ export class ApiService {
   addVolunteer(clubId: number, volunteer: Volunteer): Observable<Volunteer> {
     return this.http.post<Volunteer>(`${this.baseUrl}/volunteers/${clubId}`, volunteer);
   }
+
+  deleteVolunteer(volunteerId: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/volunteers/${volunteerId}`);
+  }
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Club } from '../interfaces/club';
 import { ApiService } from '../services/api.service';
@@ -23,7 +23,7 @@ import { FeatherIconComponent } from "../components/feather-icon/feather-icon.co
   templateUrl: './volunteers.component.html',
   styleUrl: './volunteers.component.scss'
 })
-export class VolunteersComponent implements OnInit {
+export class VolunteersComponent implements OnInit, AfterViewInit {
   currentYear: number | null = null;
 
   // Loading
@@ -78,21 +78,30 @@ export class VolunteersComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.club_id = Number(params['id']);
-    });
+      this.apiService.getClub(this.club_id).subscribe({
+        next: (result) => {
+          this.club = result;
+        },
+        error: (error) => {
+          console.log(this.helperService.parseError(error));
+        }
+      });
 
-    this.apiService.getClub(this.club_id).subscribe({
-      next: (result) => {
-        this.club = result;
-      },
-      error: (error) => {
-        console.log(this.helperService.parseError(error));
-      }
+      this.getCurrentEdition();
+      this.getTshirts();
+      this.getSizes();
+      this.getVolunteers();
     });
+  }
 
-    this.getCurrentEdition();
-    this.getTshirts();
-    this.getSizes();
-    this.getVolunteers();
+  ngAfterViewInit(): void {
+    // Ensure the modals are properly initialized
+    if (this.editModal) {
+      this.editModal.closeModal();
+    }
+    if (this.deleteModal) {
+      this.deleteModal.closeModal();
+    }
   }
 
   // Get Current Edition
@@ -170,6 +179,24 @@ export class VolunteersComponent implements OnInit {
     });
   }
 
+  // delete
+  deleteVolunteer(volunteer: Volunteer) {
+    this.volunteerDeleted = '';
+    this.errorVolunteerDeletion = '';
+
+    if (volunteer.id !== undefined) {
+      this.apiService.deleteVolunteer(volunteer.id).subscribe({
+        next: (result) => {
+          this.volunteerDeleted = 'Vrijwilliger verwijderd.';
+          this.getVolunteers();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.errorVolunteerDeletion = this.helperService.parseError(error);
+        }
+      });
+    }
+  }
+
   // Get Available Sizes based on value of t-shirt model selected in the forms
   determineListOfSizesForCRUDs(volunteer: Volunteer): void {
     if (volunteer.tshirt_id !== undefined && volunteer.size_id !== null) {
@@ -204,10 +231,25 @@ export class VolunteersComponent implements OnInit {
   }
 
   openEditModal(volunteer: Volunteer) {
+    this.selectedVolunteer = { ...volunteer }; // Make a copy of the volunteer
 
+    setTimeout(() => {
+      if (this.editModal) {
+        this.editModal.openModal();
+      }
+    });
   }
 
+  // Delete Popup
   openDeleteModal(volunteer: Volunteer) {
+    this.volunteerDeleted = '';
+    this.errorVolunteerDeletion = '';
+    this.selectedVolunteer = { ...volunteer }; 
 
+    setTimeout(() => { 
+      if (this.deleteModal) { 
+        this.deleteModal.openModal();  
+      }
+    });
   }
 }
