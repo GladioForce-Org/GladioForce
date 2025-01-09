@@ -134,9 +134,9 @@ export class AuthComponent implements OnInit {
   changeUser(user: any) {
     this.user = user;
     this.changeDetectorRef.detectChanges();
-    if (!environment.production) {
-      console.log(this.user);
-    }
+    // if (!environment.production) {
+    //   console.log(this.user);
+    // }
   }
   resetPassword() {
     if (this.passwordResetEmail !== '') {

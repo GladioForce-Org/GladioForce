@@ -18,7 +18,7 @@ export const AuthInterceptor: HttpInterceptorFn = (
   const auth = getAuth();
   const apiUrl = environment.apiUrl;
 
-  console.log('Intercepting request:', req.url);
+  // console.log('Intercepting request:', req.url);
 
   if (req.url.startsWith(apiUrl)) {
     return new Observable((observer) => {
