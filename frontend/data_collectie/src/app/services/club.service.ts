@@ -32,4 +32,9 @@ export class ClubService {
   getVolunteersByClubLink(link: string): Observable<Volunteer[]> {
     return this.httpClient.get<Volunteer[]>(`${this.baseUrl}`+'volunteers/'+`${link}`);
   }
+
+
+  //time registration endpoints
+
+  
 }

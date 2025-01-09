@@ -7,6 +7,7 @@ from .link_api.router import router as link_router
 from .admin_api import tshirtAPI
 from .admin_api import editionApi
 from vuilbakken.api import container_api
+from .registration_api import timeApi
 
 auth=AuthBearer()
 api = NinjaAPI(title="Gladio API - Datacollectie", version="1.0.0", csrf=False)
@@ -25,3 +26,4 @@ api.add_router("/coremembers", coreMemberApi.router)
 api.add_router("/tshirts", tshirtAPI.router)
 api.add_router("/editions", editionApi.router)
 api.add_router("/vuilbakken", container_api)
+api.add_router("/register", timeApi.router)

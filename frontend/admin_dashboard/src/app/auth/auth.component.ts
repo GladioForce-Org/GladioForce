@@ -1,19 +1,28 @@
 // src/app/auth.component.ts
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FirebaseApp, initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, signOut, browserLocalPersistence, AuthError, Auth, setPersistence, sendPasswordResetEmail } from 'firebase/auth';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  browserSessionPersistence,
+  AuthError,
+  Auth,
+  setPersistence,
+  sendPasswordResetEmail,
+} from 'firebase/auth';
 import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
-import { LoadingComponent } from "../components/loading/loading.component";
+import { LoadingComponent } from '../components/loading/loading.component';
 
 @Component({
   selector: 'app-auth',
   standalone: true,
   imports: [CommonModule, FormsModule, LoadingComponent],
   templateUrl: './auth.component.html',
-  styleUrls: ['./auth.component.scss']
+  styleUrls: ['./auth.component.scss'],
 })
 export class AuthComponent implements OnInit {
   private firebaseApp: FirebaseApp;
@@ -31,20 +40,23 @@ export class AuthComponent implements OnInit {
   errorAuthentication = '';
   errorLoggedOut = '';
 
-  constructor(private changeDetectorRef: ChangeDetectorRef, private authService: AuthService) {
+  constructor(
+    private changeDetectorRef: ChangeDetectorRef,
+    private authService: AuthService
+  ) {
     // Initialize Firebase with your Firebase configuration
     this.firebaseApp = initializeApp(environment.firebaseConfig);
   }
 
   async ngOnInit() {
     this.loading = true;
-  
+
     // Subscribe to email$ observable
     this.authService.email$.subscribe((email) => {
       this.email = email;
       this.changeDetectorRef.detectChanges();
     });
-  
+
     // Auth state change handling
     this.auth.onAuthStateChanged((user) => {
       if (user) {
@@ -64,40 +76,40 @@ export class AuthComponent implements OnInit {
   signIn() {
     this.errorAuthentication = '';
 
-    setPersistence(this.auth, browserLocalPersistence).then(() => {
+    setPersistence(this.auth, browserSessionPersistence).then(() => {
       let email = this.email !== null ? this.email.toString() : '';
       signInWithEmailAndPassword(this.auth, email, this.password)
-      .then((userCredential) => {
-        this.changeUser(userCredential.user);
-        this.errorAuthentication = '';
-      })
-      .catch((error: AuthError) => {
-        // Handle errors during sign-in
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        .then((userCredential) => {
+          this.changeUser(userCredential.user);
+          this.errorAuthentication = '';
+        })
+        .catch((error: AuthError) => {
+          // Handle errors during sign-in
+          const errorCode = error.code;
+          const errorMessage = error.message;
 
-        switch (errorCode) {
-          case "auth/invalid-email":
-            this.errorAuthentication = "Ongeldig e-mailadres.";
-            break;
-          case "auth/user-disabled":
-            this.errorAuthentication = "Gebruikersaccount is uitgeschakeld.";
-            break;
-          case "auth/user-not-found":
-            this.errorAuthentication = "Geen gebruiker gevonden met dit e-mailadres.";
-            break;
-          case "auth/wrong-password":
-            this.errorAuthentication = "Onjuist wachtwoord.";
-            break;
-          case "auth/invalid-credential":
-            this.errorAuthentication = "Ongeldige inloggegevens.";
-            break;
-          default:
-            this.errorAuthentication = `Error: ${errorMessage} (Code: ${errorCode})`;
-        }
-      });
-    })
-
+          switch (errorCode) {
+            case 'auth/invalid-email':
+              this.errorAuthentication = 'Ongeldig e-mailadres.';
+              break;
+            case 'auth/user-disabled':
+              this.errorAuthentication = 'Gebruikersaccount is uitgeschakeld.';
+              break;
+            case 'auth/user-not-found':
+              this.errorAuthentication =
+                'Geen gebruiker gevonden met dit e-mailadres.';
+              break;
+            case 'auth/wrong-password':
+              this.errorAuthentication = 'Onjuist wachtwoord.';
+              break;
+            case 'auth/invalid-credential':
+              this.errorAuthentication = 'Ongeldige inloggegevens.';
+              break;
+            default:
+              this.errorAuthentication = `Error: ${errorMessage} (Code: ${errorCode})`;
+          }
+        });
+    });
   }
 
   async getIdToken(): Promise<string | null> {
@@ -122,18 +134,21 @@ export class AuthComponent implements OnInit {
   changeUser(user: any) {
     this.user = user;
     this.changeDetectorRef.detectChanges();
-    console.log(this.user);
+    // if (!environment.production) {
+    //   console.log(this.user);
+    // }
   }
-
   resetPassword() {
     if (this.passwordResetEmail !== '') {
       sendPasswordResetEmail(this.auth, this.passwordResetEmail)
-      .then(() => {
-        alert('Wachtwoord-resetlink is verzonden naar het e-mailadres van de gebruiker.');
-      })
-      .catch((error) => {
-        alert('Fout bij het verzenden van de resetlink: ' + error.message);
-      });
+        .then(() => {
+          alert(
+            'Wachtwoord-resetlink is verzonden naar het e-mailadres van de gebruiker.'
+          );
+        })
+        .catch((error) => {
+          alert('Fout bij het verzenden van de resetlink: ' + error.message);
+        });
     }
   }
 }

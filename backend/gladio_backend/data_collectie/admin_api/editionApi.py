@@ -1,6 +1,6 @@
 from ninja import Router
 from typing import List
-from data_collectie.models import Edition
+from data_collectie.models import Edition, Volunteer
 from data_collectie.schemas import EditionSchema, EditionCreateSchema
 from gladio_backend.auth.auth import AuthBearer
 
@@ -33,6 +33,10 @@ def create_edition(request, payload: EditionCreateSchema):
     edition = Edition.objects.create(**payload.dict())
     edition.isCurrentEdition = True
     edition.save()
+
+    # Set works_day1 and works_day2 to False for all volunteers
+    Volunteer.objects.update(works_day1=False, works_day2=False)
+
     return { "id": edition.id, "year": edition.year, "isCurrentEdition": True }
 
 # Edit Edition
