@@ -1,25 +1,20 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ApiService } from '../services/api.service';
-import { AvailableTshirt, AvailableTshirtPatcher } from '../interfaces/available-tshirt';
-import { Size } from '../interfaces/size';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../components/modal/modal.component';
-import { Tshirt } from '../interfaces/tshirt';
 import { IconButtonComponent } from '../components/icon-button/icon-button.component';
 import { Edition } from '../interfaces/edition';
 import { HelpersService } from '../services/helpers.service';
 import { LoadingComponent } from "../components/loading/loading.component";
-import { CustomDropdownComponent } from "../components/custom-dropdown/custom-dropdown.component";
 import { Club, ClubCreate } from '../interfaces/club';
-import { ParticipatingClub } from '../interfaces/participating-club';
-import { Volunteer } from '../interfaces/volunteer';
+import { ParticipatingClub, ParticipatingClubPatcher } from '../interfaces/participating-club';
 import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-clubs',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalComponent, IconButtonComponent, LoadingComponent, CustomDropdownComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, IconButtonComponent, LoadingComponent],
   templateUrl: './clubs.component.html',
   styleUrl: './clubs.component.scss'
 })
@@ -29,7 +24,7 @@ export class ClubsComponent {
   loadingVolunteers: boolean = false;
 
   //Data Collection URL
-  dataCollectionUrl = "";
+  dataCollectionUrl: string = "";
 
   //Clubs
   allClubs: Club[] = [];
@@ -57,32 +52,28 @@ export class ClubsComponent {
   selectedClub: Club = this.newClub;
   selectedClubId: number = 0;
 
-  volunteers: Volunteer[] = []; // The volunteers of the selected club
+  // Link
+  link: string = '';
 
+  // CRUD
   clubToManageLinkFor: Club | undefined = undefined;
-
   participatingClubToDelete: ParticipatingClub | null = null;
   clubToDelete: Club | null = null;
-
-  tshirtToEdit: AvailableTshirtPatcher | null = null;
-  tshirtToEditSizes: number[] = [];
-
-  sizeToCreate: string = '';
-
-  link: string = '';
+  participatingClubToEdit: ParticipatingClubPatcher | null = null;
+  participatingClubToEditId: number = -1;
 
   // Messages
   clubCreated: string = '';
   errorClubCreation: string = '';
 
-  tshirtEdited: string = '';
-  errorTshirtEdit: string = '';
+  clubEdited: string = '';
+  errorClubEdit: string = '';
 
-  clubDeleted = '';
-  errorClubDeletion = '';
+  clubDeleted: string = '';
+  errorClubDeletion: string = '';
 
-  participatingClubDeleted = '';
-  errorParticipatingClubDeletion = '';
+  participatingClubDeleted: string = '';
+  errorParticipatingClubDeletion: string = '';
 
   linkSent: string = '';
   errorLinkSending: string = '';
@@ -111,15 +102,14 @@ export class ClubsComponent {
   }
 
   onModelChange(): void {
-    if (this.selectedClubId !== 0 && this.selectedClub !== undefined) { // Existing t-shirt
+    if (this.selectedClubId !== 0 && this.selectedClub !== undefined) { // Existing club
       let foundClub: Club = this.clubDictionary[this.selectedClubId];
   
       if (foundClub !== undefined) {
         this.selectedClub = foundClub; // Assign the found club
         this.selectedClub.id = this.selectedClubId; // Now update the club_id after assignment
-        this.loadVolunteers();
       }
-    } else { // New t-shirt
+    } else { // New club
       this.resetNewClub();
     }
   }
@@ -163,115 +153,8 @@ export class ClubsComponent {
   }
 
   isClubParticipating(): boolean {
-    // yes it is necessary to do this number conversion because the selectedClubId is apparently an object :S
     return this.participatingClubIds.includes(Number(this.selectedClubId));
   }
-
-  // toggleSize(size: Size) {
-  //   //selectedTshirt
-  //   const index = this.selectedTshirtSizes.indexOf(size.id);
-  //   if (index === -1) {
-  //     this.selectedTshirt.sizes.push(size);
-  //   } else {
-  //     this.selectedTshirt.sizes.splice(index, 1);
-  //   }
-
-  //   this.selectedTshirtSizes = this.selectedTshirt.sizes.map((size: Size) => size.id);
-
-  //   console.log(this.selectedTshirtSizes);
-
-  //   if (this.selectedTshirt.tshirt_id != 0) {
-  //     let patchModel: Tshirt = {
-  //       sizes: this.selectedTshirtSizes
-  //     };
-      
-  //     console.log('T-shirt patchen:', this.selectedTshirt.model);
-
-  //     console.log('tshirt ID:', this.selectedTshirt.tshirt_id);
-
-  //     this.apiService.updateTshirt(patchModel, this.selectedTshirt.tshirt_id).subscribe({
-  //       next: (result) => {
-  //         this.loadTshirts();
-  //         this.loadModels();    
-  //       },
-  //       error: (error) => {
-  //         console.error('Error bij het updaten van de t-shirt:', error);
-  //       }
-  //     });
-  //   }
-  // }
-
-  toggleVolunteers(size: Size) {
-    if(this.tshirtToEdit !== null) {
-      const index = this.tshirtToEditSizes.indexOf(size.id);
-
-      if (index === -1) {
-        this.tshirtToEdit.sizes.push(size);
-      } else {
-        this.tshirtToEdit.sizes.splice(index, 1);
-      }
-
-      this.tshirtToEditSizes = this.tshirtToEdit.sizes.map((size: Size) => size.id);
-    }
-  }
-
-  loadVolunteers(): void {
-    this.loadingVolunteers = true;
-
-    // Fetch sizes for the selected model
-    this.apiService.getVolunteersByClubId(this.selectedClub.id).subscribe(
-      (volunteers) => { // Update sizes for the selected model
-        this.volunteers = volunteers;
-        this.loadingVolunteers = false;
-      },
-      (error) => {
-        console.error('Error bij het ophalen van de leden van de club:', error);
-      }
-    );
-  }
-
-  // createOrUpdateSize(): void {
-  //   if (!this.sizeToCreate.trim()) {
-  //     console.warn('Maat mag niet leeg zijn.');
-  //     return;
-  //   }
-
-  //   const requestBody = { size: this.sizeToCreate.trim() };
-
-  //   if (this.selectedClubId == 0) {
-  //     console.log('Aanmaken van nieuwe maat:', this.sizeToCreate);
-  //     // Create a new size
-  //     this.apiService.createSize(requestBody).subscribe(
-  //       () => {
-  //         console.log('Maat aangemaakt:', this.sizeToCreate);
-  //         this.loadSizes();
-  //         this.sizeToCreate = '';
-  //       },
-  //       (error) => {
-  //         console.error('Error bij het aanmaken van een maat:', error);
-  //         if (error.status === 400) {
-  //           console.error("Bad Request: Misschien bestaat de maat al of is ze niet geldig.");
-  //         }
-  //         else {
-  //           console.error(this.helperService.parseError(error));
-  //         }
-  //       }
-  //     );
-  //   } else {
-  //     // Patch the t-shirt with the updated sizes
-  //     const updatedTshirt = { ...this.selectedTshirt, sizes: [...this.newTshirt.sizes, this.sizeToCreate.trim()] };
-  //     this.apiService.updateTshirt(updatedTshirt, this.selectedClubId).subscribe(
-  //       () => {
-  //         console.log('T-shirt updated with new size:', this.sizeToCreate);
-  //         this.loadTshirts();
-  //         this.sizeToCreate = '';
-  //       },
-  //       (error) => {
-  //         console.error(this.helperService.parseError(error));
-  //       }
-  //     );
-  //   }
-  // }
 
   addClub(): void {
     let clubToCreate: ClubCreate = {
@@ -292,17 +175,17 @@ export class ClubsComponent {
       person1_in_charge_day2: null
     }
 
-    this.apiService.addClub(clubToCreate).subscribe(() => {
-      this.loadClubs();
-      this.loadParticipatingClubs();
-      this.resetNewClub();
-      this.clubCreated = 'Club succesvol toegevoegd!';
-      this.errorClubCreation = '';
-
-      let $event  = new Event('click');
-    }, error => {
-      this.errorClubCreation = this.helperService.parseError(error);
-      this.clubCreated = '';
+    this.apiService.addClub(clubToCreate).subscribe({
+      next: (result) => {
+        this.loadClubs();
+        this.loadParticipatingClubs();
+        this.resetNewClub();
+        this.clubCreated = 'Club succesvol toegevoegd!';
+        this.errorClubCreation = '';
+      }, error: (error) => {
+        this.errorClubCreation = this.helperService.parseError(error);
+        this.clubCreated = '';
+      }
     });
   }
   
@@ -356,6 +239,7 @@ export class ClubsComponent {
     });
   }
 
+  // Link
   generateLink(): void {
     this.resetLinkMessages();
 
@@ -384,15 +268,28 @@ export class ClubsComponent {
 
   // Edit Popup
   openEditModal(club: ParticipatingClub): void {
-    // this.tshirtToEdit = {
-    //   id: tshirt.id,
-    //   tshirt_id: tshirt.tshirt_id,
-    //   model: tshirt.model,
-    //   sizes: [...tshirt.sizes],
-    //   price: tshirt.price
-    // }
+    this.clubEdited = '';
+    this.errorClubEdit = '';
 
-    // this.tshirtToEditSizes = this.tshirtToEdit.sizes.map((size: Size) => size.id);
+    this.participatingClubToEditId = Number(club.id);
+
+    let clubToEdit: Club = this.clubDictionary[club.club_id];
+    this.participatingClubToEdit = {
+      club_id: Number(club.club_id),
+      name: clubToEdit.name,
+      email: clubToEdit.email,
+      contact: clubToEdit.contact,
+      phone: clubToEdit.phone,
+      bank_account: clubToEdit.bank_account,
+      address: clubToEdit.address,
+      btw_number: clubToEdit.btw_number,
+      postal_code: clubToEdit.postal_code,
+      city: clubToEdit.city,
+      person_in_charge_day1: club.person_in_charge_day1,
+      person1_in_charge_day1: club.person1_in_charge_day1,
+      person_in_charge_day2: club.person_in_charge_day2,
+      person1_in_charge_day2: club.person1_in_charge_day2
+    }
 
     setTimeout(() => {
       if (this.editModal) {
@@ -402,24 +299,23 @@ export class ClubsComponent {
   }
 
   // Edit
-  updateTshirt(tshirt: AvailableTshirtPatcher): void {
-    // remove ID from editObject to comply with the API
-    let editObject = {
-      tshirt_id: tshirt.tshirt_id,
-      model: tshirt.model,
-      sizes: tshirt.sizes,
-      price: tshirt.price
-    }
+  updateClub(): void {
+    if (this.participatingClubToEdit !== null) {
+      console.log(this.participatingClubToEdit);
 
-    this.apiService.updateAvailableTshirt(editObject, tshirt.id).subscribe(() => {
-      this.loadParticipatingClubs();
-      this.loadClubs();
-      this.tshirtEdited = 'T-shirt succesvol aangepast!';
-      this.errorTshirtEdit = '';
-    }, error => {
-      this.errorTshirtEdit = this.helperService.parseError(error);
-      this.tshirtEdited = '';
-    });
+      this.apiService.updateParticipatingClub(this.participatingClubToEdit, this.participatingClubToEditId).subscribe({
+        next: (result) => {
+          this.loadParticipatingClubs();
+          this.loadClubs();
+          this.clubEdited = 'Vereniging succesvol aangepast!';
+          this.errorClubEdit = '';
+        },
+        error: (error) => {
+          this.errorClubEdit = this.helperService.parseError(error);
+          this.clubEdited = '';
+        }
+      });
+    }
   }
 
   // Delete Participating Popup
@@ -454,7 +350,7 @@ export class ClubsComponent {
     }
   }
 
-  // Delete Participating Popup
+  // Delete Popup
   openDeleteModal(club: Club) {
     this.clubDeleted = '';
     this.errorClubDeletion = '';
@@ -468,7 +364,7 @@ export class ClubsComponent {
     });
   }
 
-  // Delete Participating
+  // Delete
   deleteClub(): void {
     this.clubDeleted = '';
     this.errorClubDeletion = '';
@@ -479,10 +375,10 @@ export class ClubsComponent {
           this.loadClubs();
           this.loadParticipatingClubs();
           this.resetNewClub();
-          this.participatingClubDeleted = 'Vereniging verwijderd voor Editie ' + this.editionYear + '.';
+          this.clubDeleted = 'Vereniging succesvol verwijderd!';
         },
         error: (error) => {
-          this.errorParticipatingClubDeletion = this.helperService.parseError(error);
+          this.errorClubDeletion = this.helperService.parseError(error);
         }
       });
     }

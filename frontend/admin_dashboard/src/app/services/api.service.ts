@@ -9,7 +9,7 @@ import { Tshirt } from '../interfaces/tshirt';
 import { Size } from '../interfaces/size';
 import { Club, ClubCreate } from '../interfaces/club';
 import { Volunteer } from '../interfaces/volunteer';
-import { ParticipatingClub } from '../interfaces/participating-club';
+import { ParticipatingClub, ParticipatingClubPatcher } from '../interfaces/participating-club';
 
 @Injectable({
   providedIn: 'root'
@@ -121,17 +121,14 @@ export class ApiService {
   }
 
   // Calls for clubs
-  //list all clubs /clubs/
   getAllClubs(): Observable<Club[]> {
     return this.http.get<Club[]>(`${this.baseUrl}/clubs/`);
   }
 
-  //list all available tshirts for the current edition /tshirts/available-tshirts/current/
   getParticipatingClubs(): Observable<ParticipatingClub[]> {
     return this.http.get<ParticipatingClub[]>(`${this.baseUrl}/clubs/participating/current/`);
   }
 
-  //get sizes by tshirt id /tshirt_sizes/{tshirt_id}/
   getVolunteersByClubId(clubId: number): Observable<Volunteer[]> {
     return this.http.get<Volunteer[]>(`${this.baseUrl}/clubs/volunteers/${clubId}/`);
   }
@@ -142,6 +139,10 @@ export class ApiService {
 
   addClub(club: ClubCreate): Observable<ParticipatingClub> {
     return this.http.post<ParticipatingClub>(`${this.baseUrl}/clubs/participating`, club);
+  }
+
+  updateParticipatingClub(club: ParticipatingClubPatcher, id: number): Observable<ParticipatingClub> {
+    return this.http.patch<ParticipatingClub>(`${this.baseUrl}/clubs/participating/${id}/`, club);
   }
 
   deleteClub(id: number): Observable<any> {

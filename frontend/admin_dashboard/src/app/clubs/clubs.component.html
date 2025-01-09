@@ -1,7 +1,6 @@
 <div class="mt-10 py-6 mx-10">
     <h1 class="text-2xl font-semibold text-center mb-4">Verenigingen</h1>
     <form (submit)="addClub()" class="text-left">
-
         <!-- Club Field -->
         <div class="mb-2 max-w-md mx-auto">
             <label for="club" class="block text-sm font-medium text-gray-700">Vereniging</label>
@@ -209,13 +208,11 @@
             <td class="py-2 px-4 border-b text-start">{{ clubDictionary[club.club_id].postal_code }}</td>
             <td class="py-2 px-4 border-b text-start">{{ clubDictionary[club.club_id].city }}</td>
             <td class="py-2 px-4 border-b text-start">
-                {{ club.person_in_charge_day1 }}
-                <ng-container *ngIf="club.person_in_charge_day1 !== null && club.person1_in_charge_day1">, </ng-container>
+                {{ club.person_in_charge_day1 }}<ng-container *ngIf="club.person_in_charge_day1 !== null && club.person1_in_charge_day1">, </ng-container>
                 {{ club.person1_in_charge_day1 }}
             </td>
             <td class="py-2 px-4 border-b text-start">
-                {{ club.person_in_charge_day2 }}
-                <ng-container *ngIf="club.person_in_charge_day2 !== null && club.person1_in_charge_day2">, </ng-container>
+                {{ club.person_in_charge_day2 }}<ng-container *ngIf="club.person_in_charge_day2 !== null && club.person1_in_charge_day2">, </ng-container>
                 {{ club.person1_in_charge_day2 }}
             </td>
             <td class="py-2 px-4 border-b text-center">
@@ -334,76 +331,207 @@
   
 <!-- Edit Window -->
 <app-modal
-    *ngIf="tshirtToEdit !== null"
+    *ngIf="participatingClubToEdit !== null"
     #editModal
-    [header]="'T-shirt ' + tshirtToEdit.model + ' Aanpassen'"
-    [maxWidth]="500"
+    [header]="participatingClubToEdit.name + ' Aanpassen'"
+    [maxWidth]="750"
 >
-<form (submit)="updateTshirt(tshirtToEdit)" class="text-left">
-    <!-- Model Field -->
-    <div class="mb-4">
-    <label for="editModel" class="block text-sm font-medium text-gray-700">Model</label>
-    <input
-        type="text"
-        id="editModel"
-        name="editModel"
-        [(ngModel)]="tshirtToEdit.model"
-        #editModel="ngModel"
-        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-    />
-    </div>
-
-    <!-- Sizes Field -->
-    <div class="mb-4">
-    <label for="sizes" class="block text-sm font-medium text-gray-700">Maten</label>
-    <div class="relative" *ngIf="!loadingVolunteers">
-        <app-custom-dropdown>
-        <!-- Dropdown Header -->
-        <ng-container header>
-            <ng-container *ngFor="let size of tshirtToEdit.sizes">
-            {{ size.size }}<ng-container *ngIf="size !== tshirtToEdit.sizes[tshirtToEdit.sizes.length - 1]">, </ng-container>
-            </ng-container>
-            <ng-container *ngIf="!tshirtToEdit.sizes.length">Kies Maten</ng-container>
-        </ng-container>
-
-        <!-- Dropdown Body -->
-        <ng-container body>
-            <div *ngFor="let volunteer of volunteers" class="flex items-center justify-between px-4 py-2">
-            <!-- <label class="inline-flex items-center">
-                <input
-                type="checkbox"
-                [value]="size.size"
-                (change)="toggleEditSize(size)"
-                [checked]="tshirtToEditSizes.includes(size.id)"
-                class="form-checkbox"
-                />
-                <span class="ml-2">{{ size.size }}</span>
-            </label> -->
+    <form (submit)="updateClub()" class="text-left">
+        <div class="mb-3 grid grid-cols-1 md:grid-cols-2 gap-4 col-span-2">
+            <!-- Confirm Button -->
+            <div class="w-full edit-button">
+                <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    Vereniging Aanpassen
+                </button>    
             </div>
-        </ng-container>
-        </app-custom-dropdown>
-    </div>
-    </div>
 
-    <!-- Price Field -->
-    <div class="mb-4">
-    <label for="editPrice" class="block text-sm font-medium text-gray-700">Prijs</label>
-    <input
-        type="text"
-        id="editPrice"
-        name="editPrice"
-        [(ngModel)]="tshirtToEdit.price"
-        #editPrice="ngModel"
-        class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-    />
-    </div>
+            <!-- Name Field -->
+            <div class="">
+                <label for="name" class="block text-sm font-medium text-gray-700">Naam Vereniging</label>
+                <input
+                    required
+                    type="text"
+                    id="name"
+                    name="name"
+                    [(ngModel)]="participatingClubToEdit.name"
+                    #name="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
 
-    <div class="mb-4">
-    <p *ngIf="tshirtEdited !==''" class="text-green-600 font-semibold mt-3">{{ tshirtEdited }}</p>
-    <p *ngIf="errorTshirtEdit !==''" class="text-red-600 font-semibold mt-3">{{ errorTshirtEdit }}</p>
-    </div>
-    <button type="submit" class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-    T-shirt Aanpassen
-    </button>
-</form>
+            <!-- Email Field -->
+            <div class="">
+                <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
+                <input
+                    required
+                    type="text"
+                    id="email"
+                    name="email"
+                    [(ngModel)]="participatingClubToEdit.email"
+                    #email="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Contact Field -->
+            <div class="">
+                <label for="contact" class="block text-sm font-medium text-gray-700">Contact</label>
+                <input
+                    required
+                    type="text"
+                    id="contact"
+                    name="contact"
+                    [(ngModel)]="participatingClubToEdit.contact"
+                    #contact="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Phone Field -->
+            <div class="">
+                <label for="phonenumber" class="block text-sm font-medium text-gray-700">Telefoon</label>
+                <input
+                    required
+                    type="text"
+                    id="phonenumber"
+                    name="phonenumber"
+                    [(ngModel)]="participatingClubToEdit.phone"
+                    #phonenumber="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Bank Account Field -->
+            <div class="">
+                <label for="bankaccount" class="block text-sm font-medium text-gray-700">Banknummer</label>
+                <input
+                    required
+                    type="text"
+                    id="bankaccount"
+                    name="bankaccount"
+                    [(ngModel)]="participatingClubToEdit.bank_account"
+                    #bankaccount="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- BTW Number Field -->
+            <div class="">
+                <label for="btwnumber" class="block text-sm font-medium text-gray-700">BTW-nummer</label>
+                <input
+                    required
+                    type="text"
+                    id="btwnumber"
+                    name="btwnumber"
+                    [(ngModel)]="participatingClubToEdit.btw_number"
+                    #btwnumber="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Address Field -->
+            <div class="">
+                <label for="address" class="block text-sm font-medium text-gray-700">Adres</label>
+                <input
+                    required
+                    type="text"
+                    id="address"
+                    name="address"
+                    [(ngModel)]="participatingClubToEdit.address"
+                    #address="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Postal Code Field -->
+            <div class="">
+                <label for="postalcode" class="block text-sm font-medium text-gray-700">Postcode</label>
+                <input
+                    required
+                    type="text"
+                    id="postalcode"
+                    name="postalcode"
+                    [(ngModel)]="participatingClubToEdit.postal_code"
+                    #postalcode="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- City Field -->
+            <div class="">
+                <label for="city" class="block text-sm font-medium text-gray-700">Gemeente</label>
+                <input
+                    required
+                    type="text"
+                    id="city"
+                    name="city"
+                    [(ngModel)]="participatingClubToEdit.city"
+                    #city="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Person 1 in Charge Day 1 Field -->
+            <div class="">
+                <label for="personInChargeDay1" class="block text-sm font-medium text-gray-700">Supervisor 1 voor Dag 1</label>
+                <input
+                    required
+                    type="text"
+                    id="personInChargeDay1"
+                    name="personInChargeDay1"
+                    [(ngModel)]="participatingClubToEdit.person_in_charge_day1"
+                    #personInChargeDay1="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Person 2 in Charge Day 1 Field -->
+            <div class="">
+                <label for="person1InChargeDay1" class="block text-sm font-medium text-gray-700">Supervisor 2 voor Dag 1</label>
+                <input
+                    required
+                    type="text"
+                    id="person1InChargeDay1"
+                    name="person1InChargeDay1"
+                    [(ngModel)]="participatingClubToEdit.person1_in_charge_day1"
+                    #person1InChargeDay1="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Person 1 in Charge Day 2 Field -->
+            <div class="">
+                <label for="personInChargeDay2" class="block text-sm font-medium text-gray-700">Supervisor 1 voor Dag 2</label>
+                <input
+                    required
+                    type="text"
+                    id="personInChargeDay2"
+                    name="personInChargeDay2"
+                    [(ngModel)]="participatingClubToEdit.person_in_charge_day2"
+                    #personInChargeDay2="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Person 2 in Charge Day 2 Field -->
+            <div class="">
+                <label for="person1InChargeDay2" class="block text-sm font-medium text-gray-700">Supervisor 2 voor Dag 2</label>
+                <input
+                    required
+                    type="text"
+                    id="person1InChargeDay2"
+                    name="person1InChargeDay2"
+                    [(ngModel)]="participatingClubToEdit.person1_in_charge_day2"
+                    #person1InChargeDay2="ngModel"
+                    class="w-full mt-2 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div>
+            <p *ngIf="clubEdited !==''" class="text-green-600 font-semibold">{{ clubEdited }}</p>
+            <p *ngIf="errorClubEdit !==''" class="text-red-600 font-semibold">{{ errorClubEdit }}</p>
+        </div>
+    </form>
 </app-modal>

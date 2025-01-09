@@ -1,8 +1,9 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from ninja import NinjaAPI, Router
+from data_collectie.services import patch_club_then_patch_participating_club
 from data_collectie.models import Club, Edition, ParticipatingClub, Volunteer
-from data_collectie.schemas import ClubSchemaOut, ClubCreateSchema, ParticipatingClubSchema, ParticipatingClubInSchema, VolunteerSchemaOut, ClubSchemaPatch
+from data_collectie.schemas import ClubSchemaOut, ClubCreateSchema, ParticipatingClubSchema, ParticipatingClubInSchema, ParticipatingClubSchemaPatch, VolunteerSchemaOut, ClubSchemaPatch
 from typing import List
 from gladio_backend.auth.auth import AuthBearer
 
@@ -59,7 +60,7 @@ def create_participating_club(request, data: ParticipatingClubInSchema):
     if not current_edition:
         return JsonResponse({"error": "No current edition found"}, status=404)
     
-    # Check if the tshirt exists
+    # Check if the club exists
     new_club_id = data.club_id
 
     existing_club = Club.objects.filter(id=data.club_id).first()
@@ -110,6 +111,12 @@ def delete_participating_club(request, participating_club_id: int):
         return JsonResponse({"error": "No participating club found for this ID."}, status=404)
     participating_club.delete()
     return {"status": "ok"}
+
+@router.patch("/participating/{participating_club_id}/", response=ParticipatingClubSchema)
+def update_participating_club(request, participating_club_id: int, data: ParticipatingClubSchemaPatch):
+    patched_club = patch_club_then_patch_participating_club(participating_club_id, data)
+
+    return patched_club
 
 #patch club through participating club
 @router.patch("/update/{participating_club_id}")
