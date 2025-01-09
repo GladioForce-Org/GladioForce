@@ -159,6 +159,6 @@ export class ApiService {
   }
 
   addVolunteer(clubId: number, volunteer: Volunteer): Observable<Volunteer> {
-    return this.http.post<Volunteer>(`${this.baseUrl}/clubs/volunteers/${clubId}`, volunteer);
+    return this.http.post<Volunteer>(`${this.baseUrl}/volunteers/${clubId}`, volunteer);
   }
 }

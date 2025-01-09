@@ -81,7 +81,7 @@ class ParticipatingClubSchemaPatch(Schema):
 class VolunteerCreateSchema(Schema):
     first_name: str
     last_name: str
-    national_registry_number: str
+    national_registry_number: Optional[str] = None
     works_day1: bool
     works_day2: bool
     needs_parking_day1: bool

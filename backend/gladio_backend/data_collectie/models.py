@@ -55,7 +55,7 @@ class AvailableTshirt(models.Model):
 class Volunteer(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    national_registry_number = models.CharField(max_length=100)
+    national_registry_number = models.CharField(max_length=100, null=True)
     works_day1 = models.BooleanField(default=False)
     works_day2 = models.BooleanField(default=False)
     needs_parking_day1 = models.BooleanField(default=False)
