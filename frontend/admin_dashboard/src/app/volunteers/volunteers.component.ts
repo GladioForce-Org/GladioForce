@@ -34,7 +34,6 @@ export class VolunteersComponent implements OnInit {
     this.apiService.getClub(this.club_id).subscribe({
       next: (result) => {
         this.club = result;
-        console.log(this.club);
       },
       error: (error) => {
         console.log(this.helperService.parseError(error));
