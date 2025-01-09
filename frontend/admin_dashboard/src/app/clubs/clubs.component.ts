@@ -300,8 +300,6 @@ export class ClubsComponent {
   // Edit
   updateClub(): void {
     if (this.participatingClubToEdit !== null) {
-      console.log(this.participatingClubToEdit);
-
       this.apiService.updateParticipatingClub(this.participatingClubToEdit, this.participatingClubToEditId).subscribe({
         next: (result) => {
           this.loadParticipatingClubs();
