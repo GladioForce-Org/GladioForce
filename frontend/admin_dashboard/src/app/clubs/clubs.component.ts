@@ -36,7 +36,7 @@ export class ClubsComponent {
 
   editionYear: number | null = null;
 
-  newClub: Club = {
+  selectedClub: Club = {
     id: 0,
     name: '',
     email: '',
@@ -50,7 +50,6 @@ export class ClubsComponent {
     city: ''
   };
 
-  selectedClub: Club = this.newClub;
   selectedClubId: number = 0;
 
   // Link
@@ -103,15 +102,15 @@ export class ClubsComponent {
   }
 
   onModelChange(): void {
-    if (this.selectedClubId !== 0 && this.selectedClub !== undefined) { // Existing club
+    if (Number(this.selectedClubId) !== 0 && this.selectedClub !== undefined) { // Existing club
       let foundClub: Club = this.clubDictionary[this.selectedClubId];
   
       if (foundClub !== undefined) {
         this.selectedClub = foundClub; // Assign the found club
-        this.selectedClub.id = this.selectedClubId; // Now update the club_id after assignment
+        this.selectedClub.id = Number(this.selectedClubId); // Now update the club_id after assignment
       }
     } else { // New club
-      this.resetNewClub();
+      this.resetSelectedClub();
     }
   }
 
@@ -180,7 +179,7 @@ export class ClubsComponent {
       next: (result) => {
         this.loadClubs();
         this.loadParticipatingClubs();
-        this.resetNewClub();
+        this.resetSelectedClub();
         this.clubCreated = 'Club succesvol toegevoegd!';
         this.errorClubCreation = '';
       }, error: (error) => {
@@ -190,8 +189,8 @@ export class ClubsComponent {
     });
   }
   
-  resetNewClub(): void {
-    this.newClub = {
+  resetSelectedClub(): void {
+    this.selectedClub = {
       id: 0,
       name: '',
       email: '',
@@ -205,7 +204,6 @@ export class ClubsComponent {
       city: ''
     };
 
-    this.selectedClub = this.newClub;
     this.selectedClubId = 0; 
   }
 
@@ -375,7 +373,7 @@ export class ClubsComponent {
         next: (result) => {
           this.loadClubs();
           this.loadParticipatingClubs();
-          this.resetNewClub();
+          this.resetSelectedClub();
           this.clubDeleted = 'Vereniging succesvol verwijderd!';
         },
         error: (error) => {
