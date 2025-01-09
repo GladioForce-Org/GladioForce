@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ClubService } from '../data/services/club.service';
 import { CommonModule } from '@angular/common';
 import { validateBelgianBankAccount, validateEmail } from '../validators';
+import { Volunteer } from '../data/types/volunteer';
 
 @Component({
   selector: 'app-club-info-form',
@@ -15,6 +16,7 @@ import { validateBelgianBankAccount, validateEmail } from '../validators';
 })
 export class ClubInfoFormComponent implements OnInit {
   @Input() club!: Club;
+  @Input() volunteers: Volunteer[] = [];
 
   clubLink: string = '';
 
@@ -23,6 +25,9 @@ export class ClubInfoFormComponent implements OnInit {
   errorMessage = '';
   invalidBankAccount = false;
   invalidEmail = false;
+
+  parkingDay1Count: number = 0;
+  parkingDay2Count: number = 0;
 
   constructor(
     private router: Router,
@@ -35,6 +40,15 @@ export class ClubInfoFormComponent implements OnInit {
     if (this.clubLink) {
       this.loadClubDetails();
     }
+  }
+
+  ngOnChanges(): void {
+    this.calculateParkingCounts();
+  }
+
+  private calculateParkingCounts(): void {
+    this.parkingDay1Count = this.volunteers.filter(v => v.needs_parking_day1).length;
+    this.parkingDay2Count = this.volunteers.filter(v => v.needs_parking_day2).length;
   }
 
   private loadClubDetails(): void {
