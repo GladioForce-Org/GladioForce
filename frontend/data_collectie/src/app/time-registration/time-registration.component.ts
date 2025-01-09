@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { TimeService } from '../services/time.service';
-
+import { TimeService } from '../data/services/time.service';
 
 @Component({
   selector: 'app-time-registration',

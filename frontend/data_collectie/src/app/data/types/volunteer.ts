@@ -7,6 +7,12 @@ export interface Volunteer {
     needs_parking_day1: boolean;
     needs_parking_day2: boolean;
     tshirt_id: number | null;
-    club_id: number;
     size_id: number | null;
+    national_registry_number?: string;
+
+    club_id?: number;
+    works_day?: string | null;
+    needs_parking?: string | null;
+    tshirt?: string | null;
+    size?: string | null;
 }
