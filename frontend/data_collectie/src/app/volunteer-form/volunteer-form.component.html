@@ -1,0 +1,119 @@
+<app-modal [isOpen]="isOpen" [title]="isEdit ? 'Vrijwilliger Bewerken' : 'Vrijwilliger Toevoegen'"
+    (closeModal)="cancel(form)">
+    <form (ngSubmit)="onSubmit(form)" #form="ngForm" class="mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="pt-2">
+                <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900">Voornaam</label>
+                <input type="text" id="first_name" name="first_name" [(ngModel)]="volunteer.first_name"
+                    #first_name="ngModel" required
+                    class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                <p *ngIf="first_name.invalid && (first_name.dirty || first_name.touched)"
+                    class="text-red-500 text-xs mt-1">
+                    Voornaam is verplicht.
+                </p>
+            </div>
+
+            <div class="pt-2">
+                <label for="last_name" class="block mb-2 text-sm font-medium text-gray-900">Achternaam</label>
+                <input type="text" id="last_name" name="last_name" [(ngModel)]="volunteer.last_name"
+                    #last_name="ngModel" required
+                    class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                <p *ngIf="last_name.invalid && (last_name.dirty || last_name.touched)"
+                    class="text-red-500 text-xs mt-1">
+                    Achternaam is verplicht.
+                </p>
+            </div>
+
+            <div class="pt-2">
+                <label for="national_registry_number"
+                    class="block mb-2 text-sm font-medium text-gray-900">Rijksregisternummer</label>
+                <input type="text" id="national_registry_number" name="national_registry_number"
+                    [(ngModel)]="volunteer.national_registry_number" #national_registry_number="ngModel" required
+                    class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                <p *ngIf="national_registry_number.invalid && (national_registry_number.dirty || national_registry_number.touched)"
+                    class="text-red-500 text-xs mt-1">
+                    Rijksregisternummer is verplicht en moet het juiste formaat hebben (YY.MM.DD-XXX.XX).
+                </p>
+            </div>
+
+            <div class="pt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="tshirt_id" class="block mb-2 text-sm font-medium text-gray-900">T-shirt model</label>
+                    <select id="tshirt_id" name="tshirt_id" [(ngModel)]="volunteer.tshirt_id"
+                        (change)="onTshirtModelChange($event)" #tshirt_id="ngModel" required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <option [ngValue]="null" disabled>Selecteer ...</option>
+                        <option *ngFor="let tshirt of availableTshirts" [ngValue]="tshirt.id">
+                            {{ tshirt.model }}
+                        </option>
+                    </select>
+                    <p *ngIf="tshirt_id.invalid && (tshirt_id.dirty || tshirt_id.touched)"
+                        class="text-red-500 text-xs mt-1">
+                        T-shirt model is verplicht.
+                    </p>
+                </div>
+
+                <div>
+                    <label for="size_id" class="block mb-2 text-sm font-medium text-gray-900">T-shirt maat</label>
+                    <select id="size_id" name="size_id" [(ngModel)]="volunteer.size_id" #size_id="ngModel" required
+                        [disabled]="!volunteer.tshirt_id"
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <option [ngValue]="null" disabled>Selecteer ...</option>
+                        <option *ngFor="let size of availableSizes" [ngValue]="size.id">
+                            {{ size.size }}
+                        </option>
+                    </select>
+                    <p *ngIf="size_id.invalid && (size_id.dirty || size_id.touched)" class="text-red-500 text-xs mt-1">
+                        T-shirt maat is verplicht.
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-2">
+                <label for="works_day" class="block mb-2 text-sm font-medium text-gray-900">Aanwezig</label>
+                <select id="works_day" name="works_day" [(ngModel)]="volunteer.works_day" #works_day="ngModel" required
+                    class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    <option [ngValue]="null" disabled selected>Selecteer ...</option>
+                    <option value="day1">Vrijdag</option>
+                    <option value="day2">Zaterdag</option>
+                    <option value="both">Beide</option>
+                </select>
+                <p *ngIf="works_day.invalid && (works_day.dirty || works_day.touched)"
+                    class="text-red-500 text-xs mt-1">
+                    Selecteer een optie.
+                </p>
+            </div>
+
+            <div class="pt-2">
+                <label for="needs_parking" class="block mb-2 text-sm font-medium text-gray-900">Parking</label>
+                <select id="needs_parking" name="needs_parking" [ngModel]="volunteer.needs_parking"
+                    #needs_parking="ngModel" required
+                    class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    <option [ngValue]="null" disabled selected>Selecteer ...</option>
+                    <option value="none">Nee</option>
+                    <option value="day1">
+                        Vrijdag
+                    </option>
+                    <option value="day2">
+                        Zaterdag
+                    </option>
+                    <option value="both">Beide</option>
+                </select>
+                <p *ngIf="needs_parking.invalid && (needs_parking.dirty || needs_parking.touched)"
+                    class="text-red-500 text-xs mt-1">
+                    Selecteer een optie.
+                </p>
+            </div>
+        </div>
+        <div class="flex justify-end space-x-2 pt-5">
+            <button type="button" (click)="cancel(form)"
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                Annuleren
+            </button>
+            <button type="submit" [disabled]="!form.valid"
+                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">
+                Opslaan
+            </button>
+        </div>
+    </form>
+</app-modal>

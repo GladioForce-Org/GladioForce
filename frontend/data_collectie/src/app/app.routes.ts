@@ -1,13 +1,15 @@
 import { Routes } from '@angular/router';
-import { ClubFormComponent } from './club-form/club-form.component';
+import { ClubRegistrationComponent } from './club-registration/club-registration.component';
+import { ClubInfoFormComponent } from './club-info-form/club-info-form.component';
 import { TimeRegistrationComponent } from './time-registration/time-registration.component';
 import { VolunteerComponent } from './volunteer/volunteer.component';
+import { VolunteersComponent } from './volunteers/volunteers.component';
 
 
 export const routes: Routes = [
     {
         path: ':link',
-        component: ClubFormComponent
+        component: ClubRegistrationComponent
     },
     {
         path: '',
@@ -15,6 +17,14 @@ export const routes: Routes = [
     },
     { 
         path: 'volunteers/:id',
+         component: VolunteersComponent 
+    },
+    { 
+        path: 'volunteer/:id',
          component: VolunteerComponent 
+    },
+    {
+        path: '',
+        redirectTo: '/home', pathMatch: 'full'
     }
 ];

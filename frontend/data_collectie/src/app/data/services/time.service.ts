@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +25,11 @@ export class TimeService {
   makeTimeRegistration(volunteer_id: number, data: any): any {
     return this.httpClient.post(`${this.baseUrl}/time_registration/${volunteer_id}`, data);
   }
+  // get a count of all time registrations for a volunteer for current  /time_registrations_count/{volunteer_id}
+  getTimeRegistrationsCount(volunteer_id: number): any {
+    return this.httpClient.get(`${this.baseUrl}/time_registrations_count/${volunteer_id}`);
+  }
+
 
 
 

@@ -1,0 +1,134 @@
+<div class="mx-auto">
+    <!-- Messages -->
+    <div *ngIf="errorMessage" class="rounded p-4 mb-4 text-lg bg-red-200 text-red-800 border-2 border-red-300">
+        {{ errorMessage }}
+    </div>
+
+    @if (showSuccess) {
+    <div class="rounded p-4 mb-4 text-lg bg-green-200 text-green-800 border-2 border-green-300">
+        Gegevens succesvol opgeslagen!
+    </div>
+    }
+
+    <form (ngSubmit)="onSubmit(form)" #form="ngForm">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <h2 class="text-2xl font-semibold text-gray-700">{{ club.name }}</h2>
+            <button type="submit" [disabled]="form.invalid || isSubmitting"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-md w-auto px-5 py-2.5 text-center disabled:opacity-50">
+                {{ isSubmitting ? 'Bezig met opslaan...' : 'Opslaan' }}
+            </button>
+        </div>
+
+        <!-- Form Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Left Column -->
+            <div class="space-y-4">
+                <!-- Address Section -->
+                <div>
+                    <label for="address" class="block mb-2 text-sm font-medium text-gray-900">Adres</label>
+                    <input type="text" id="address" name="address" [(ngModel)]="club.address" #address="ngModel"
+                        required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="address.invalid && (address.dirty || address.touched)" class="text-red-500 text-xs mt-1">
+                        Adres is verplicht.
+                    </p>
+                </div>
+
+                <!-- Postal Code Section -->
+                <div>
+                    <label for="postal_code" class="block mb-2 text-sm font-medium text-gray-900">Postcode</label>
+                    <input type="text" id="postal_code" name="postal_code" [(ngModel)]="club.postal_code"
+                        #postal_code="ngModel" required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="postal_code.invalid && (postal_code.dirty || postal_code.touched)"
+                        class="text-red-500 text-xs mt-1">
+                        Postcode is verplicht.
+                    </p>
+                </div>
+
+                <!-- City Section -->
+                <div>
+                    <label for="city" class="block mb-2 text-sm font-medium text-gray-900">Gemeente</label>
+                    <input type="text" id="city" name="city" [(ngModel)]="club.city" #city="ngModel" required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="city.invalid && (city.dirty || city.touched)" class="text-red-500 text-xs mt-1">
+                        Gemeente is verplicht.
+                    </p>
+                </div>
+
+                <!-- BTW Number Section -->
+                <div>
+                    <label for="BTW_number" class="block mb-2 text-sm font-medium text-gray-900">BTW nummer
+                        (optioneel)</label>
+                    <input type="text" id="BTW_number" name="BTW_number" [(ngModel)]="club.BTW_number"
+                        #BTW_number="ngModel"
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                </div>
+
+                <!-- Bank Account Section -->
+                <div>
+                    <label for="bank_account" class="block mb-2 text-sm font-medium text-gray-900">Rekening
+                        nummer</label>
+                    <input type="text" id="bank_account" name="bank_account" [(ngModel)]="club.bank_account"
+                        #bank_account="ngModel" required [ngModelOptions]="{ updateOn: 'blur' }"
+                        [ngClass]="{ 'border-red-500': invalidBankAccount && (bank_account.dirty || bank_account.touched) }"
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        belgianBankAccountValidator />
+                    <p *ngIf="(bank_account.invalid || invalidBankAccount) && (bank_account.dirty || bank_account.touched)"
+                        class="text-red-500 text-xs mt-1">
+                        Gelieve een geldig Belgisch rekeningnummer in te geven.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-4">
+                <!-- Email Section -->
+                <div>
+                    <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
+                    <input type="email" id="email" name="email" [(ngModel)]="club.email" #email="ngModel" required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="(email.invalid || invalidEmail) && (email.dirty || email.touched)"
+                        class="text-red-500 text-xs mt-1">
+                        Gelieve een geldig email adres in te geven.
+                    </p>
+                </div>
+
+                <!-- Contact Section -->
+                <div>
+                    <label for="contact" class="block mb-2 text-sm font-medium text-gray-900">Hoofdcontact</label>
+                    <input type="text" id="contact" name="contact" [(ngModel)]="club.contact" #contact="ngModel"
+                        required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="contact.invalid && (contact.dirty || contact.touched)" class="text-red-500 text-xs mt-1">
+                        Hoofdcontact naam en voornaam is verplicht.
+                    </p>
+                </div>
+
+                <!-- Phone Section -->
+                <div>
+                    <label for="phone" class="block mb-2 text-sm font-medium text-gray-900">GSM nummer</label>
+                    <input type="text" id="phone" name="phone" [(ngModel)]="club.phone" #phone="ngModel" required
+                        class="bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                    <p *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="text-red-500 text-xs mt-1">
+                        GSM nummer is verplicht.
+                    </p>
+                </div>
+
+                <!-- Parking Info Section -->
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <h3 class="text-lg font-semibold mb-3">Aantal parkeerkaarten</h3>
+                    <div class="space-y-2">
+                        <p>Vrijdag: <span class="font-semibold">{{ parkingDay1Count }}</span></p>
+                        <p>Zaterdag: <span class="font-semibold">{{ parkingDay2Count }}</span></p>
+                        <p class="text-blue-600 text-sm mt-3">
+                            Probeer dit te beperken. De medewerkerparking is niet onbeperkt. Bij voorkeur fietsen of
+                            carpoolen.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

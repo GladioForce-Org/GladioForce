@@ -1,0 +1,58 @@
+<ng-container *ngIf="filled">
+    <svg
+      *ngIf="!disabled"
+      (click)="dummy($event)"
+      [attr.width]="size"
+      [attr.height]="size"
+      fill="currentColor"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <use attr.xlink:href="assets/feather-sprite.svg#{{icon}}"/>
+    </svg>
+    <svg
+      *ngIf="disabled"
+      (click)="dummy($event)"
+      [attr.width]="size"
+      [attr.height]="size"
+      fill="gray"
+      stroke="gray"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <use attr.xlink:href="assets/feather-sprite.svg#{{icon}}"/>
+    </svg>
+  
+  </ng-container>
+  <ng-container *ngIf="!filled">
+    <svg
+      *ngIf="!disabled"
+      (click)="dummy($event)"
+      [attr.width]="size"
+      [attr.height]="size"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <use attr.xlink:href="assets/feather-sprite.svg#{{icon}}"/>
+    </svg>
+    <svg
+      *ngIf="disabled"
+      (click)="dummy($event)"
+      [attr.width]="size"
+      [attr.height]="size"
+      fill="none"
+      stroke="gray"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <use attr.xlink:href="assets/feather-sprite.svg#{{icon}}"/>
+    </svg>
+</ng-container>
+  

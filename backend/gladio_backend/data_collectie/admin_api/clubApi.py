@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from ninja import NinjaAPI, Router
 from data_collectie.services import patch_club_then_patch_participating_club
 from data_collectie.models import Club, Edition, ParticipatingClub, Volunteer
-from data_collectie.schemas import ClubSchemaOut, ClubCreateSchema, ParticipatingClubSchema, ParticipatingClubInSchema, ParticipatingClubSchemaPatch, VolunteerSchemaOut, ClubSchemaPatch
+from data_collectie.schemas import ClubSchemaOut, ClubCreateSchema, ParticipatingClubSchema, ParticipatingClubInSchema, ParticipatingClubSchemaPatch, VolunteerAdminSchemaOut, VolunteerSchemaOut, ClubSchemaPatch
 from typing import List
 from gladio_backend.auth.auth import AuthBearer
 
@@ -36,7 +36,7 @@ def get_club(request, club_id: int):
     return club
 
 # Get volunteers of a club
-@router.get("/volunteers/{club_id}/", response=List[VolunteerSchemaOut])
+@router.get("/volunteers/{club_id}/", response=List[VolunteerAdminSchemaOut])
 def get_volunteers(request, club_id: int):
     volunteers = Volunteer.objects.filter(club_id=club_id)
     return list(volunteers.values())

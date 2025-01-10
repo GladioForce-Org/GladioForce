@@ -179,24 +179,6 @@ export class VolunteersComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // delete
-  deleteVolunteer(volunteer: Volunteer) {
-    this.volunteerDeleted = '';
-    this.errorVolunteerDeletion = '';
-
-    if (volunteer.id !== undefined) {
-      this.apiService.deleteVolunteer(volunteer.id).subscribe({
-        next: (result) => {
-          this.volunteerDeleted = 'Vrijwilliger verwijderd.';
-          this.getVolunteers();
-        },
-        error: (error: HttpErrorResponse) => {
-          this.errorVolunteerDeletion = this.helperService.parseError(error);
-        }
-      });
-    }
-  }
-
   // Get Available Sizes based on value of t-shirt model selected in the forms
   determineListOfSizesForCRUDs(volunteer: Volunteer): void {
     if (volunteer.tshirt_id !== undefined && volunteer.size_id !== null) {
@@ -230,8 +212,13 @@ export class VolunteersComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // Edit Popup
   openEditModal(volunteer: Volunteer) {
+    this.volunteerEdited = '';
+    this.errorVolunteerEdit = '';
+
     this.selectedVolunteer = { ...volunteer }; // Make a copy of the volunteer
+    this.determineListOfSizesForCRUDs(this.selectedVolunteer);
 
     setTimeout(() => {
       if (this.editModal) {
@@ -240,16 +227,66 @@ export class VolunteersComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // Edit
+  editVolunteer() {
+    this.volunteerEdited = '';
+    this.errorVolunteerEdit = '';
+    
+    if (this.selectedVolunteer !== null && this.selectedVolunteer.id !== undefined) {
+      let volunteerToEdit: Volunteer = {
+        first_name: this.selectedVolunteer.first_name,
+        last_name: this.selectedVolunteer.last_name,
+        works_day1: this.selectedVolunteer.works_day1,
+        works_day2: this.selectedVolunteer.works_day2,
+        needs_parking_day1: this.selectedVolunteer.needs_parking_day1,
+        needs_parking_day2: this.selectedVolunteer.needs_parking_day2,
+        national_registry_number: this.selectedVolunteer.national_registry_number,
+        tshirt_id: this.selectedVolunteer.tshirt_id,
+        size_id: this.selectedVolunteer.size_id
+      }
+      
+      this.apiService.updateVolunteer(Number(this.selectedVolunteer.id), volunteerToEdit).subscribe({
+        next: (result) => {
+          this.volunteerEdited = 'Vrijwilliger aangepast.';
+          this.getVolunteers();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.errorVolunteerEdit = this.helperService.parseError(error);
+          this.getVolunteers();
+        }
+      });
+    }
+  }
+
   // Delete Popup
   openDeleteModal(volunteer: Volunteer) {
     this.volunteerDeleted = '';
     this.errorVolunteerDeletion = '';
-    this.selectedVolunteer = { ...volunteer }; 
+
+    this.selectedVolunteer = { ...volunteer };
 
     setTimeout(() => { 
       if (this.deleteModal) { 
         this.deleteModal.openModal();  
       }
     });
+  }
+
+  // delete
+  deleteVolunteer() {
+    this.volunteerDeleted = '';
+    this.errorVolunteerDeletion = '';
+
+    if (this.selectedVolunteer !== null && this.selectedVolunteer.id !== undefined) {
+      this.apiService.deleteVolunteer(Number(this.selectedVolunteer.id)).subscribe({
+        next: (result) => {
+          this.volunteerDeleted = 'Vrijwilliger verwijderd.';
+          this.getVolunteers();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.errorVolunteerDeletion = this.helperService.parseError(error);
+        }
+      });
+    }
   }
 }

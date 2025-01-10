@@ -1,0 +1,89 @@
+<div class="mt-8">
+    <div class="flex justify-between items-center mb-6 border-b pb-4">
+        <div class="flex items-center gap-4">
+            <h2 class="text-2xl font-semibold text-gray-700">Vrijwilligers</h2>
+            <div class="relative">
+                <input type="text" [(ngModel)]="searchTerm" placeholder="Zoek vrijwilliger"
+                    class="pl-3 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <span class="absolute right-3 top-2.5 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </span>
+            </div>
+        </div>
+        <button type="button" (click)="openAddModal()"
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-md w-auto px-5 py-2.5 text-center disabled:opacity-50">
+            Vrijwilliger toevoegen
+        </button>
+    </div>
+</div>
+
+<div class="overflow-x-auto">
+    <table class="min-w-full bg-white border border-gray-200 overflow-auto">
+        <thead>
+            <tr>
+                <th class="py-2 px-4 border-b text-center">Acties</th>
+                <th class="py-2 px-4 border-b text-start cursor-pointer hover:bg-gray-100" (click)="sort('first_name')">
+                    Naam
+                    <span class="ml-1">{{ getSortIcon('first_name') }}</span>
+                </th>
+                <th class="py-2 px-4 border-b text-start">
+                    Rijksregisternummer
+                </th>
+                <th class="py-2 px-4 border-b text-start">
+                    T-shirt
+                </th>
+                <th class="py-2 px-4 border-b text-start">
+                    Aanwezig
+                </th>
+                <th class="py-2 px-4 border-b text-start">
+                    Parking
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let volunteer of filteredVolunteers">
+                <td class="text-sm font-medium border-b border-gray-200">
+                    <div class="flex justify-center gap-4">
+                        <button (click)="openEditModal(volunteer)"
+                            class="px-3 py-1 text-white bg-blue-600 hover:bg-blue-700 rounded">
+                            Edit
+                        </button>
+                        <button (click)="deleteVolunteer(volunteer.id)"
+                            class="px-3 py-1 text-white bg-red-600 hover:bg-red-700 rounded">
+                            Delete
+                        </button>
+                    </div>
+                </td>
+                <td class="py-2 px-4 border-b text-start">{{ volunteer.first_name }} {{ volunteer.last_name
+                    }}</td>
+                <td class="py-2 px-4 border-b text-start">**.**.**-***.**</td>
+                <td class="py-2 px-4 border-b text-start">
+                    {{ getTshirtModel(volunteer.tshirt_id) }} - {{ getTshirtSize(volunteer.tshirt_id, volunteer.size_id)
+                    }}
+                </td>
+                <td class="py-2 px-4 border-b text-start"> {{
+                    volunteer.works_day1 && volunteer.works_day2 ? 'Beide' :
+                    volunteer.works_day1 ? 'Vrijdag' :
+                    volunteer.works_day2 ? 'Zaterdag' : 'Nee'
+                    }}</td>
+                <td class="py-2 px-4 border-b text-start">
+                    {{
+                    volunteer.needs_parking_day1 && volunteer.needs_parking_day2 ? 'Beide' :
+                    volunteer.needs_parking_day1 ? 'Vrijdag' :
+                    volunteer.needs_parking_day2 ? 'Zaterdag' : 'Nee'
+                    }}
+                </td>
+                <!-- <td class="py-2 px-4 border-b text-center">{{ volunteer.tshirt_id }}</td>
+                            <td class="py-2 px-4 border-b text-center">{{ volunteer.size_id }}</td> -->
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<app-volunteer-form [isOpen]="isModalOpen" [isEdit]="isEdit" [volunteer]="selectedVolunteer"
+    (saveSuccess)="onSaveSuccess()" (close)="closeModal()" [clubLink]="clubLink">
+</app-volunteer-form>
