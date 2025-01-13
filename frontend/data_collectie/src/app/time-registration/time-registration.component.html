@@ -1,6 +1,14 @@
-<p>time-registration works!</p>
-<div class="club-cards">
-    <div class="club-card" *ngFor="let club of clubs">
+<div class="max-w-md mx-auto mt-10 p-6 gladiolen-text">
+    <div header="gladiolen-header gladiolen-green">
+        <app-gladiolen-logo></app-gladiolen-logo>
+        <h1 class="text-2xl font-semibold text-center mb-4">Kies je club</h1>
+    </div>
+
+
+
+
+
+    <div *ngFor="let club of clubs">
         <h2>{{ club.club.name }}</h2>
 
         <p>{{ club.club.email }}</p>

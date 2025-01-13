@@ -7,10 +7,6 @@
 /* Your custom styles */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-.test-tailwind {
-  @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
-}
-
 .gladiolen-text {
   font-family: "Poetsen One", serif;
   font-weight: 400;
@@ -40,3 +36,15 @@
 .gladiolen-white {
   background-color: #f3f2f1;
 }
+
+.gladiolen-header {
+  height: 911px;
+  font-family: "Poetsen One", serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.test-tailwind {
+  @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
+}
+
