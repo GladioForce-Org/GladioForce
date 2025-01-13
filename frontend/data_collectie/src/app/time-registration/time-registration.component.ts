@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TimeService } from '../data/services/time.service';
@@ -9,9 +9,9 @@ import { GladiolenLogoComponent } from "../gladiolen-logo/gladiolen-logo.compone
   standalone: true,
   imports: [CommonModule, RouterModule, GladiolenLogoComponent],
   templateUrl: './time-registration.component.html',
-  styleUrls: ['./time-registration.component.scss']
+  styleUrl: './time-registration.component.scss'
 })
-export class TimeRegistrationComponent {
+export class TimeRegistrationComponent implements OnInit {
   constructor(private timeService: TimeService) {}
 
   loading: boolean = false;

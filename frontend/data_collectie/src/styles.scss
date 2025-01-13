@@ -7,10 +7,8 @@
 /* Your custom styles */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-.gladiolen-text {
-  font-family: "Poetsen One", serif;
-  font-weight: 400;
-  font-style: normal;
+.time-registration-container {
+  //margin-top: -16px;
 }
 
 .gladiolen-pink {
@@ -37,11 +35,63 @@
   background-color: #f3f2f1;
 }
 
-.gladiolen-header {
-  height: 911px;
-  font-family: "Poetsen One", serif;
-  font-weight: 500;
+.gladiolen-text {
+  font-family: "Arial", "Helvetica", "Trebuchet LS" "verdana" sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: black;
   font-style: normal;
+}
+
+.gladiolen-header {
+  height: 162px;
+  font-weight: 800;
+  font-size: 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gladiolen-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gladiolen-white-banner {
+  background-color: white;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 25px;
+  margin-top: 30px;
+  padding-left: 0px;
+  padding-right: 20px;
+  width: 100%;
+}
+
+.gladiolen-black-button {
+  background-color: black;
+  color: white;
+  height: 50px;
+  min-width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.gladiolen-list {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+  margin-left: 20px;
 }
 
 .test-tailwind {
