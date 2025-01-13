@@ -196,7 +196,13 @@ variable "private_key_path" {
 
   description = "location of private key for ssh connection to EC2, must refer to github secret in later phase"
 }
-# ###################### Bastion - host #############################
+
+
+variable "public_key_path" {
+
+  description = "location of public key for ssh connection to EC2, must refer to github secret in later phase"
+}
+
 
 
 

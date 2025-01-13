@@ -1,10 +1,19 @@
 # Keypair for SSH access to the EC2 instance
 
-data "aws_key_pair" "mykeypair" {
-  key_name           = "nginx"
-  include_public_key = true
+# resource "aws_key_pair" "upload_key" {
+#   key_name   = "nginx"
+#   public_key = filebase64("./deploy/nginx.pem") # Use your .pem file
+# }
 
+# output "key_pair_name" {
+#   value = aws_key_pair.upload_key.key_name
+# }
+
+resource "aws_key_pair" "my_key_pair" {
+  key_name   = "my-key-pair"
+  public_key = file(var.public_key_path) # Path to the public key
 }
+
 
 
 # EC2 Instance for NGINX with user_data to set up the config
@@ -13,7 +22,7 @@ resource "aws_instance" "nginx" {
   instance_type   = "t2.micro"
   subnet_id       = aws_subnet.public_subnets[0].id
   security_groups = [aws_security_group.internet_nginx_sg.id]
-  key_name        = data.aws_key_pair.mykeypair.key_name
+  key_name        = aws_key_pair.my_key_pair.key_name
   private_ip      = "10.0.1.100" # Static private IP address
 
   user_data = <<-EOF

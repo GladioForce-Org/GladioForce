@@ -12,7 +12,21 @@ resource "aws_kms_key" "db_replica_key" {
   )
 }
 
+#check if the snapshot exists and if it is the most recent one
+data "aws_db_snapshot" "final_snapshot" {
+  most_recent            = true
+  db_instance_identifier = "${local.prefix}-db" # Replace with your DB identifier
+}
 
+output "final_snapshot" {
+  value = data.aws_db_snapshot.final_snapshot.id
+
+}
+
+#variable to check if the snapshot is to be used
+variable "use_snapshot" {
+  default = false
+}
 
 #Creation of a RDS instance, in a multi-AZ environment the credentials are stored in the .env file and loaded as environment variables before deployment
 
@@ -38,6 +52,7 @@ resource "aws_db_instance" "db_app" {
   storage_encrypted         = true
   kms_key_id                = aws_kms_key.db_replica_key.arn
   multi_az                  = false
+  snapshot_identifier       = var.use_snapshot ? data.aws_db_snapshot.final_snapshot.id : null
 
 
   tags = merge(
