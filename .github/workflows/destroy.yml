@@ -24,6 +24,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Decode RSA Key
+        run: |
+          echo "${{ secrets.AWS_KEY_PAIR_PRIVATE }}" > ./deploy/my-key.pem
+          echo "${{ secrets.AWS_KEY_PAIR_PUBLIC }}" > ./deploy/my-key.pub
+          chmod 400 ./deploy/my-key.pem
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
         with:
