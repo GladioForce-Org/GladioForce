@@ -11,8 +11,8 @@
             <div class="gladiolen-black-banner">Vrijwilligers</div>
             <h2>{{ club.club.name }}</h2>
         </a>
-        <div class="gladiolen-info">
+        <a class="gladiolen-info" [routerLink]="['/volunteers', club.club.id]">
             <p>{{ club.club.email }}</p>
-        </div>
+        </a>
     </div>
 </div>
