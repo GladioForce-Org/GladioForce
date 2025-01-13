@@ -31,4 +31,16 @@ export class VolunteersComponent {
       }
     );
   }
+
+  //make a time registration
+  makeRegistration(volunteerId: number, data: any): void {
+    this.timeService.makeTimeRegistration(volunteerId, data).subscribe({
+      next: (result: any) => {
+        this.loadVolunteers();
+      },
+      error: (error: any) => {
+        console.error(error);
+      }
+    });
+  }
 }

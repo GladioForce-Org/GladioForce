@@ -165,8 +165,9 @@ jobs:
 
       - name: Decode RSA Key
         run: |
-          echo "${{ secrets.NGINX }}" | base64 -d > ./deploy/nginx.pem
-          chmod 400 ./deploy/nginx.pem
+          echo "${{ secrets.AWS_KEY_PAIR_PRIVATE }}" > ./deploy/my-key.pem
+          echo "${{ secrets.AWS_KEY_PAIR_PUBLIC }}" > ./deploy/my-key.pub
+          chmod 400 ./deploy/my-key.pem
 
       # Download Angular Admin Artifact
       - name: Download Angular Admin Artifact
@@ -202,6 +203,10 @@ jobs:
           export TF_VAR_ecr_image_api=${{ secrets.ECR_REPO }}:${{ github.sha }}
           terraform apply -var-file="00-project.tfvars" -auto-approve
         working-directory: ./deploy
+
+      - name: Cleanup SSH keys
+        if: always()
+        run: rm -f ./deploy/my-key.pem ./deploy/my-key.pub
 
   production-test:
     name: Test Production Application
