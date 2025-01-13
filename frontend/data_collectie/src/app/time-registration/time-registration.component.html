@@ -1,17 +1,17 @@
-<div class="time-registration-container text-center gladiolen-text gladiolen-light-blue" style="height: 100vh;">
+<div class="gladiolen-container gladiolen-light-blue">
     <div class="gladiolen-header gladiolen-green gladiolen-light-blue-text">
-        <div class="max-w-md mx-auto w-full sm:w-auto gladiolen-header-content">
+        <div class="max-w-lg mx-auto px-4 gladiolen-header-content">
             <app-gladiolen-logo color="#B0E2FF" class="mr-16"></app-gladiolen-logo>
-            <h1 class="text-center mb-4">Kies je club</h1>    
+            <h1 class="">Kies je club</h1>    
         </div>
     </div>
 
-    <div class="max-w-md mx-auto" *ngFor="let club of clubs">
-        <div class="gladiolen-white-banner">
-            <a class="gladiolen-black-button" [routerLink]="['/volunteers', club.club.id]">Vrijwilligers</a>
+    <div class="max-w-lg mx-auto px-4" *ngFor="let club of clubs">
+        <a class="gladiolen-white-banner" [routerLink]="['/volunteers', club.club.id]">
+            <div class="gladiolen-black-banner">Vrijwilligers</div>
             <h2>{{ club.club.name }}</h2>
-        </div>
-        <div class="gladiolen-list">
+        </a>
+        <div class="gladiolen-info">
             <p>{{ club.club.email }}</p>
         </div>
     </div>
