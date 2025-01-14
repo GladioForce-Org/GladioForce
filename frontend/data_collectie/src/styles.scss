@@ -11,18 +11,9 @@
   @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
 }
 
-.gladiolen-text {
-  font-family: "Poetsen One", serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
+// Time registration background colors
 .gladiolen-pink {
-  background-color: #FFC0CB;
-}
-
-.gladiolen-purple-text {
-  background-color: #950E66;
+  background-color: #FFBCE5;
 }
 
 .gladiolen-green {
@@ -33,10 +24,90 @@
   background-color: #B0E2FF;
 }
 
+.gladiolen-white {
+  background-color: #f3f2f1;
+}
+
+// Time registration text colors
+.gladiolen-purple-text {
+  color: #950E66;
+}
+
 .gladiolen-light-blue-text {
   color: #B0E2FF;
 }
 
-.gladiolen-white {
-  background-color: #f3f2f1;
+.gladiolen-orange-text {
+  color: #FF460D;
 }
+
+// Time registration layout classes
+.gladiolen-container {
+  height: 100vh;
+  text-align: center;
+  font-family: "Arial", "Helvetica", "Trebuchet LS" "verdana" sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: black;
+  font-style: normal;
+}
+
+.gladiolen-header {
+  height: 162px;
+  font-weight: 800;
+  font-size: 1.25rem;
+  display: block;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-top: 32px;
+}
+
+.gladiolen-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gladiolen-white-banner {
+  background-color: white;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 25px;
+  margin-top: 30px;
+  padding-left: 0px;
+  padding-right: 20px;
+  padding-bottom: 4px;
+  width: 100%;
+}
+
+.gladiolen-black-banner {
+  background-color: black;
+  color: white;
+  height: 50px;
+  min-width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 4px;
+  padding-bottom: 4px;
+  &:hover {
+    color: #e9e9e9;
+  }
+}
+
+.gladiolen-info {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+  margin-left: 20px;
+}
+
