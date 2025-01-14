@@ -10,9 +10,26 @@
     </div>
 
     <div class="max-w-lg mx-auto px-4">
-        <a class="gladiolen-white-banner">
-            <div class="gladiolen-black-banner">Klok uit</div>
-            <h2>ingeklokt</h2>
-        </a>
+        <div
+            class="gladiolen-white-banner unselectable clickable"
+            (click)="toggleFestivalDay()"
+        >
+            <button *ngIf="festivalDay === 1" class="gladiolen-toggle-left">Dag 1</button>
+            <button *ngIf="festivalDay === 2" class="gladiolen-toggle-right">Dag 2</button>
+        </div>
+        <div
+            class="gladiolen-banner unselectable clickable"
+            (click)="makeRegistration()"
+            [ngClass]="{'bg-green-500': isUserCheckedIn, 'bg-red-500': !isUserCheckedIn}"
+        >
+            <ng-container *ngIf="isUserCheckedIn">
+                <button class="gladiolen-black-banner">Klok uit</button>
+                <h2>ingeklokt</h2>
+            </ng-container>
+            <ng-container *ngIf="!isUserCheckedIn">
+                <button class="gladiolen-black-banner">Klok in</button>
+                <h2>uitgeklokt</h2>
+            </ng-container>
+        </div>
     </div>
 </div>

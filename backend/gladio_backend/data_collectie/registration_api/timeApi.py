@@ -86,12 +86,12 @@ def get_time_registrations(request, volunteer_id: int):
         raise Http404(str(e))
     
 # get a count of all time registrations for a volunteer for current edition
-@router.get("/time_registrations_count/{volunteer_id}")
-def get_time_registrations_count(request, volunteer_id: int):
+@router.get("/time_registrations_count/{volunteer_id}/{day}", response=int)
+def get_time_registrations_count(request, volunteer_id: int, day: int):
     try:
         current_edition = Edition.objects.get(isCurrentEdition=True)
         volunteer = Volunteer.objects.get(id=volunteer_id)
-        time_registrations = TimeRegistration.objects.filter(volunteer=volunteer, edition=current_edition)
+        time_registrations = TimeRegistration.objects.filter(volunteer=volunteer, edition=current_edition, day=day)
         return len(time_registrations)
     except Volunteer.DoesNotExist:
         raise Http404("Volunteer does not exist")
