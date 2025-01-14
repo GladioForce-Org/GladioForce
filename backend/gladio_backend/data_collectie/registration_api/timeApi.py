@@ -1,7 +1,9 @@
 from ninja import Router
 from typing import List
-from django.http import Http404
-from ..models import Club, TimeRegistration, Edition, ParticipatingClub, Volunteer
+from django.http import Http404, JsonResponse
+from data_collectie.schemas import AvailableTshirtsResponseSchema, SizeSchema
+from data_collectie.services import list_all_available_tshirts_by_edition
+from ..models import Club, Size, TimeRegistration, Edition, ParticipatingClub, Volunteer
 from django.utils import timezone
 from .schemas import ParticipatingClubSchemaOut, VolunteerSchemaOut, TimeRegistrationSchemaCreate, TimeRegistrationSchemaOut
 
@@ -97,3 +99,24 @@ def get_time_registrations_count(request, volunteer_id: int, day: int):
         raise Http404("Volunteer does not exist")
     except Exception as e:
         raise Http404(str(e))
+    
+#list all available tshirts for current edition
+@router.get("/available-tshirts/current/")
+def available_tshirts_current_edition_view(request):
+    current_edition = Edition.objects.filter(isCurrentEdition=True).first()
+    if not current_edition:
+        return JsonResponse({"error": "No current edition found"}, status=404)
+    available_tshirts = list_all_available_tshirts_by_edition(current_edition.id)
+    return available_tshirts
+
+#get sizes
+@router.get("/sizes", response=List[SizeSchema])
+def list_sizes(request):
+    sizes = Size.objects.all()
+    return [
+        {
+            "id": size.id,
+            "size": size.size
+        }
+        for size in sizes
+    ]

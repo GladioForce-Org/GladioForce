@@ -98,13 +98,13 @@ def delete_size(request, size_id: int):
 
 
 #list available tshirts by edition
-@router.get("/available-tshirts/{edition_id}", response=List[AvailableTshirtsResponseSchema], auth=None)
+@router.get("/available-tshirts/{edition_id}", response=List[AvailableTshirtsResponseSchema])
 def available_tshirts_list_view(request, edition_id: int):
     available_tshirts = list_all_available_tshirts_by_edition(edition_id)
     return available_tshirts
 
 #list all available tshirts for current edition
-@router.get("/available-tshirts/current/", auth=None)
+@router.get("/available-tshirts/current/")
 def available_tshirts_current_edition_view(request):
     current_edition = Edition.objects.filter(isCurrentEdition=True).first()
     if not current_edition:
