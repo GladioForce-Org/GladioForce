@@ -89,6 +89,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Decode and Save environment.ts
+        run: |
+          echo "${{ secrets.ENVIRONMENT_ADMIN_FRONTEND_BASE64 }}" | base64 -d > ./frontend/admin_dashboard/src/environments/environment.ts
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
