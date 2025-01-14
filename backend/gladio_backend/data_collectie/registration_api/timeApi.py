@@ -24,6 +24,20 @@ def get_available_clubs(request):
     except Exception as e:
         raise Http404(str(e))
     
+# get volunteer by id for club id
+@router.get("/{club_id}/volunteer/{volunteer_id}", response=VolunteerSchemaOut)
+def get_volunteer(request, club_id: int, volunteer_id: int):
+    try:
+        club = Club.objects.get(id=club_id)
+        volunteer = club.volunteers.get(id=volunteer_id)
+        return volunteer
+    except Club.DoesNotExist:
+        raise Http404("Club does not exist")
+    except Volunteer.DoesNotExist:
+        raise Http404("Volunteer does not exist")
+    except Exception as e:
+        raise Http404(str(e))
+    
     
 # get all the volunteers of a club
 @router.get("/{club_id}/volunteers", response=List[VolunteerSchemaOut])
