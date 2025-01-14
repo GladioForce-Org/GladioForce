@@ -25,9 +25,9 @@ export class VolunteerComponent implements OnInit {
   }
 
   loadVolunteer(): void {
-    this.timeService.getVolunteersByClubId(this.clubId).subscribe({
+    this.timeService.getVolunteerByClubIdAndVolunteerId(this.clubId, this.volunteerId).subscribe({
         next: (result: any) => {
-          this.volunteer = result.find((volunteer: any) => volunteer.id === this.volunteerId);
+          this.volunteer = result;
         },
         error: (error: any) => {
           console.error(error);
