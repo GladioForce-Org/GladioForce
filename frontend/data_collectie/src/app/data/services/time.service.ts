@@ -31,7 +31,7 @@ export class TimeService {
   }
   
   // get a count of all time registrations for a volunteer for current  /time_registrations_count/{volunteer_id}
-  getTimeRegistrationsCount(volunteer_id: number): any {
-    return this.httpClient.get(`${this.baseUrl}/time_registrations_count/${volunteer_id}`);
+  getTimeRegistrationsCount(volunteer_id: number, day: number): any {
+    return this.httpClient.get(`${this.baseUrl}/time_registrations_count/${volunteer_id}/${day}`);
   }
 }

@@ -83,6 +83,19 @@
   width: 100%;
 }
 
+.gladiolen-banner {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 25px;
+  margin-top: 30px;
+  padding-left: 0px;
+  padding-right: 20px;
+  padding-bottom: 4px;
+  width: 100%;
+}
+
 .gladiolen-black-banner {
   background-color: black;
   color: white;
@@ -101,6 +114,46 @@
   }
 }
 
+.gladiolen-toggle-left {
+  background-color: black;
+  color: white;
+  height: 50px;
+  width: calc(50% + 25px);
+  min-width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 4px;
+  padding-bottom: 4px;
+  &:hover {
+    color: #e9e9e9;
+  }
+}
+
+.gladiolen-toggle-right {
+  background-color: black;
+  color: white;
+  height: 50px;
+  width: calc(50% + 25px);
+  min-width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 4px;
+  padding-bottom: 4px;
+  margin-left: auto;
+  margin-right: -20px;
+  &:hover {
+    color: #e9e9e9;
+  }
+}
+
 .gladiolen-info {
   text-align: center;
   display: flex;
@@ -111,3 +164,10 @@
   margin-left: 20px;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
+.unselectable {
+  user-select: none;
+}

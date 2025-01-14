@@ -21,7 +21,7 @@ class VolunteerSchemaOut(Schema):
 
 class TimeRegistrationSchemaCreate(Schema):
     volunteer_id: int
-    day: List[int] = Field(..., choices=[(1, "Day 1"), (2, "Day 2")])
+    day: int = Field(..., choices=[(1, "Day 1"), (2, "Day 2")])
     start_time: Optional[bool]
     end_time: Optional[bool]
 
