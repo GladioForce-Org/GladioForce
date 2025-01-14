@@ -2,6 +2,7 @@ from ninja import Router
 from typing import List
 from django.http import Http404
 from ..models import Club, TimeRegistration, Edition, ParticipatingClub, Volunteer
+from django.utils import timezone
 from .schemas import ParticipatingClubSchemaOut, VolunteerSchemaOut, TimeRegistrationSchemaCreate, TimeRegistrationSchemaOut
 
 router = Router(tags=["Time registrations"], auth=None)
@@ -53,15 +54,15 @@ def get_club_volunteers(request, club_id: int):
     
 # make time registration for a volunteer for current edition
 @router.post("/time_registration/{volunteer_id}", response=TimeRegistrationSchemaOut)
-def create_time_registration(data: TimeRegistrationSchemaCreate):
+def create_time_registration(request, volunteer_id: int, data: TimeRegistrationSchemaCreate):
     try:
         current_edition = Edition.objects.get(isCurrentEdition=True)
-        volunteer = Volunteer.objects.get(id=data.volunteer_id)
+        volunteer = Volunteer.objects.get(id=volunteer_id)
         time_registration = TimeRegistration.objects.create(
             volunteer=volunteer,
             day=data.day,
-            start_time=data.start_time,
-            end_time=data.end_time,
+            start_time=timezone.now() if data.start_time else None,
+            end_time=timezone.now() if data.end_time else None,
             edition=current_edition
         )
         return TimeRegistrationSchemaOut.from_model(time_registration)
