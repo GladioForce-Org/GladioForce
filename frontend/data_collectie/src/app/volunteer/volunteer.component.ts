@@ -37,13 +37,13 @@ export class VolunteerComponent implements OnInit {
 
   //make a time registration
   makeRegistration(data: any): void {
-    this.timeService.makeTimeRegistration(this.volunteerId).subscribe({
-      next: (result: any) => {
-        console.log(result);
-      },
-      error: (error: any) => {
-        console.error(error);
-      }
-    });
+    // this.timeService.makeTimeRegistration(this.volunteerId).subscribe({
+    //   next: (result: any) => {
+    //     console.log(result);
+    //   },
+    //   error: (error: any) => {
+    //     console.error(error);
+    //   }
+    // });
   }
 }
