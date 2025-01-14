@@ -70,8 +70,8 @@ export class VolunteerComponent implements OnInit {
     let data = {
       volunteer_id: this.volunteerId,
       day: this.festivalDay,
-      start_time: this.isUserCheckedIn,
-      end_time: !this.isUserCheckedIn
+      start_time: !this.isUserCheckedIn,
+      end_time: this.isUserCheckedIn
     };
 
     this.timeService.makeTimeRegistration(this.volunteerId, data).subscribe({
