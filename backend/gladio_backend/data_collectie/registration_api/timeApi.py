@@ -53,10 +53,10 @@ def get_club_volunteers(request, club_id: int):
     
 # make time registration for a volunteer for current edition
 @router.post("/time_registration/{volunteer_id}", response=TimeRegistrationSchemaOut)
-def create_time_registration(data: TimeRegistrationSchemaCreate):
+def create_time_registration(request, volunteer_id: int, data: TimeRegistrationSchemaCreate):
     try:
         current_edition = Edition.objects.get(isCurrentEdition=True)
-        volunteer = Volunteer.objects.get(id=data.volunteer_id)
+        volunteer = Volunteer.objects.get(id=volunteer_id)
         time_registration = TimeRegistration.objects.create(
             volunteer=volunteer,
             day=data.day,
