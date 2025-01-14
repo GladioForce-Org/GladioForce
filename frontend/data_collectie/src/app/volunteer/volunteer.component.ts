@@ -26,22 +26,20 @@ export class VolunteerComponent implements OnInit {
 
   loadVolunteer(): void {
     this.timeService.getVolunteerByClubIdAndVolunteerId(this.clubId, this.volunteerId).subscribe({
-        next: (result: any) => {
-          this.volunteer = result;
-        },
-        error: (error: any) => {
-          console.error(error);
-        }
+      next: (result: any) => {
+        this.volunteer = result;
+      },
+      error: (error: any) => {
+        console.error(error);
       }
-    );
+    });
   }
 
   //make a time registration
-  makeRegistration(volunteerId: number, data: any): void {
-    this.timeService.makeTimeRegistration(volunteerId, data).subscribe({
+  makeRegistration(data: any): void {
+    this.timeService.makeTimeRegistration(this.volunteerId).subscribe({
       next: (result: any) => {
-        //this.loadVolunteer();
-        // load registrations instead?
+        console.log(result);
       },
       error: (error: any) => {
         console.error(error);

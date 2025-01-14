@@ -22,12 +22,12 @@ export class TimeService {
   }
 
   getVolunteerByClubIdAndVolunteerId(club_id: number, volunteer_id: number): any {
-    return this.httpClient.get(`${this.baseUrl}/${club_id}/volunteers/${volunteer_id}`);
+    return this.httpClient.get(`${this.baseUrl}/${club_id}/volunteer/${volunteer_id}`);
   }
 
   // make time registration for a volunteer for current edition /time_registration/{volunteer_id}
-  makeTimeRegistration(volunteer_id: number, data: any): any {
-    return this.httpClient.post(`${this.baseUrl}/time_registration/${volunteer_id}`, data);
+  makeTimeRegistration(volunteer_id: number): any {
+    return this.httpClient.post(`${this.baseUrl}/time_registration/${volunteer_id}`);
   }
   // get a count of all time registrations for a volunteer for current  /time_registrations_count/{volunteer_id}
   getTimeRegistrationsCount(volunteer_id: number): any {
