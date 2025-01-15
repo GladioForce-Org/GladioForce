@@ -10,7 +10,7 @@
 #AWS Credentials
 export AWS_ACCESS_KEY_ID=""
 export AWS_SECRET_ACCESS_KEY=""
-export AWS_SESSION_TOKEN=""
+export AWS_SESSION_TOKEN="" # Only needed in AWS Learning Labs
 #Secrets
 export TF_VAR_db_user_name=""
 export TF_VAR_db_password=""
