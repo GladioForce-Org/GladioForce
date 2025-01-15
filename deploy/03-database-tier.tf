@@ -24,7 +24,7 @@ data "external" "rds_final_snapshot_exists" {
 
 data "aws_db_snapshot" "latest_snapshot" {
   count                  = data.external.rds_final_snapshot_exists.result.db_exists ? 1 : 0
-  db_instance_identifier = "db-instance-id"
+  db_instance_identifier = "${local.prefix}-db"
   most_recent            = true
 }
 
@@ -55,6 +55,12 @@ resource "aws_db_instance" "db_app" {
   multi_az                  = false
   snapshot_identifier       = try(data.aws_db_snapshot.latest_snapshot.0.id, null)
 
+  lifecycle {
+    ignore_changes = [
+      snapshot_identifier,
+      final_snapshot_identifier
+    ]
+  }
 
   tags = merge(
     local.common_tags,
