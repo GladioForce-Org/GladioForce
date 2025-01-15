@@ -1,6 +1,22 @@
-<p>volunteers works!</p>
-<ul>
-    <li *ngFor="let volunteer of volunteers">
-        {{ volunteer.first_name }}
-    </li>
-</ul>
+<div class="gladiolen-container gladiolen-white">
+    <div class="gladiolen-header gladiolen-pink gladiolen-orange-text">
+        <div class="max-w-lg mx-auto px-4 gladiolen-header-content">
+            <app-gladiolen-logo color="#FF460D" class="mr-16"></app-gladiolen-logo>
+            <h1 class="">Kies je naam</h1>    
+        </div>
+    </div>
+
+    <div class="max-w-lg mx-auto px-4" *ngFor="let volunteer of volunteers">
+        <a class="gladiolen-white-banner" [routerLink]="['/volunteer', clubId, volunteer.id]">
+            <div class="gladiolen-black-banner">Werktijden</div>
+            <h2>{{ volunteer.first_name }} {{ volunteer.last_name }}</h2>
+        </a>
+    </div>
+
+    <div class="max-w-lg mx-auto px-4">
+        <!-- Back Button-->
+        <a class="gladiolen-black-banner gladiolen-margin-top" [routerLink]="['/']">
+            <h2>←&emsp;Terug</h2>
+        </a>
+    </div>
+</div>

@@ -17,14 +17,14 @@ export const routes: Routes = [
     },
     { 
         path: 'volunteers/:id',
-         component: VolunteersComponent 
+        component: VolunteersComponent 
     },
     { 
-        path: 'volunteer/:id',
-         component: VolunteerComponent 
+        path: 'volunteer/:clubid/:id',
+        component: VolunteerComponent 
     },
     {
         path: '',
-        redirectTo: '/home', pathMatch: 'full'
+        redirectTo: '/', pathMatch: 'full'
     }
 ];

@@ -17,7 +17,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          #aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} #Only needed in lab environment
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -50,7 +50,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          #aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} #Only needed in lab environment
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -88,6 +88,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Decode and Save environment.ts
+        run: |
+          echo "${{ secrets.ENVIRONMENT_ADMIN_FRONTEND_BASE64 }}" | base64 -d > ./frontend/admin_dashboard/src/environments/environment.ts
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -158,7 +162,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          #aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} #Only needed in lab environment
 
       - name: Checkout code
         uses: actions/checkout@v3

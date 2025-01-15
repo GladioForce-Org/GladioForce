@@ -1,17 +1,19 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, RouterModule, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TimeService } from '../data/services/time.service';
+import { GladiolenLogoComponent } from "../gladiolen-logo/gladiolen-logo.component";
 
 @Component({
   selector: 'app-volunteers',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, GladiolenLogoComponent],
   templateUrl: './volunteers.component.html',
   styleUrl: './volunteers.component.scss'
 })
-export class VolunteersComponent {
+export class VolunteersComponent implements OnInit {
+  clubId: number = Number(this.route.snapshot.paramMap.get('id'));
   volunteers: any[] = [];
   constructor(private route: ActivatedRoute, private http: HttpClient, private timeService: TimeService) { }
 
@@ -20,8 +22,7 @@ export class VolunteersComponent {
   }
 
   loadVolunteers(): void {
-    const clubId = Number(this.route.snapshot.paramMap.get('id'));
-    this.timeService.getVolunteersByClubId(clubId).subscribe({
+    this.timeService.getVolunteersByClubId(this.clubId).subscribe({
         next: (result: any) => {
           this.volunteers = result;
         },
@@ -30,17 +31,5 @@ export class VolunteersComponent {
         }
       }
     );
-  }
-
-  //make a time registration
-  makeRegistration(volunteerId: number, data: any): void {
-    this.timeService.makeTimeRegistration(volunteerId, data).subscribe({
-      next: (result: any) => {
-        this.loadVolunteers();
-      },
-      error: (error: any) => {
-        console.error(error);
-      }
-    });
   }
 }

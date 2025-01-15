@@ -1,1 +1,40 @@
-<p>volunteer works!</p>
+<div class="gladiolen-container gladiolen-white">
+    <div class="gladiolen-header gladiolen-pink gladiolen-purple-text">
+        <div class="max-w-lg mx-auto px-4 gladiolen-header-content">
+            <app-gladiolen-logo color="#950E66" class="mr-16"></app-gladiolen-logo>
+            <h1 class="">
+                <ng-container *ngIf="volunteer">{{ volunteer.first_name }} {{ volunteer.last_name }}</ng-container>
+                <ng-container *ngIf="!volunteer">Laden Naam...</ng-container>
+            </h1>    
+        </div>
+    </div>
+
+    <div class="max-w-lg mx-auto px-4">
+        <div
+            class="gladiolen-white-banner unselectable clickable"
+            (click)="toggleFestivalDay()"
+        >
+            <button *ngIf="festivalDay === 1" class="gladiolen-toggle-left">Dag 1</button>
+            <button *ngIf="festivalDay === 2" class="gladiolen-toggle-right">Dag 2</button>
+        </div>
+        <div
+            class="gladiolen-banner unselectable clickable"
+            (click)="makeRegistration()"
+            [ngClass]="{'bg-green-500': isUserCheckedIn, 'bg-red-500': !isUserCheckedIn}"
+        >
+            <ng-container *ngIf="isUserCheckedIn">
+                <button class="gladiolen-black-banner">Klok uit</button>
+                <h2>ingeklokt</h2>
+            </ng-container>
+            <ng-container *ngIf="!isUserCheckedIn">
+                <button class="gladiolen-black-banner">Klok in</button>
+                <h2>uitgeklokt</h2>
+            </ng-container>
+        </div>
+
+        <!-- Back Button-->
+        <a class="gladiolen-black-banner gladiolen-margin-top" [routerLink]="['/volunteers', clubId]">
+            <h2>←&emsp;Terug</h2>
+        </a>
+    </div>
+</div>

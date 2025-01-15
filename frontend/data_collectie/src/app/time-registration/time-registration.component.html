@@ -1,9 +1,18 @@
-<p>time-registration works!</p>
-<div class="club-cards">
-    <div class="club-card" *ngFor="let club of clubs">
-        <h2>{{ club.club.name }}</h2>
+<div class="gladiolen-container gladiolen-light-blue">
+    <div class="gladiolen-header gladiolen-green gladiolen-light-blue-text">
+        <div class="max-w-lg mx-auto px-4 gladiolen-header-content">
+            <app-gladiolen-logo color="#B0E2FF" class="mr-16"></app-gladiolen-logo>
+            <h1 class="">Kies je club</h1>    
+        </div>
+    </div>
 
-        <p>{{ club.club.email }}</p>
-        <a [routerLink]="['/volunteers', club.club.id]">View Volunteers</a>
+    <div class="max-w-lg mx-auto px-4" *ngFor="let club of clubs">
+        <a class="gladiolen-white-banner" [routerLink]="['/volunteers', club.club.id]">
+            <div class="gladiolen-black-banner">Vrijwilligers</div>
+            <h2>{{ club.club.name }}</h2>
+        </a>
+        <a class="gladiolen-info" [routerLink]="['/volunteers', club.club.id]">
+            <p>{{ club.club.email }}</p>
+        </a>
     </div>
 </div>
