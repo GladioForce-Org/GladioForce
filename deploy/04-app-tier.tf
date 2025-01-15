@@ -3,13 +3,28 @@
 
 #Retrieve data source labrole (Needed for the task definition creation) !!!! Must be changed when going to production !!!
 
-data "aws_iam_role" "labrole" {
-  name = "labrole"
+# Create an IAM role for ECS task execution
+resource "aws_iam_role" "ecs_task_role" {
+  name = "ecs-task-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
 }
 
-output "labrole_id" {
-  value = data.aws_iam_role.labrole.arn
-
+# Attach the AmazonECSTaskExecutionRolePolicy policy to the ECS task execution role
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
 
@@ -225,8 +240,8 @@ resource "aws_ecs_task_definition" "gladioforce_backend" {
   ]
   memory             = var.container_memory
   cpu                = var.container_cpu
-  execution_role_arn = data.aws_iam_role.labrole.arn # needs to be changed when going into production
-  task_role_arn      = data.aws_iam_role.labrole.arn # needs to be changed when going into production
+  execution_role_arn = aws_iam_role.ecs_task_role.arn
+  task_role_arn      = aws_iam_role.ecs_task_role.arn
 
   tags = merge(
     local.common_tags,
