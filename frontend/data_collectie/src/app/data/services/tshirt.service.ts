@@ -10,7 +10,7 @@ import { Size } from '../types/size';
 })
 export class TshirtService {
 
-  private readonly baseUrl = `${environment.apiUrl}/register`;
+  private readonly baseUrl = `${environment.apiUrl}/collection`;
   private readonly headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
 
   constructor(private readonly httpClient: HttpClient) { }
