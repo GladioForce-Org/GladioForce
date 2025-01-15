@@ -58,7 +58,6 @@ minimum_instances = 1
 maximum_instances = 5
 container_cpu     = 1024
 container_memory  = 2048
-ecr_image         = "482617122788.dkr.ecr.us-east-1.amazonaws.com/gladioforce-backend"
 
 
 
