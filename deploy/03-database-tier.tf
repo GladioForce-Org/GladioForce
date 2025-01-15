@@ -2,15 +2,6 @@
 
 
 
-#Creation of KMS key for the encryption of the replica database
-
-resource "aws_kms_key" "db_replica_key" {
-  description = "${local.prefix}-kms-key-db"
-  tags = merge(
-    local.common_tags,
-    tomap({ "Name" = "${local.prefix}-kms-key-db" })
-  )
-}
 
 #check if the snapshot exists and if it is the most recent one
 # Optional data block to fetch the most recent snapshot
@@ -51,7 +42,6 @@ resource "aws_db_instance" "db_app" {
   skip_final_snapshot       = false
   final_snapshot_identifier = "db-${local.prefix}-snapshot-${formatdate("DD-MM-HH-mm-ss", timestamp())}"
   storage_encrypted         = true
-  kms_key_id                = aws_kms_key.db_replica_key.arn
   multi_az                  = false
   snapshot_identifier       = try(data.aws_db_snapshot.latest_snapshot.0.id, null)
 
