@@ -8,11 +8,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { HelpersService } from '../services/helpers.service';
 import { ModalComponent } from '../components/modal/modal.component';
 import { LoadingComponent } from "../components/loading/loading.component";
+import { FeatherIconComponent } from "../components/feather-icon/feather-icon.component";
 
 @Component({
   selector: 'app-edition',
   standalone: true,
-  imports: [IconButtonComponent, CommonModule, FormsModule, ModalComponent, LoadingComponent],
+  imports: [IconButtonComponent, CommonModule, FormsModule, ModalComponent, LoadingComponent, FeatherIconComponent],
   templateUrl: './edition.component.html',
   styleUrl: './edition.component.scss'
 })
