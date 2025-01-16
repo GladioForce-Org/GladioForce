@@ -1,6 +1,7 @@
+import datetime
 from django.http import Http404
 from ninja import Schema, Router
-from data_collectie.registration_api.schemas import TimeRegistrationSchemaOut
+from data_collectie.registration_api.schemas import TimeRegistrationSchemaCreateWithTimeStrings, TimeRegistrationSchemaOut
 from data_collectie.models import Edition, TimeRegistration, Volunteer, Club, AvailableTshirt, Size
 from data_collectie.schemas import VolunteerSchemaOut, VolunteerCreateSchema, VolunteerSchemaPatch
 from typing import List
@@ -69,3 +70,34 @@ def get_time_registrations(request, volunteer_id: int):
 def delete_time_registration(request, time_registration_id: int):
     TimeRegistration.objects.get(id=time_registration_id).delete()
     return {"status": "ok", "message": "Time registration deleted successfully"}
+
+# make time registration for a volunteer for current edition
+@router.post("/time_registration/{volunteer_id}/", response=TimeRegistrationSchemaOut)
+def create_time_registration(request, volunteer_id: int, data: TimeRegistrationSchemaCreateWithTimeStrings):
+    try:
+        current_edition = Edition.objects.get(isCurrentEdition=True)
+        volunteer = Volunteer.objects.get(id=volunteer_id)
+
+        start_time = None
+        end_time = None
+        # convert the 00:00:00 string to a TimeField
+        if (data.start_time):
+            hourString, minuteString = data.start_time.split(":")
+            start_time = datetime.time(int(hourString), int(minuteString))
+        else:
+            hourString, minuteString = data.end_time.split(":")
+            end_time = datetime.time(int(hourString), int(minuteString))
+
+        # create database object
+        time_registration = TimeRegistration.objects.create(
+            volunteer=volunteer,
+            day=data.day,
+            start_time=start_time,
+            end_time=end_time,
+            edition=current_edition
+        )
+        return TimeRegistrationSchemaOut.from_model(time_registration)
+    except Volunteer.DoesNotExist:
+        raise Http404("Volunteer does not exist")
+    except Exception as e:
+        raise e
