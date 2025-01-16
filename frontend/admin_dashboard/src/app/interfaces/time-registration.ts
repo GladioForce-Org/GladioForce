@@ -8,3 +8,10 @@ export interface TimeRegistration {
     start_time: string | null;
     end_time: string | null;
 }
+
+export interface TimeRegistrationCreate {
+    volunteer_id: number;
+    day: number;
+    start_time: string | null;
+    end_time: string | null;
+}

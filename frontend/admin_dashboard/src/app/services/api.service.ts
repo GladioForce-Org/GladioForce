@@ -10,7 +10,7 @@ import { Size } from '../interfaces/size';
 import { Club, ClubCreate } from '../interfaces/club';
 import { Volunteer } from '../interfaces/volunteer';
 import { ParticipatingClub, ParticipatingClubPatcher } from '../interfaces/participating-club';
-import { TimeRegistration } from '../interfaces/time-registration';
+import { TimeRegistration, TimeRegistrationCreate } from '../interfaces/time-registration';
 
 @Injectable({
   providedIn: 'root'
@@ -179,5 +179,10 @@ export class ApiService {
   // delete time registration /time_registrations/:id
   deleteTimeRegistration(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/volunteers/time_registration/${id}`);
+  }
+
+  // add time registration /time_registrations/
+  addTimeRegistration(volunteer_id: number, timeRegistration: TimeRegistrationCreate): Observable<TimeRegistration> {
+    return this.http.post<TimeRegistration>(`${this.baseUrl}/volunteers/time_registration/${volunteer_id}/`, timeRegistration);
   }
 }
