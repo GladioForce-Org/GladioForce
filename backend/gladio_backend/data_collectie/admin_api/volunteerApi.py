@@ -1,5 +1,7 @@
+from django.http import Http404
 from ninja import Schema, Router
-from data_collectie.models import Volunteer, Club, AvailableTshirt, Size
+from data_collectie.registration_api.schemas import TimeRegistrationSchemaOut
+from data_collectie.models import Edition, TimeRegistration, Volunteer, Club, AvailableTshirt, Size
 from data_collectie.schemas import VolunteerSchemaOut, VolunteerCreateSchema, VolunteerSchemaPatch
 from typing import List
 from data_collectie.services import get_tshirt_or_none, get_size_or_none
@@ -48,3 +50,22 @@ def update_volunteer(request, volunteer_id: int, payload: VolunteerSchemaPatch):
         return {"status": "ok", "message": "Volunteer updated successfully"}
     except Volunteer.DoesNotExist:
         return {"status": "error", "message": f"Volunteer with ID {volunteer_id} does not exist"}
+    
+# get all time registrations for a volunteer for current edition
+@router.get("/time_registrations/{volunteer_id}", response=List[TimeRegistrationSchemaOut])
+def get_time_registrations(request, volunteer_id: int):
+    try:
+        current_edition = Edition.objects.get(isCurrentEdition=True)
+        volunteer = Volunteer.objects.get(id=volunteer_id)
+        time_registrations = TimeRegistration.objects.filter(volunteer=volunteer, edition=current_edition)
+        return [TimeRegistrationSchemaOut.from_model(tr) for tr in time_registrations]
+    except Volunteer.DoesNotExist:
+        raise Http404("Volunteer does not exist")
+    except Exception as e:
+        raise Http404(str(e))
+    
+# delete time registration
+@router.delete("/time_registration/{time_registration_id}")
+def delete_time_registration(request, time_registration_id: int):
+    TimeRegistration.objects.get(id=time_registration_id).delete()
+    return {"status": "ok", "message": "Time registration deleted successfully"}

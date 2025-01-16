@@ -10,6 +10,7 @@ import { Size } from '../interfaces/size';
 import { Club, ClubCreate } from '../interfaces/club';
 import { Volunteer } from '../interfaces/volunteer';
 import { ParticipatingClub, ParticipatingClubPatcher } from '../interfaces/participating-club';
+import { TimeRegistration } from '../interfaces/time-registration';
 
 @Injectable({
   providedIn: 'root'
@@ -168,5 +169,15 @@ export class ApiService {
 
   updateVolunteer(volunteerId: number, volunteer: Volunteer): Observable<Volunteer> {
     return this.http.patch<Volunteer>(`${this.baseUrl}/volunteers/update/${volunteerId}/`, volunteer);
+  }
+
+  // get a count of all time registrations for a volunteer for current  /time_registrations_count/{volunteer_id}
+  getTimeRegistrationsForVolunteerAndCurrentEdition(volunteer_id: number): Observable<TimeRegistration[]> {
+    return this.http.get<TimeRegistration[]>(`${this.baseUrl}/volunteers/time_registrations/${volunteer_id}`);
+  }
+
+  // delete time registration /time_registrations/:id
+  deleteTimeRegistration(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/volunteers/time_registration/${id}`);
   }
 }

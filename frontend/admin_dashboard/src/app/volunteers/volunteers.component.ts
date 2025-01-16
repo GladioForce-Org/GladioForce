@@ -15,6 +15,7 @@ import { Edition } from '../interfaces/edition';
 import { Size } from '../interfaces/size';
 import { IconButtonComponent } from '../components/icon-button/icon-button.component';
 import { FeatherIconComponent } from "../components/feather-icon/feather-icon.component";
+import { TimeRegistration } from '../interfaces/time-registration';
 
 @Component({
   selector: 'app-volunteers',
@@ -30,6 +31,7 @@ export class VolunteersComponent implements OnInit, AfterViewInit {
   public loading: boolean = false;
   public loadingTshirts: boolean = false;
   public loadingSizes: boolean = false;
+  public loadingTimeRegistrations: boolean = false;
 
   // Club
   club_id: number = -1;
@@ -53,6 +55,10 @@ export class VolunteersComponent implements OnInit, AfterViewInit {
   availableSizes: Size[] = [];
   sizeDictionary: { [key: number]: Size } = {}; //Dictionary of all sizes
 
+  // Time Registrations
+  timeRegistrations: TimeRegistration[] = [];
+  totalTimeWorked: string = 'geen tijd geregistreerd voor deze vrijwilliger.';
+
   // Messages
   volunteerCreated = '';
   errorVolunteerCreation = '';
@@ -63,9 +69,13 @@ export class VolunteersComponent implements OnInit, AfterViewInit {
   volunteerDeleted = '';
   errorVolunteerDeletion = '';
 
+  timeRegistrationSuccess = '';
+  errorTimeRegistrations = '';
+
   selectedVolunteer: Volunteer | null = null;
   
   // Modal
+  @ViewChild('timeRegistrationModal') timeRegistrationModal!: ModalComponent;
   @ViewChild('editModal') editModal!: ModalComponent;
   @ViewChild('deleteModal') deleteModal!: ModalComponent;
 
@@ -210,6 +220,130 @@ export class VolunteersComponent implements OnInit, AfterViewInit {
     if (!volunteer.works_day2) {
       volunteer.needs_parking_day2 = false;
     }
+  }
+
+  // Time Registration Popup
+  openTimeRegistrationModal(volunteer: Volunteer) {
+    this.timeRegistrationSuccess = '';
+    this.errorTimeRegistrations = '';
+
+    this.selectedVolunteer = { ...volunteer }; // Make a copy of the volunteer
+
+    this.getTimeRegistrations();
+
+    setTimeout(() => {
+      if (this.timeRegistrationModal) {
+        this.timeRegistrationModal.openModal();
+      }
+    });
+  }
+
+  // Get Time Registration for a Volunteer for the Current Edition
+  private getTimeRegistrations() {
+    this.timeRegistrations = [];
+
+    if (this.selectedVolunteer !== null && this.selectedVolunteer.id !== undefined) {
+      this.loadingTimeRegistrations = true;
+
+      this.apiService.getTimeRegistrationsForVolunteerAndCurrentEdition(Number(this.selectedVolunteer.id)).subscribe({
+        next: (result) => {
+          this.timeRegistrations = result;
+          
+          this.compensateForBadData();
+
+          this.calculateTotalTimeWorked();
+
+          this.loadingTimeRegistrations = false;
+        },
+        error: (error) => {
+          this.errorTimeRegistrations = this.helperService.parseError(error);
+          this.loadingTimeRegistrations = false;
+        }
+      });
+    }
+  }
+
+  // Compensate for Bad Data (1 time stamp is actually enough, so this is fine)
+  compensateForBadData(): void {
+    let isStartTime: boolean = true;
+    if (this.timeRegistrations.length > 0) {
+      for (let timeRegistration of this.timeRegistrations) {
+        if (isStartTime && timeRegistration.start_time === null) {
+          timeRegistration.start_time = timeRegistration.end_time;
+          timeRegistration.end_time = null;
+        }
+
+        if (!isStartTime && timeRegistration.end_time === null) {
+          timeRegistration.end_time = timeRegistration.start_time;
+          timeRegistration.start_time = null;
+        }
+
+        isStartTime = !isStartTime;
+      }
+    }
+  }
+
+  // Calculate Total Time Worked
+  calculateTotalTimeWorked() {
+    this.totalTimeWorked = 'geen tijd geregistreerd voor deze vrijwilliger.';
+
+    let isStartTime: boolean = true;
+    let startTimeInSeconds: number = -1;
+    let endTimeInSeconds: number = -1;
+    let totalTimeWorkedInSeconds: number = 0;
+
+    if (this.timeRegistrations.length > 0 && this.timeRegistrations.length % 2 === 0) {
+      for(let timeRegistration of this.timeRegistrations) {
+        let timeStamp: string | null = timeRegistration.start_time !== null ? timeRegistration.start_time : timeRegistration.end_time;
+
+        if (timeStamp !== null) { // Should never happen, indicates incorrect data
+          let hoursMinutesSeconds: string[] = timeStamp.split(':');
+
+          if (isStartTime) {
+            isStartTime = false; // set up for next item
+            startTimeInSeconds = Number(hoursMinutesSeconds[0]) * 3600 + Number(hoursMinutesSeconds[1]) * 60 + Number(hoursMinutesSeconds[2]);
+          } else {
+            isStartTime = true; // set up for next item
+            endTimeInSeconds = Number(hoursMinutesSeconds[0]) * 3600 + Number(hoursMinutesSeconds[1]) * 60 + Number(hoursMinutesSeconds[2]);
+
+            if (endTimeInSeconds > -1 && startTimeInSeconds > -1) {
+              totalTimeWorkedInSeconds += endTimeInSeconds - startTimeInSeconds;
+            }
+          }
+        }
+      }
+
+      if (totalTimeWorkedInSeconds > 0) {
+        let hours: number = Math.floor(totalTimeWorkedInSeconds / 3600);
+        let minutes: number = Math.floor((totalTimeWorkedInSeconds % 3600) / 60);
+        let seconds: number = totalTimeWorkedInSeconds % 60;
+
+        this.totalTimeWorked = `${hours} uur, ${minutes} minuten en ${seconds} seconden.`;
+      }
+    }
+  }
+
+  // Delete Time Registration
+  deleteTimeRegistration(timeRegistration: TimeRegistration) {
+    this.timeRegistrationSuccess = '';
+    this.errorTimeRegistrations = '';
+
+    if (timeRegistration !== null && timeRegistration.id !== undefined) {
+      this.apiService.deleteTimeRegistration(Number(timeRegistration.id)).subscribe({
+        next: (result) => {
+          this.timeRegistrationSuccess = 'Tijdsregistratie verwijderd.';
+          this.getTimeRegistrations();
+        },
+        error: (error: HttpErrorResponse) => {
+          this.errorTimeRegistrations = this.helperService.parseError(error);
+        }
+      });
+    }
+  }
+
+  // Create Time Registration
+  createTimeRegistration() {
+
   }
 
   // Edit Popup
