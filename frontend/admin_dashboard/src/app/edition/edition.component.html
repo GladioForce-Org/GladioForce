@@ -46,8 +46,10 @@
           <td class="py-2 px-4 border-b text-start">
             {{ edition.year }}
           </td>
-          <td class="py-2 px-4 border-b text-start">
-              {{ edition.isCurrentEdition }}
+          <td class="py-2 px-4 border-b text-start" [ngClass]="edition.isCurrentEdition ? 'text-green-600' : 'text-red-600'">
+            <app-feather-icon
+              [icon]="edition.isCurrentEdition ? 'check' : 'x'"
+            ></app-feather-icon>
           </td>
           <td class="py-2 px-4 border-b text-center">
             <div class="flex justify-center gap-4">

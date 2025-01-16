@@ -76,7 +76,9 @@
       class="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700"
     >
       <app-link *ngIf="!isEnvironmentProduction" linkName="Docs" [link]="apiUrl" icon="clipboard"></app-link>
-      <app-link linkName="Help" link="/help" icon="help-circle"></app-link>
+
+      <!-- Don't show a page like this unless it's done -->
+      <!-- <app-link linkName="Help" link="/help" icon="help-circle"></app-link> -->
     </ul>
   </div>
 
