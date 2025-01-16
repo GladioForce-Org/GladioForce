@@ -1,8 +1,8 @@
 from ninja import NinjaAPI, Router
-from django.http import Http404
-from ..models import Club, Volunteer, AvailableTshirt, Size
+from django.http import Http404, JsonResponse
+from ..models import Club, Edition, Volunteer, AvailableTshirt, Size
 from ..schemas import ClubSchemaOut, VolunteerSchemaOut, ClubSchemaPatch, VolunteerCreateSchema, VolunteerSchemaPatch
-from ..services import get_tshirt_or_none, get_size_or_none
+from ..services import get_tshirt_or_none, get_size_or_none, list_all_available_tshirts_by_edition
 from typing import List
 
 router = Router(tags=["Clubs Data Collection"], auth=None)
@@ -101,3 +101,12 @@ def delete_volunteer(request, volunteer_id: int, club_link: str):
     except Exception as e:
         return {"status": "error", "message": str(e)}
     return {"status": "ok"}
+
+#list all available tshirts for current edition
+@router.get("/available-tshirts/current/")
+def available_tshirts_current_edition_view(request):
+    current_edition = Edition.objects.filter(isCurrentEdition=True).first()
+    if not current_edition:
+        return JsonResponse({"error": "No current edition found"}, status=404)
+    available_tshirts = list_all_available_tshirts_by_edition(current_edition.id)
+    return available_tshirts

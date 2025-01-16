@@ -67,14 +67,16 @@ export class VolunteerFormComponent implements OnInit {
   }
 
   protected onSubmit(form: NgForm): void {
-    const formValue = { ...form.value };
+    const formValue = {
+      ...form.value,
+      id: this.volunteer.id
+    };
 
-    // Convert works_day to boolean fields
+    // Rest of conversion logic
     formValue.works_day1 = formValue.works_day === 'day1' || formValue.works_day === 'both';
     formValue.works_day2 = formValue.works_day === 'day2' || formValue.works_day === 'both';
     delete formValue.works_day;
 
-    // Convert needs_parking to boolean fields
     formValue.needs_parking_day1 = formValue.needs_parking === 'day1' || formValue.needs_parking === 'both';
     formValue.needs_parking_day2 = formValue.needs_parking === 'day2' || formValue.needs_parking === 'both';
     delete formValue.needs_parking;
