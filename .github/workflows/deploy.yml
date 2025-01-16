@@ -203,8 +203,8 @@ jobs:
           TF_VAR_cloudflare_email: ${{ secrets.TF_VAR_CLOUDFLARE_EMAIL }}
           TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
           TF_VAR_db_username: ${{ secrets.TF_VAR_DB_USERNAME }}
+          TF_VAR_ecr_image: ${{ secrets.ECR_REPO }}
         run: |
-          export TF_VAR_ecr_image_api=${{ secrets.ECR_REPO }}:${{ github.sha }}
           terraform apply -var-file="00-project.tfvars" -auto-approve
         working-directory: ./deploy
 

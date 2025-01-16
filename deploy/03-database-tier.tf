@@ -2,31 +2,23 @@
 
 
 
-#Creation of KMS key for the encryption of the replica database
-
-resource "aws_kms_key" "db_replica_key" {
-  description = "${local.prefix}-kms-key-db"
-  tags = merge(
-    local.common_tags,
-    tomap({ "Name" = "${local.prefix}-kms-key-db" })
-  )
-}
 
 #check if the snapshot exists and if it is the most recent one
-data "aws_db_snapshot" "final_snapshot" {
+# Optional data block to fetch the most recent snapshot
+data "external" "rds_final_snapshot_exists" {
+  program = [
+    "./check-rds-snapshot.sh",
+    "${local.prefix}-db"
+  ]
+}
+
+
+data "aws_db_snapshot" "latest_snapshot" {
+  count                  = data.external.rds_final_snapshot_exists.result.db_exists ? 1 : 0
+  db_instance_identifier = "${local.prefix}-db"
   most_recent            = true
-  db_instance_identifier = "${local.prefix}-db" # Replace with your DB identifier
 }
 
-output "final_snapshot" {
-  value = data.aws_db_snapshot.final_snapshot.id
-
-}
-
-#variable to check if the snapshot is to be used
-variable "use_snapshot" {
-  default = false
-}
 
 #Creation of a RDS instance, in a multi-AZ environment the credentials are stored in the .env file and loaded as environment variables before deployment
 
@@ -50,10 +42,15 @@ resource "aws_db_instance" "db_app" {
   skip_final_snapshot       = false
   final_snapshot_identifier = "db-${local.prefix}-snapshot-${formatdate("DD-MM-HH-mm-ss", timestamp())}"
   storage_encrypted         = true
-  kms_key_id                = aws_kms_key.db_replica_key.arn
   multi_az                  = false
-  snapshot_identifier       = var.use_snapshot ? data.aws_db_snapshot.final_snapshot.id : null
+  snapshot_identifier       = try(data.aws_db_snapshot.latest_snapshot.0.id, null)
 
+  lifecycle {
+    ignore_changes = [
+      snapshot_identifier,
+      final_snapshot_identifier
+    ]
+  }
 
   tags = merge(
     local.common_tags,
