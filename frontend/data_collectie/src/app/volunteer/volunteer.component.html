@@ -14,8 +14,14 @@
             class="gladiolen-white-banner unselectable clickable"
             (click)="toggleFestivalDay()"
         >
-            <button *ngIf="festivalDay === 1" class="gladiolen-toggle-left">Dag 1</button>
-            <button *ngIf="festivalDay === 2" class="gladiolen-toggle-right">Dag 2</button>
+            <ng-container *ngIf="festivalDay === 1">
+                <button class="gladiolen-toggle-left">Dag 1</button>
+                <div class="gladiolen-toggle-rest">Dag 2</div>
+            </ng-container>
+            <ng-container *ngIf="festivalDay === 2">
+                <div class="gladiolen-toggle-rest">Dag 1</div>
+                <button class="gladiolen-toggle-right">Dag 2</button>
+            </ng-container>
         </div>
         <div
             class="gladiolen-banner unselectable clickable"
@@ -24,11 +30,11 @@
         >
             <ng-container *ngIf="isUserCheckedIn">
                 <button class="gladiolen-black-banner">Klok uit</button>
-                <h2>ingeklokt</h2>
+                <h2 class="gladiolen-white-banner-text">ingeklokt</h2>
             </ng-container>
             <ng-container *ngIf="!isUserCheckedIn">
                 <button class="gladiolen-black-banner">Klok in</button>
-                <h2>uitgeklokt</h2>
+                <h2 class="gladiolen-white-banner-text">uitgeklokt</h2>
             </ng-container>
         </div>
 

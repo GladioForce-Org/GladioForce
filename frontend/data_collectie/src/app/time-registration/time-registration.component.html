@@ -9,7 +9,7 @@
     <div class="max-w-lg mx-auto px-4" *ngFor="let club of clubs">
         <a class="gladiolen-white-banner" [routerLink]="['/volunteers', club.club.id]">
             <div class="gladiolen-black-banner">Vrijwilligers</div>
-            <h2>{{ club.club.name }}</h2>
+            <h2 class="gladiolen-white-banner-text">{{ club.club.name }}</h2>
         </a>
         <a class="gladiolen-info" [routerLink]="['/volunteers', club.club.id]">
             <p>{{ club.club.email }}</p>
