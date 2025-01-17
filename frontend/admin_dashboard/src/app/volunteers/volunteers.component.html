@@ -222,6 +222,11 @@
                 <td class="py-2 px-4 border-b text-center">
                     <div class="flex justify-center gap-4">
                         <app-icon-button
+                            (click)="openTimeRegistrationModal(volunteer)"
+                            icon="clock"
+                        >
+                        </app-icon-button>
+                        <app-icon-button
                             (click)="openEditModal(volunteer)"
                             icon="edit"
                         >
@@ -240,29 +245,140 @@
     <app-loading *ngIf="loading" class="mt-10"></app-loading>
 </div>
 
+<!-- Time Registration Window -->
+<app-modal
+    *ngIf="selectedVolunteer !== null"
+    #timeRegistrationModal
+    [header]="selectedVolunteer.first_name + ' ' + selectedVolunteer.last_name + ' Tijdsregistraties&nbsp;' + currentYear"
+    [maxWidth]="500"
+    [minHeight]="150"
+>
+    <div class="overflow-x-auto" *ngIf="!loadingTimeRegistrations">
+        <form (submit)="createTimeRegistration()">
+            <!-- Time Field -->
+            <div class="mb-2">
+                <label for="createtime" class="block text-sm font-medium text-gray-700 text-left">Tijdsregistratie</label>
+                <input
+                    required
+                    min="00:00"
+                    max="23:59"
+                    type="time"
+                    id="createtime"
+                    name="createtime"
+                    [(ngModel)]="createTime"
+                    #createtime="ngModel"
+                    class="w-full text-center px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+                <p *ngIf="createtime.invalid && (createtime.dirty || createtime.touched)" class="text-red-500 text-xs mt-1">
+                    Tijdsregistratie is verplicht.
+                </p>
+            </div>
+
+            <!-- Day 1 or Day 2 -->
+            <div class="my-4 grid grid-cols-2 gap-4">
+                <div class="flex items-center">
+                    <input
+                        type="checkbox"
+                        id="createday1"
+                        name="createday1"
+                        [(ngModel)]="createDay1"
+                        (change)="changeCreateDay(1)"
+                        #createday1="ngModel"
+                    />
+                    <label for="createday1" class="ml-2 block text-sm font-medium text-gray-700">Dag 1</label>
+                </div>
+
+                <div class="flex items-center">
+                    <input
+                        type="checkbox"
+                        id="createday2"
+                        name="createday2"
+                        [(ngModel)]="createDay2"
+                        (change)="changeCreateDay(2)"
+                        #worksDay2="ngModel"
+                    />
+                    <label for="createday2" class="ml-2 block text-sm font-medium text-gray-700">Dag 2</label>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <p *ngIf="timeRegistrationSuccess !==''" class="text-green-600 font-semibold mt-3">{{ timeRegistrationSuccess }}</p>
+                <p *ngIf="errorTimeRegistrations !==''" class="text-red-600 font-semibold mt-3">{{ errorTimeRegistrations }}</p>
+            </div>
+
+            <button type="submit" class="w-full py-2 px-4 mb-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                Tijdsregistratie Toevoegen
+            </button>
+        </form>
+    </div>
+
+    <!-- Time Registration Table -->
+    <div class="overflow-x-auto rounded-md shadow overflow-y-auto" *ngIf="!loadingTimeRegistrations">
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+          <thead>
+            <tr class="bg-gray-50"> <th class="py-3 px-4 border-b text-center"></th>
+              <th class="py-3 px-4 border-b text-start">Dag</th>
+              <th class="py-3 px-4 border-b text-start">Klokt In</th>
+              <th class="py-3 px-4 border-b text-start">Klokt Uit</th>
+              <th class="py-3 px-4 border-b text-center">Acties</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let timeRegistration of timeRegistrations" class="hover:bg-gray-100">
+                <td class="text-sm font-medium py-2 px-4 border-b border-gray-200"></td>
+                <td class="py-2 px-4 border-b text-start">
+                    {{ timeRegistration.day }}
+                </td>
+                <td class="py-2 px-4 border-b text-start">
+                    {{ timeRegistration.start_time }}
+                </td>
+                <td class="py-2 px-4 border-b text-start">
+                    {{ timeRegistration.end_time }}
+                </td>
+                <td class="py-2 px-4 border-b text-center">
+                    <div class="flex justify-center gap-4">
+                        <app-icon-button
+                            (click)="deleteTimeRegistration(timeRegistration)"
+                            icon="trash-2"
+                        ></app-icon-button>
+                    </div>
+                </td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+
+    <p *ngIf="!loadingTimeRegistrations" class="mt-4 text-left">
+        <strong>Werkuren:</strong> {{ totalTimeWorked}}
+    </p>
+
+    <!-- Loading Time Registrations -->
+    <app-loading *ngIf="loadingTimeRegistrations" class=""></app-loading>
+</app-modal>
+
 <!-- Delete Window -->
 <app-modal
-  *ngIf="selectedVolunteer !== null"
-  #deleteModal
-  [header]="selectedVolunteer.first_name + ' ' + selectedVolunteer.last_name + ' Verwijderen'"
-  [maxWidth]="500"
-  [minHeight]="150"
+    *ngIf="selectedVolunteer !== null"
+    #deleteModal
+    [header]="selectedVolunteer.first_name + ' ' + selectedVolunteer.last_name + ' Verwijderen'"
+    [maxWidth]="500"
+    [minHeight]="150"
 >
-  <p class="mb-4">Bent u zeker dat u deze vrijwilliger wil verwijderen?</p>
+    <p class="mb-4">Bent u zeker dat u deze vrijwilliger wil verwijderen?</p>
 
-  <div class="mb-4">
-    <p *ngIf="volunteerDeleted !==''" class="text-green-600 font-semibold mt-3">{{ volunteerDeleted }}</p>
-    <p *ngIf="errorVolunteerDeletion !==''" class="text-red-600 font-semibold mt-3">{{ errorVolunteerDeletion }}</p>
-  </div>
+    <div class="mb-4">
+        <p *ngIf="volunteerDeleted !==''" class="text-green-600 font-semibold mt-3">{{ volunteerDeleted }}</p>
+        <p *ngIf="errorVolunteerDeletion !==''" class="text-red-600 font-semibold mt-3">{{ errorVolunteerDeletion }}</p>
+    </div>
 
-  <button
-    *ngIf = "volunteerDeleted === ''"
-    (click)="deleteVolunteer()"
-    type="submit"
-    class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-  >
-    Bevestigen
-  </button>
+    <button
+        *ngIf = "volunteerDeleted === ''"
+        (click)="deleteVolunteer()"
+        type="submit"
+        class="w-full py-2 px-4 bg-purple-400 text-gray-900 rounded-md hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    >
+        Bevestigen
+    </button>
 </app-modal>
 
 <!-- Edit Window -->

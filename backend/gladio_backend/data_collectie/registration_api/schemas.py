@@ -25,6 +25,12 @@ class TimeRegistrationSchemaCreate(Schema):
     start_time: Optional[bool]
     end_time: Optional[bool]
 
+class TimeRegistrationSchemaCreateWithTimeStrings(Schema):
+    volunteer_id: int
+    day: int = Field(..., choices=[(1, "Day 1"), (2, "Day 2")])
+    start_time: Optional[str]
+    end_time: Optional[str]
+
 class TimeRegistrationSchemaOut(Schema):
     id: int
     volunteer: VolunteerSchemaOut
